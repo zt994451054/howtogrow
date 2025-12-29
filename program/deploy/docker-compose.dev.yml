@@ -1,0 +1,30 @@
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "howtotalk"
+      TZ: "Asia/Shanghai"
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_0900_ai_ci"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../backend/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - ./mysql/initdb/01-schema.sh:/docker-entrypoint-initdb.d/01-schema.sh:ro
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:

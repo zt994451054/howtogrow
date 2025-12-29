@@ -1,0 +1,28 @@
+{
+  "name": "howtogrow-admin-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node ./scripts/ensure-esbuild.mjs",
+    "prebuild": "node ./scripts/ensure-esbuild.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node ./scripts/test-runtime-config.mjs",
+    "reinstall": "node ./scripts/reinstall-deps.mjs"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "element-plus": "^2.3.14",
+    "pinia": "^2.0.36",
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^14.18.63",
+    "@vitejs/plugin-vue": "^2.3.4",
+    "typescript": "^4.9.5",
+    "vite": "^2.9.18"
+  }
+}

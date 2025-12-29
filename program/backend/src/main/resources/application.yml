@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: howtogrow-backend
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  # 环境相关配置（DB/JWT/CORS/AI 等）请放到 application-dev.yml / application-prod.yml

@@ -1,0 +1,4 @@
+com/howtogrow/backend/controller/DtoSchemaDescriptionTest.class
+com/howtogrow/backend/domain/time/AgeInMonthsCalculatorTest.class
+com/howtogrow/backend/auth/JwtServiceTest.class
+com/howtogrow/backend/service/common/FixedWindowRateLimiterTest.class
