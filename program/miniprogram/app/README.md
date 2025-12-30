@@ -10,6 +10,5 @@
 
 ## 配置
 
-- API Base：在 `program/miniprogram/app/services/config.ts` 修改 `API_BASE_URL`
+- API Base：在 `program/miniprogram/app/services/config.js` 修改 `API_BASE_URL`
 - 需要后端支持的接口定义见：`program/backend/API.md`
-

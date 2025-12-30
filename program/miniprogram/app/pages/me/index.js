@@ -1,5 +1,5 @@
 const { STORAGE_KEYS } = require("../../services/config");
-const { fetchMe, getCachedMe, ensureLoggedIn } = require("../../services/auth");
+const { fetchMe, getCachedMe, ensureLoggedIn, isProfileComplete } = require("../../services/auth");
 const { removeStorage } = require("../../services/storage");
 const { getSystemMetrics } = require("../../utils/system");
 
@@ -8,7 +8,17 @@ function defaultAvatar() {
 }
 
 Page({
-  data: { statusBarHeight: 20, nickname: "育儿新手", avatarUrl: defaultAvatar(), subscriptionEndAt: "", isSubscribed: false, isExpired: false, freeTrialUsed: false },
+  data: {
+    statusBarHeight: 20,
+    nickname: "育儿新手",
+    avatarUrl: defaultAvatar(),
+    subscriptionEndAt: "",
+    isSubscribed: false,
+    isExpired: false,
+    freeTrialUsed: false,
+    showAuthModal: false,
+    pendingNav: "",
+  },
   onLoad() {
     const { statusBarHeight } = getSystemMetrics();
     this.setData({ statusBarHeight });
@@ -46,6 +56,11 @@ Page({
     });
   },
   goChildren() {
+    const me = getCachedMe();
+    if (!isProfileComplete(me)) {
+      this.setData({ showAuthModal: true, pendingNav: "children" });
+      return;
+    }
     wx.navigateTo({ url: "/pages/me/children" });
   },
   goHistory() {
@@ -60,5 +75,11 @@ Page({
   goAgreement() {
     wx.navigateTo({ url: "/pages/me/agreement" });
   },
+  onAuthSuccess() {
+    const nav = this.data.pendingNav;
+    this.setData({ showAuthModal: false, pendingNav: "" });
+    if (nav === "children") {
+      wx.navigateTo({ url: "/pages/me/children" });
+    }
+  },
 });
-

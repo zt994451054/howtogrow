@@ -47,5 +47,22 @@ async function ensureLoggedIn() {
   }
 }
 
-module.exports = { ensureLoggedIn, login, fetchMe, getCachedMe, getToken };
+function isProfileComplete(me) {
+  if (!me) return false;
+  const nickname = me.nickname;
+  const avatarUrl = me.avatarUrl;
+  return Boolean(nickname && String(nickname).trim()) && Boolean(avatarUrl && String(avatarUrl).trim());
+}
 
+async function updateProfile(payload) {
+  const nickname = payload?.nickname ? String(payload.nickname).trim() : "";
+  const avatarUrl = payload?.avatarUrl ? String(payload.avatarUrl).trim() : "";
+  if (!nickname || !avatarUrl) {
+    throw new Error("nickname/avatarUrl required");
+  }
+  await apiRequest("POST", "/miniprogram/me/profile", { nickname, avatarUrl });
+  // Refresh cache after update
+  await fetchMe();
+}
+
+module.exports = { ensureLoggedIn, login, fetchMe, getCachedMe, getToken, updateProfile, isProfileComplete };

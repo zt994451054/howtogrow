@@ -83,6 +83,10 @@
 #### `GET /api/v1/miniprogram/me`
 - 响应 data：`MiniprogramMeResponse`
 
+#### `POST /api/v1/miniprogram/me/profile`
+- Body(JSON)：`UpdateProfileRequest`
+- 响应 data：null
+
 #### `PUT /api/v1/miniprogram/children/{childId}` / `DELETE /api/v1/miniprogram/children/{childId}`
 - Path：
   - `childId`：孩子ID
@@ -206,6 +210,12 @@
 | `avatarUrl` | string/null | 头像URL（可为空） |
 | `subscriptionEndAt` | string/null | 订阅到期时间（可为空，ISO-8601） |
 | `freeTrialUsed` | boolean | 是否已使用免费体验 |
+
+#### `UpdateProfileRequest`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `nickname` | string | 昵称 |
+| `avatarUrl` | string | 头像URL |
 
 #### `ChildCreateRequest` / `ChildUpdateRequest`
 | 字段 | 类型 | 说明 |

@@ -1,5 +1,6 @@
 const { getSystemMetrics } = require("../../utils/system");
 const { createChatSession, listChatSessions, sendChatMessage, streamChat } = require("../../services/chat");
+const { getCachedMe, isProfileComplete } = require("../../services/auth");
 
 Page({
   data: {
@@ -12,6 +13,8 @@ Page({
     inputTrim: "",
     typing: false,
     scrollIntoId: "bottom",
+    showAuthModal: false,
+    pendingSend: false,
   },
   onLoad() {
     const { statusBarHeight } = getSystemMetrics();
@@ -60,6 +63,12 @@ Page({
     const text = String(this.data.input).trim();
     if (!text || this.data.typing) return;
 
+    const me = getCachedMe();
+    if (!isProfileComplete(me)) {
+      this.setData({ showAuthModal: true, pendingSend: true });
+      return;
+    }
+
     const ensure = this.data.sessionId ? Promise.resolve() : this.ensureSession();
     ensure.then(() => {
       if (!this.data.sessionId) {
@@ -104,5 +113,11 @@ Page({
         });
     });
   },
+  onAuthSuccess() {
+    const shouldSend = Boolean(this.data.pendingSend);
+    this.setData({ showAuthModal: false, pendingSend: false });
+    if (shouldSend) {
+      this.onSend();
+    }
+  },
 });
-

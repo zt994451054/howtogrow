@@ -1,0 +1,23 @@
+<view class="auth-modal {{show ? 'show' : ''}}">
+  <view class="auth-modal__mask" bindtap="onClose" />
+  <view class="auth-modal__container safe-bottom">
+    <view class="auth-modal__header">
+      <text class="auth-modal__title">完善信息</text>
+      <text class="auth-modal__subtitle">为了提供更好的服务，请完善头像和昵称</text>
+    </view>
+    
+    <view class="auth-modal__content">
+      <button class="avatar-wrapper" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" />
+        <view class="avatar-edit" wx:if="{{!avatarUrl}}">点击设置头像</view>
+      </button>
+
+      <view class="input-wrapper">
+        <text class="label">昵称</text>
+        <input type="nickname" class="input" placeholder="请输入昵称" value="{{nickname}}" bind:change="onNicknameChange" bind:blur="onNicknameChange" />
+      </view>
+      
+      <button class="submit-btn" bindtap="onSubmit" disabled="{{!formattedNickname || !avatarUrl}}">保存并继续</button>
+    </view>
+  </view>
+</view>

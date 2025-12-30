@@ -57,4 +57,5 @@
       </button>
     </view>
   </scroll-view>
+  <auth-modal show="{{showAuthModal}}" bind:success="onAuthSuccess" bind:close="onAuthClose" />
 </view>

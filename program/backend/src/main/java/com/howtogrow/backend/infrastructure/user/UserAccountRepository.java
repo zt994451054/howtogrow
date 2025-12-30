@@ -13,8 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserAccountRepository {
-  private static final RowMapper<UserAccount> ROW_MAPPER =
-      (rs, rowNum) -> toUserAccount(rs);
+  private static final RowMapper<UserAccount> ROW_MAPPER = (rs, rowNum) -> toUserAccount(rs);
 
   private final NamedParameterJdbcTemplate jdbc;
 
@@ -23,8 +22,7 @@ public class UserAccountRepository {
   }
 
   public Optional<UserAccount> findById(long id) {
-    var sql =
-        """
+    var sql = """
         SELECT id, wechat_openid, nickname, avatar_url, subscription_end_at, free_trial_used
         FROM user_account
         WHERE id = :id AND deleted_at IS NULL
@@ -34,8 +32,7 @@ public class UserAccountRepository {
   }
 
   public Optional<UserAccount> findByWechatOpenid(String openid) {
-    var sql =
-        """
+    var sql = """
         SELECT id, wechat_openid, nickname, avatar_url, subscription_end_at, free_trial_used
         FROM user_account
         WHERE wechat_openid = :openid AND deleted_at IS NULL
@@ -46,8 +43,7 @@ public class UserAccountRepository {
 
   public UserAccount create(String openid, String unionid) {
     KeyHolder kh = new GeneratedKeyHolder();
-    var sql =
-        """
+    var sql = """
         INSERT INTO user_account(wechat_openid, wechat_unionid, created_at, updated_at)
         VALUES (:openid, :unionid, NOW(3), NOW(3))
         """;
@@ -63,13 +59,22 @@ public class UserAccountRepository {
   }
 
   public void markFreeTrialUsed(long userId) {
-    var sql =
-        """
+    var sql = """
         UPDATE user_account
         SET free_trial_used = 1, updated_at = NOW(3)
         WHERE id = :userId AND deleted_at IS NULL AND free_trial_used = 0
         """;
     jdbc.update(sql, Map.of("userId", userId));
+  }
+
+  public void updateProfile(long userId, String nickname, String avatarUrl) {
+    var sql = """
+        UPDATE user_account
+        SET nickname = :nickname, avatar_url = :avatarUrl, updated_at = NOW(3)
+        WHERE id = :userId AND deleted_at IS NULL
+        """;
+    jdbc.update(
+        sql, Map.of("userId", userId, "nickname", nickname, "avatarUrl", avatarUrl));
   }
 
   private static UserAccount toUserAccount(ResultSet rs) throws SQLException {

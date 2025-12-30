@@ -68,4 +68,5 @@
       <view class="send {{inputTrim ? 'on' : 'off'}}" bindtap="onSend">➤</view>
     </view>
   </view>
+  <auth-modal show="{{showAuthModal}}" bind:success="onAuthSuccess" />
 </view>

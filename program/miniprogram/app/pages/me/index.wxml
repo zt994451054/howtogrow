@@ -81,5 +81,7 @@
   <view class="footer">
     <text class="ver">Howtotalk App v1.2.0</text>
   </view>
+  
+  <auth-modal show="{{showAuthModal}}" bind:success="onAuthSuccess" />
 </view>
 

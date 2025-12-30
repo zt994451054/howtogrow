@@ -41,8 +41,8 @@
     ]
   },
   "usingComponents": {
-    "custom-tab-bar": "custom-tab-bar/index"
+    "custom-tab-bar": "custom-tab-bar/index",
+    "auth-modal": "/components/auth-modal/index"
   },
   "sitemapLocation": "sitemap.json"
 }
-

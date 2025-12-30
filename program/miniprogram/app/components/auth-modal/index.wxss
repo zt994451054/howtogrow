@@ -1,0 +1,142 @@
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.auth-modal.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.auth-modal__mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.auth-modal__container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+  padding: 48rpx 40rpx;
+  box-sizing: border-box;
+}
+
+.auth-modal.show .auth-modal__container {
+  transform: translateY(0);
+}
+
+.auth-modal__header {
+  margin-bottom: 48rpx;
+  text-align: center;
+}
+
+.auth-modal__title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 12rpx;
+}
+
+.auth-modal__subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #9ca3af;
+}
+
+.auth-modal__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  padding: 0;
+  width: 160rpx !important;
+  height: 160rpx !important;
+  background: none;
+  border-radius: 50%;
+  margin-bottom: 48rpx;
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-wrapper::after {
+  border: none;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-edit {
+  position: absolute;
+  font-size: 20rpx;
+  color: #9ca3af;
+}
+
+.input-wrapper {
+  width: 100%;
+  height: 100rpx;
+  background: #f9fafb;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+  box-sizing: border-box;
+  margin-bottom: 48rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #374151;
+  margin-right: 32rpx;
+}
+
+.input {
+  flex: 1;
+  height: 100%;
+  font-size: 28rpx;
+}
+
+.submit-btn {
+  width: 100% !important;
+  height: 88rpx;
+  background: #f97316;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn[disabled] {
+  background: #fdba74 !important;
+  color: #fff !important;
+  opacity: 0.8;
+}
