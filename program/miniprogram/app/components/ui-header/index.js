@@ -9,6 +9,7 @@ function getSystemMetrics() {
 Component({
   properties: {
     title: { type: String, value: "" },
+    logo: { type: String, value: "" },
     left: { type: String, value: "" },
     right: { type: String, value: "" },
   },

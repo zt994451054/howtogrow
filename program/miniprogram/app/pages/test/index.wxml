@@ -34,5 +34,4 @@
       <view class="add__text">添加孩子</view>
     </view>
   </view>
-  <auth-modal show="{{showAuthModal}}" bind:success="onAuthSuccess" />
 </view>

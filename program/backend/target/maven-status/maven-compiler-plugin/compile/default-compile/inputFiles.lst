@@ -67,6 +67,7 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/MiniprogramQuoteController.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/MiniprogramReportController.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/MiniprogramSubscriptionController.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/MiniprogramUploadController.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/AiChatCreateSessionRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/AiChatCreateSessionResponse.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/AiChatMessageCreateRequest.java
@@ -94,6 +95,8 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/SubscriptionOrderCreateRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/SubscriptionOrderCreateResponse.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/SubscriptionPlanView.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/UpdateProfileRequest.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/UploadAvatarResponse.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/WechatLoginRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/miniprogram/dto/WechatLoginResponse.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/pay/WechatPayNotifyController.java
@@ -140,12 +143,16 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/child/ChildRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/db/Db.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/db/SqlPagination.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/oss/OssConfig.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/oss/OssProperties.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/oss/OssPublicUploader.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/MockWechatPayClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/WechatPayClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/WechatPayClientProvider.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/WechatPayNotifyEventRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/WechatPayProperties.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/WechatPayTransactionRepository.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/pay/WxJavaWechatPayClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/question/QuestionOptionRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/question/QuestionRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/question/QuestionViewRepository.java
@@ -158,12 +165,12 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/subscription/UserSubscriptionRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/user/UserAccount.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/user/UserAccountRepository.java
-/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/HttpWechatClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/MockWechatClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/WechatClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/WechatClientProvider.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/WechatProperties.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/WechatSession.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/wechat/WxJavaWechatClient.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/admin/AdminAssessmentService.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/admin/AdminAuthService.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/admin/AdminDimensionService.java
@@ -188,4 +195,5 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/miniprogram/MiniprogramMeService.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/miniprogram/MiniprogramQuoteService.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/miniprogram/MiniprogramSubscriptionService.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/miniprogram/MiniprogramUploadService.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/service/pay/WechatPayNotifyService.java

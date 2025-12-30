@@ -87,6 +87,11 @@
 - Body(JSON)：`UpdateProfileRequest`
 - 响应 data：null
 
+#### `POST /api/v1/miniprogram/uploads/avatar`
+- `multipart/form-data`：
+  - 字段名：`file`（头像文件，`image/*`）
+- 响应 data：`UploadAvatarResponse`
+
 #### `PUT /api/v1/miniprogram/children/{childId}` / `DELETE /api/v1/miniprogram/children/{childId}`
 - Path：
   - `childId`：孩子ID
@@ -216,6 +221,11 @@
 | --- | --- | --- |
 | `nickname` | string | 昵称 |
 | `avatarUrl` | string | 头像URL |
+
+#### `UploadAvatarResponse`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `url` | string | 上传后的可访问 URL（用于后续保存到用户资料） |
 
 #### `ChildCreateRequest` / `ChildUpdateRequest`
 | 字段 | 类型 | 说明 |

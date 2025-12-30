@@ -1,8 +1,11 @@
 package com.howtogrow.backend.service.pay;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
+import com.github.binarywang.wxpay.exception.WxPayException;
 import com.howtogrow.backend.api.ErrorCode;
 import com.howtogrow.backend.api.exception.AppException;
+import com.howtogrow.backend.infrastructure.pay.WxJavaWechatPayClient;
 import com.howtogrow.backend.infrastructure.pay.WechatPayProperties;
 import com.howtogrow.backend.infrastructure.pay.WechatPayTransactionRepository;
 import com.howtogrow.backend.infrastructure.subscription.PurchaseOrderRepository;
@@ -25,6 +28,7 @@ public class WechatPayNotifyService {
   private final UserSubscriptionRepository userSubscriptionRepo;
   private final SubscriptionGrantRepository grantRepo;
   private final WechatPayTransactionRepository txnRepo;
+  private final WxJavaWechatPayClient wxJavaWechatPayClient;
   private final Clock clock;
 
   public WechatPayNotifyService(
@@ -34,6 +38,7 @@ public class WechatPayNotifyService {
       UserSubscriptionRepository userSubscriptionRepo,
       SubscriptionGrantRepository grantRepo,
       WechatPayTransactionRepository txnRepo,
+      WxJavaWechatPayClient wxJavaWechatPayClient,
       Clock clock) {
     this.props = props;
     this.orderRepo = orderRepo;
@@ -41,19 +46,84 @@ public class WechatPayNotifyService {
     this.userSubscriptionRepo = userSubscriptionRepo;
     this.grantRepo = grantRepo;
     this.txnRepo = txnRepo;
+    this.wxJavaWechatPayClient = wxJavaWechatPayClient;
     this.clock = clock;
   }
 
   /**
    * 当前实现支持 mock 回调：在 `app.wechat-pay.mock-enabled=true` 时，body 可直接带交易字段。
-   * 生产环境需要补齐：验签、解密回调 resource（WeChat Pay v3）。
+   * 非 mock 模式：使用 WxJava 验签并解密回调 resource（WeChat Pay v3）。
    */
   @Transactional
-  public void process(String eventId, JsonNode rawNode) {
-    if (!props.mockEnabled()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay verify/decrypt not implemented");
+  public void process(String eventId, String rawBody, JsonNode rawNode, SignatureHeader signatureHeader) {
+    if (props.mockEnabled()) {
+      processMock(eventId, rawNode);
+      return;
     }
 
+    if (signatureHeader == null
+        || signatureHeader.getTimeStamp() == null
+        || signatureHeader.getTimeStamp().isBlank()
+        || signatureHeader.getNonce() == null
+        || signatureHeader.getNonce().isBlank()
+        || signatureHeader.getSignature() == null
+        || signatureHeader.getSignature().isBlank()
+        || signatureHeader.getSerial() == null
+        || signatureHeader.getSerial().isBlank()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "missing wechat pay signature headers");
+    }
+    if (rawBody == null || rawBody.isBlank()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "empty body");
+    }
+
+    try {
+      var wxPayService = wxJavaWechatPayClient.requireWxPayService();
+      var parsed = wxPayService.parseOrderNotifyV3Result(rawBody, signatureHeader);
+      var r = parsed == null ? null : parsed.getResult();
+      if (r == null) {
+        throw new AppException(ErrorCode.INVALID_REQUEST, "invalid wechat pay notify");
+      }
+
+      var outTradeNo = requiredText(r.getOutTradeNo(), "out_trade_no");
+      var transactionId = requiredText(r.getTransactionId(), "transaction_id");
+      var tradeState = requiredText(r.getTradeState(), "trade_state");
+      if (!"SUCCESS".equalsIgnoreCase(tradeState)) {
+        return;
+      }
+
+      var totalCent = requiredInt(r.getAmount() == null ? null : r.getAmount().getTotal(), "amount.total");
+      var currency = r.getAmount() == null ? "CNY" : textOrDefault(r.getAmount().getCurrency(), "CNY");
+
+      var payerOpenid = "";
+      if (r.getPayer() != null && r.getPayer().getOpenid() != null) {
+        payerOpenid = r.getPayer().getOpenid();
+      }
+
+      var successTime = parseSuccessTime(r.getSuccessTime());
+      if (successTime == null) {
+        successTime = Instant.now(clock);
+      }
+
+      processPaidTransaction(
+          eventId,
+          outTradeNo,
+          transactionId,
+          tradeState,
+          textOrEmpty(r.getMchid()),
+          textOrEmpty(r.getAppid()),
+          textOrEmpty(r.getTradeType()),
+          textOrEmpty(r.getTradeStateDesc()),
+          textOrEmpty(r.getBankType()),
+          payerOpenid,
+          totalCent,
+          currency,
+          successTime);
+    } catch (WxPayException e) {
+      throw new AppException(ErrorCode.WECHAT_PAY_VERIFY_FAILED, "wechat pay verify failed");
+    }
+  }
+
+  private void processMock(String eventId, JsonNode rawNode) {
     var outTradeNo = requiredText(rawNode, "out_trade_no");
     var transactionId = requiredText(rawNode, "transaction_id");
     var tradeState = requiredText(rawNode, "trade_state");
@@ -61,13 +131,48 @@ public class WechatPayNotifyService {
       return;
     }
 
+    var amountNode = rawNode.get("amount");
+    var totalCent = requiredInt(amountNode, "total");
+    var currency = textOrDefault(amountNode, "currency", "CNY");
+    var successTime = parseSuccessTime(rawNode.get("success_time"));
+    if (successTime == null) {
+      successTime = Instant.now(clock);
+    }
+
+    processPaidTransaction(
+        eventId,
+        outTradeNo,
+        transactionId,
+        tradeState,
+        textOrEmpty(rawNode, "mchid"),
+        textOrEmpty(rawNode, "appid"),
+        textOrEmpty(rawNode, "trade_type"),
+        textOrEmpty(rawNode, "trade_state_desc"),
+        textOrEmpty(rawNode, "bank_type"),
+        textOrEmpty(rawNode.path("payer"), "openid"),
+        totalCent,
+        currency,
+        successTime);
+  }
+
+  private void processPaidTransaction(
+      String eventId,
+      String outTradeNo,
+      String transactionId,
+      String tradeState,
+      String mchId,
+      String appId,
+      String tradeType,
+      String tradeStateDesc,
+      String bankType,
+      String payerOpenid,
+      int totalCent,
+      String currency,
+      Instant successTime) {
     var order =
         orderRepo
             .findByOrderNo(outTradeNo)
             .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "order not found"));
-
-    var amountNode = rawNode.get("amount");
-    var totalCent = requiredInt(amountNode, "total");
     if (totalCent != order.amountCent()) {
       throw new AppException(ErrorCode.WECHAT_PAY_AMOUNT_MISMATCH, "amount mismatch");
     }
@@ -77,24 +182,19 @@ public class WechatPayNotifyService {
             .findById(order.planId())
             .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "plan not found"));
 
-    var successTime = parseSuccessTime(rawNode.get("success_time"));
-    if (successTime == null) {
-      successTime = Instant.now(clock);
-    }
-
     txnRepo.upsertTransaction(
         order.id(),
         outTradeNo,
-        textOrEmpty(rawNode, "mchid"),
-        textOrEmpty(rawNode, "appid"),
+        mchId,
+        appId,
         transactionId,
-        textOrEmpty(rawNode, "trade_type"),
+        tradeType,
         tradeState,
-        textOrEmpty(rawNode, "trade_state_desc"),
-        textOrEmpty(rawNode, "bank_type"),
-        textOrEmpty(rawNode.path("payer"), "openid"),
+        tradeStateDesc,
+        bankType,
+        payerOpenid,
         totalCent,
-        textOrDefault(amountNode, "currency", "CNY"),
+        currency,
         successTime,
         eventId);
 
@@ -155,6 +255,43 @@ public class WechatPayNotifyService {
     }
     try {
       return OffsetDateTime.parse(text).toInstant();
+    } catch (Exception ignored) {
+      return null;
+    }
+  }
+
+  private static String requiredText(String value, String field) {
+    if (value == null || value.isBlank()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, field + " is required");
+    }
+    return value;
+  }
+
+  private static int requiredInt(Integer value, String field) {
+    if (value == null) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, field + " is required");
+    }
+    if (value <= 0) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, field + " must be positive");
+    }
+    return value;
+  }
+
+  private static String textOrEmpty(String value) {
+    return value == null ? "" : value.trim();
+  }
+
+  private static String textOrDefault(String value, String fallback) {
+    var t = textOrEmpty(value);
+    return t.isBlank() ? fallback : t;
+  }
+
+  private static Instant parseSuccessTime(String value) {
+    if (value == null || value.isBlank()) {
+      return null;
+    }
+    try {
+      return OffsetDateTime.parse(value).toInstant();
     } catch (Exception ignored) {
       return null;
     }

@@ -17,31 +17,10 @@
   width: 224rpx; /* w-28 = 7rem = 112px = 224rpx */
   height: 224rpx;
   border-radius: 9999rpx;
-  background: var(--brand); /* orange-500 */
-  position: relative;
   box-shadow: 0 20px 25px -5px rgba(255, 237, 213, 1), 0 8px 10px -6px rgba(255, 237, 213, 1); /* shadow-xl shadow-orange-100 */
   margin-bottom: 96rpx; /* mb-12 */
-}
-
-.logo__smile {
-  position: absolute;
-  left: 40rpx;
-  right: 40rpx;
-  top: 92rpx;
-  height: 90rpx;
-  border-bottom: 16rpx solid #ffffff; /* Thicker stroke */
-  border-radius: 0 0 200rpx 200rpx;
-  box-sizing: border-box;
-}
-
-.logo__tail {
-  position: absolute;
-  right: 60rpx;
-  top: 56rpx;
-  width: 16rpx;
-  height: 70rpx;
-  background: #ffffff;
-  border-radius: 999rpx;
+  overflow: hidden;
+  background: transparent;
 }
 
 .quote {
@@ -174,4 +153,3 @@
   letter-spacing: 0.05em; /* tracking-wider */
   margin-top: 16rpx; /* mt-2 */
 }
-

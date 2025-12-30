@@ -13,11 +13,22 @@
             <view class="sub">{{item.age}}岁 · {{item.birthDate}}</view>
           </view>
         </view>
-        <view class="right" />
+        <view class="right">
+          <view
+            class="btn-link"
+            bindtap="onEdit"
+            data-id="{{item.id}}"
+            data-nickname="{{item.nickname}}"
+            data-gender="{{item.gender}}"
+            data-birth-date="{{item.birthDate}}"
+          >
+            编辑
+          </view>
+        </view>
       </view>
 
-      <view wx:if="{{isAdding}}" class="form">
-        <view class="form__title">添加新孩子</view>
+      <view wx:if="{{formMode}}" class="form">
+        <view class="form__title">{{formMode === 'add' ? '添加新孩子' : '编辑孩子'}}</view>
 
         <view class="field">
           <view class="label">孩子昵称</view>

@@ -53,6 +53,20 @@
   color: var(--text-muted);
 }
 
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.btn-link {
+  font-size: 22rpx;
+  font-weight: 900;
+  color: var(--brand);
+  padding: 10rpx 14rpx;
+  border-radius: 9999rpx;
+  background: rgba(249, 115, 22, 0.12);
+}
+
 .form {
   background: #fff;
   border-radius: 24rpx;
@@ -174,4 +188,3 @@
 .add__icon {
   font-size: 32rpx;
 }
-

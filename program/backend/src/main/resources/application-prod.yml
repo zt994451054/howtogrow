@@ -23,14 +23,14 @@ app:
     allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
   wechat:
     mock-enabled: false
-    appid: ${WECHAT_APPID}
-    secret: ${WECHAT_SECRET}
+    appid: wx708361aab07c9b7a
+    secret: a9ed0b219a95bf05255ce64c8f259103
   ai:
     mock-enabled: false
-    base-url: ${OPENAI_API_BASE:${AI_BASE_URL}}
-    api-key: ${OPENAI_API_KEY:${AI_API_KEY}}
-    model: ${OPENAI_MODEL:${AI_MODEL}}
-    chat-completions-path: ${OPENAI_CHAT_COMPLETIONS_PATH:/v1/chat/completions}
+    base-url: https://ark.cn-beijing.volces.com/api/v3
+    api-key: 49447452-3728-4bf6-ab39-f3c28bee421a
+    model: deepseek-v3-2-251201
+    chat-completions-path: /v1/chat/completions
   wechat-pay:
     mock-enabled: false
     mch-id: ${WECHAT_PAY_MCH_ID}

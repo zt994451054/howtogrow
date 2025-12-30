@@ -88,7 +88,7 @@
 }
 
 .btn-primary {
-  background: var(--brand);
+  background-color: #f97316;
   color: #fff;
   border-radius: var(--radius-pill);
   font-size: 26rpx;
@@ -96,6 +96,10 @@
   padding: 22rpx 0;
   width: 360rpx;
   box-shadow: var(--shadow-brand);
+}
+
+.btn-primary::after {
+  border: none;
 }
 
 .grid {
@@ -175,4 +179,3 @@
   font-size: 22rpx;
   font-weight: 900;
 }
-

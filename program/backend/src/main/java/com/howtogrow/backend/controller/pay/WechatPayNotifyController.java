@@ -2,6 +2,7 @@ package com.howtogrow.backend.controller.pay;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
 import com.howtogrow.backend.api.ErrorCode;
 import com.howtogrow.backend.api.exception.AppException;
 import com.howtogrow.backend.infrastructure.pay.WechatPayNotifyEventRepository;
@@ -46,7 +47,13 @@ public class WechatPayNotifyController {
 
     eventRepo.insertIfAbsent(eventId, eventType, resourceType, summary, rawBody);
     try {
-      notifyService.process(eventId, node);
+      var signatureHeader =
+          new SignatureHeader(
+              request.getHeader("Wechatpay-Timestamp"),
+              request.getHeader("Wechatpay-Nonce"),
+              request.getHeader("Wechatpay-Signature"),
+              request.getHeader("Wechatpay-Serial"));
+      notifyService.process(eventId, rawBody, node, signatureHeader);
       eventRepo.markProcessed(eventId);
     } catch (AppException e) {
       eventRepo.markFailed(eventId, e.getMessage());

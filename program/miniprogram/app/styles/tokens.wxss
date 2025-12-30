@@ -1,4 +1,4 @@
-:root {
+page {
   --brand: #f97316;
   --brand-weak: #fff6e6;
   --bg-page: #f3f4f6;
@@ -21,4 +21,3 @@
   --shadow-md: 0 16rpx 40rpx rgba(17, 24, 39, 0.10);
   --shadow-brand: 0 16rpx 32rpx rgba(249, 115, 22, 0.18);
 }
-

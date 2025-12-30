@@ -3,6 +3,7 @@ package com.howtogrow.backend.config;
 import com.howtogrow.backend.auth.JwtProperties;
 import com.howtogrow.backend.config.AdminSecurityProperties;
 import com.howtogrow.backend.infrastructure.ai.AiProperties;
+import com.howtogrow.backend.infrastructure.oss.OssProperties;
 import com.howtogrow.backend.infrastructure.pay.WechatPayProperties;
 import com.howtogrow.backend.infrastructure.wechat.WechatProperties;
 import java.time.Clock;
@@ -21,7 +22,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
   RateLimitProperties.class,
   CorsProperties.class,
   AdminSecurityProperties.class,
-  DailyAssessmentProperties.class
+  DailyAssessmentProperties.class,
+  OssProperties.class
 })
 public class AppConfig {
   @Bean

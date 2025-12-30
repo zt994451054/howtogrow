@@ -5,7 +5,10 @@
         <ui-icon name="{{left}}" size="{{24}}" />
       </view>
     </view>
-    <view class="title text-ellipsis">{{title}}</view>
+    <view class="center-content">
+      <image wx:if="{{logo}}" class="logo-image" src="{{logo}}" mode="heightFix" />
+      <view wx:else class="title text-ellipsis">{{title}}</view>
+    </view>
     <view class="side right">
       <view wx:if="{{right}}" class="btn" bindtap="onRight">
         <ui-icon name="{{right}}" size="{{22}}" />

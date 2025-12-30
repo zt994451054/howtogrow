@@ -1,0 +1,44 @@
+{
+  "description": "Howtotalk miniprogram (repo root config)",
+  "projectname": "howtotalk-miniprogram",
+  "appid": "wx708361aab07c9b7a",
+  "setting": {
+    "compileHotReLoad": true,
+    "useCompilerModule": true,
+    "packNpmManually": false,
+    "es6": true,
+    "minified": true,
+    "ignoreDevUnusedFiles": false,
+    "ignoreUploadUnusedFiles": false,
+    "urlCheck": false,
+    "postcss": false,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "miniprogramRoot": "app/",
+  "compileType": "miniprogram",
+  "libVersion": "3.5.6",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
+}
+

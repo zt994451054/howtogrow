@@ -68,7 +68,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 ## 说明
 - 本仓库当前以“技术方案 + 部署编排”为主，业务实现按 `backend/技术方案.md` 逐步补齐。
-- 目前微信支付 v3 的验签/解密尚未实现；生产环境必须补齐。
+- 微信支付 v3 的验签/解密已基于 WxJava 实现；生产环境需正确配置商户私钥、证书序列号与 API v3 Key。
 - 运营端接口已启用“权限码校验”（见 `backend/db/schema.sql` 中的 `admin_permission` seed），可通过 `admin/admin` 登录后调用 `/api/v1/admin/rbac/*` 管理其他管理员/角色/权限。
 - AI 相关接口已启用简单限流：
   - 每分钟对话次数：环境变量 `AI_CHAT_PER_MINUTE`（默认 60）

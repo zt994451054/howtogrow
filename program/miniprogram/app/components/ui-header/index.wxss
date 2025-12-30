@@ -33,8 +33,20 @@
   color: var(--text-secondary);
 }
 
-.title {
+.center-content {
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.logo-image {
+  height: 48rpx; /* Adjust based on design requirement, keeping it within bar height */
+  width: auto;
+}
+
+.title {
   text-align: center;
   font-size: 26rpx;
   font-weight: 700;

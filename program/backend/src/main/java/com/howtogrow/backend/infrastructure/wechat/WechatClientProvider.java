@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 public class WechatClientProvider {
   private final WechatProperties props;
   private final MockWechatClient mockClient;
-  private final HttpWechatClient httpClient;
+  private final WxJavaWechatClient wxJavaClient;
 
-  public WechatClientProvider(WechatProperties props, MockWechatClient mockClient, HttpWechatClient httpClient) {
+  public WechatClientProvider(WechatProperties props, MockWechatClient mockClient, WxJavaWechatClient wxJavaClient) {
     this.props = props;
     this.mockClient = mockClient;
-    this.httpClient = httpClient;
+    this.wxJavaClient = wxJavaClient;
   }
 
   public WechatClient get() {
-    return props.mockEnabled() ? mockClient : httpClient;
+    return props.mockEnabled() ? mockClient : wxJavaClient;
   }
 }

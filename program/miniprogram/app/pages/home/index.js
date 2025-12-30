@@ -2,6 +2,7 @@ const { fetchRandomQuote } = require("../../services/quotes");
 
 Page({
   data: {
+    logoUrl: "/assets/logo-placeholder.png",
     heroQuote: "爱不是替他做所有事，是忍住不做\n让他发现自己有多棒",
     aboutText:
       "Parenting and communication expert Heleen de Hertog is the founder of Howtotalk. Using the Howtotalk method, she teaches you how to deal with every imaginable parenting challenge -...",
@@ -26,4 +27,3 @@ Page({
     wx.showToast({ title: "已收藏（占位）", icon: "none" });
   },
 });
-

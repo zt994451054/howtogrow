@@ -17,5 +17,8 @@ async function createChild(payload) {
   return response.childId;
 }
 
-module.exports = { getCachedChildren, fetchChildren, createChild };
+async function updateChild(childId, payload) {
+  await apiRequest("PUT", `/miniprogram/children/${encodeURIComponent(String(childId))}`, payload);
+}
 
+module.exports = { getCachedChildren, fetchChildren, createChild, updateChild };

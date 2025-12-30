@@ -132,10 +132,6 @@ public class AiChatService {
               emitter.send(SseEmitter.event().name("done").data("[DONE]", MediaType.TEXT_PLAIN));
             } else {
               var messages = new ArrayList<AiChatClient.ChatMessage>();
-              messages.add(
-                  new AiChatClient.ChatMessage(
-                      "system",
-                      "请使用 Markdown 格式输出（不要输出 HTML）。内容共情、具体、可执行，不做诊断、不贴标签。"));
               messages.addAll(toChatMessages(context));
               openAiStreamClient.streamChatCompletions(
                   messages,

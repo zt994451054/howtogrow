@@ -55,8 +55,8 @@ function isProfileComplete(me) {
 }
 
 async function updateProfile(payload) {
-  const nickname = payload?.nickname ? String(payload.nickname).trim() : "";
-  const avatarUrl = payload?.avatarUrl ? String(payload.avatarUrl).trim() : "";
+  const nickname = payload && payload.nickname ? String(payload.nickname).trim() : "";
+  const avatarUrl = payload && payload.avatarUrl ? String(payload.avatarUrl).trim() : "";
   if (!nickname || !avatarUrl) {
     throw new Error("nickname/avatarUrl required");
   }

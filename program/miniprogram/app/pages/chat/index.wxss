@@ -1,6 +1,10 @@
 .page {
-  min-height: 100vh;
+  height: 100vh;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 220rpx;
+  box-sizing: border-box;
 }
 
 .status {
@@ -169,7 +173,8 @@
 }
 
 .messages {
-  height: calc(100vh - 320rpx);
+  flex: 1;
+  min-height: 0;
   background: rgba(249, 250, 251, 0.7);
   padding: 24rpx 24rpx;
 }
@@ -235,11 +240,7 @@
 }
 
 .input {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 20rpx 24rpx 200rpx;
+  padding: 20rpx 24rpx 24rpx;
   background: #fff;
   border-top: 1rpx solid var(--border);
 }
@@ -296,4 +297,3 @@
   background: #9ca3af;
   border-radius: 9999rpx;
 }
-

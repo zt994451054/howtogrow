@@ -1,12 +1,9 @@
 <view class="page">
-  <ui-header title="Howtotalk" right="bookmark" bind:right="onBookmark" />
+  <ui-header title="Howtotalk"  bind:left="onBookmark" />
 
   <view class="content safe-bottom">
     <view class="hero col center animate-fade-in">
-      <view class="logo">
-        <view class="logo__smile" />
-        <view class="logo__tail" />
-      </view>
+      <image class="logo" src="{{logoUrl}}" mode="aspectFit" />
       <view class="quote">{{heroQuote}}</view>
     </view>
 
@@ -40,4 +37,3 @@
     </scroll-view>
   </view>
 </view>
-

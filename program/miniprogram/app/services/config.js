@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8080";
+const API_BASE_URL = "http://192.168.1.152:8080";
 const API_PREFIX = "/api/v1";
 
 const STORAGE_KEYS = {
