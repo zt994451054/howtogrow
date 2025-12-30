@@ -1,0 +1,45 @@
+.wrap {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  z-index: 20;
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 24rpx;
+}
+
+.side {
+  width: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.side.right {
+  justify-content: flex-end;
+}
+
+.btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+

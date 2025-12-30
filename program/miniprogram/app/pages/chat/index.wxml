@@ -1,0 +1,71 @@
+<view class="page">
+  <view class="status" style="height: {{statusBarHeight}}px;" />
+  <view class="header row between">
+    <view class="icon-btn" bindtap="openDrawer">
+      <ui-icon name="menu" size="{{24}}" />
+    </view>
+    <view class="title">马上沟通</view>
+    <view class="icon-btn" bindtap="startNewChat">
+      <ui-icon name="edit" size="{{22}}" />
+    </view>
+  </view>
+
+  <view class="drawer-mask {{drawerOpen ? 'on' : ''}}" bindtap="closeDrawer" />
+  <view class="drawer {{drawerOpen ? 'on' : 'off'}}">
+    <view class="drawer__head">
+      <view class="row a">
+        <view class="logo">
+          <view class="logo__smile" />
+          <view class="logo__tail" />
+        </view>
+        <view class="col">
+          <view class="drawer__t1">历史对话</view>
+          <view class="drawer__t2">查看之前的咨询记录</view>
+        </view>
+      </view>
+    </view>
+
+    <scroll-view class="drawer__body" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <button class="new" bindtap="startNewChat">✎ 开启新会话</button>
+      <view class="tag">最近</view>
+      <button wx:for="{{sessions}}" wx:key="sessionId" class="sess" bindtap="selectSession" data-id="{{item.sessionId}}">
+        会话 #{{item.sessionId}}
+      </button>
+      <view wx:if="{{sessions.length == 0}}" class="sess-empty">暂无会话</view>
+    </scroll-view>
+
+    <view class="drawer__foot">Howtotalk AI Assistant v1.0</view>
+  </view>
+
+  <scroll-view class="messages" scroll-y="true" enhanced="true" show-scrollbar="false" scroll-into-view="{{scrollIntoId}}">
+    <view class="msg-list">
+      <view wx:for="{{messages}}" wx:key="id" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
+        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
+          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
+            <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
+          </view>
+          <view class="bubble {{item.role == 'user' ? 'b-me' : 'b-ai'}}">{{item.text}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{typing}}" class="msg ai">
+        <view class="bubble-row">
+          <view class="avatar a-ai"><text>🤖</text></view>
+          <view class="dots">
+            <view class="dot" />
+            <view class="dot" />
+            <view class="dot" />
+          </view>
+        </view>
+      </view>
+      <view id="bottom" />
+    </view>
+  </scroll-view>
+
+  <view class="input safe-bottom">
+    <view class="box row">
+      <input class="ipt" placeholder="输入你的问题..." value="{{input}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend" />
+      <view class="send {{inputTrim ? 'on' : 'off'}}" bindtap="onSend">➤</view>
+    </view>
+  </view>
+</view>

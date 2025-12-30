@@ -1,0 +1,43 @@
+<view class="page">
+  <ui-header title="Howtotalk" right="bookmark" bind:right="onBookmark" />
+
+  <view class="content safe-bottom">
+    <view class="hero col center animate-fade-in">
+      <view class="logo">
+        <view class="logo__smile" />
+        <view class="logo__tail" />
+      </view>
+      <view class="quote">{{heroQuote}}</view>
+    </view>
+
+    <view class="section">
+      <view class="section__title">关于HOWTOTALK</view>
+      <view class="about">
+        <text>{{aboutText}}</text>
+        <text class="more">...more</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section__title">每日自测</view>
+    </view>
+
+    <scroll-view class="courses" scroll-x="true" enhanced="true" show-scrollbar="false">
+      <view class="courses__row">
+        <view wx:for="{{courses}}" wx:key="id" class="course">
+          <image class="course__bg" src="{{item.imageUrl}}" mode="aspectFill" />
+          <view class="course__mask" />
+          <view class="course__inner">
+            <view class="course__brand">
+              <view class="mini-dot">L</view>
+              <view class="mini-text">howtotalk.</view>
+            </view>
+            <view class="course__title">{{item.title}}</view>
+            <view class="course__sub">{{item.subtitle}}</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+

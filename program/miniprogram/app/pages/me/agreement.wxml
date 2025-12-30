@@ -1,0 +1,17 @@
+<view class="page">
+  <ui-header title="用户协议" left="back" bind:left="onBack" />
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="wrap">
+      <view class="h3">1. 服务条款</view>
+      <view class="p">欢迎使用 Howtotalk。在使用本应用之前，请仔细阅读以下条款…</view>
+
+      <view class="h3">2. 隐私政策</view>
+      <view class="p">我们非常重视您的隐私。您的所有数据仅存储于本地或加密传输…</view>
+
+      <view class="h3">3. 订阅说明</view>
+      <view class="p">订阅服务为虚拟商品，一经售出概不退款。请在购买前确认套餐内容…</view>
+    </view>
+  </scroll-view>
+</view>
+

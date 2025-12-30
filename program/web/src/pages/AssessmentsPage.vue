@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { listAssessments, type AssessmentView } from "@/api/admin/assessments";
+import { formatDateTime } from "@/utils/format";
 
 type PageState = {
   page: number;
@@ -48,16 +49,20 @@ onMounted(() => {
       </div>
     </div>
 
-    <el-table :data="items" v-loading="loading" style="width: 100%">
-      <el-table-column prop="assessmentId" label="ID" width="90" />
-      <el-table-column prop="bizDate" label="日期" width="120" />
-      <el-table-column prop="status" label="状态" width="140" />
-      <el-table-column prop="userId" label="用户ID" width="100" />
-      <el-table-column prop="userNickname" label="用户昵称" width="160" />
-      <el-table-column prop="childId" label="孩子ID" width="100" />
-      <el-table-column prop="childNickname" label="孩子昵称" width="160" />
-      <el-table-column prop="startedAt" label="开始时间" width="220" />
-      <el-table-column prop="submittedAt" label="提交时间" width="220" />
+    <el-table :data="items" v-loading="loading" style="width: 100%" table-layout="fixed">
+      <el-table-column prop="assessmentId" label="ID" width="80" align="center" />
+      <el-table-column prop="bizDate" label="日期" width="110" />
+      <el-table-column prop="status" label="状态" width="120" />
+      <el-table-column prop="userId" label="用户ID" width="90" align="center" />
+      <el-table-column prop="userNickname" label="用户昵称" width="140" show-overflow-tooltip />
+      <el-table-column prop="childId" label="孩子ID" width="90" align="center" />
+      <el-table-column prop="childNickname" label="孩子昵称" width="140" show-overflow-tooltip />
+      <el-table-column label="开始时间" width="170">
+        <template #default="{ row }">{{ formatDateTime(row.startedAt) }}</template>
+      </el-table-column>
+      <el-table-column label="提交时间" width="170">
+        <template #default="{ row }">{{ formatDateTime(row.submittedAt) }}</template>
+      </el-table-column>
     </el-table>
 
     <div class="pager">
@@ -96,4 +101,3 @@ onMounted(() => {
   justify-content: flex-end;
 }
 </style>
-

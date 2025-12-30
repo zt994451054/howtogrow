@@ -1,0 +1,18 @@
+<view class="tabbar safe-bottom">
+  <view class="tabbar__inner">
+    <view
+      wx:for="{{list}}"
+      wx:key="pagePath"
+      class="tabbar__item {{selected == index ? 'is-active' : ''}}"
+      bindtap="onTap"
+      data-index="{{index}}"
+      data-path="{{item.pagePath}}"
+    >
+      <view class="tabbar__icon">
+        <image class="icon-image" src="{{selected === index ? item.selectedIconPath : item.iconPath}}" />
+      </view>
+      <view class="tabbar__label">{{item.text}}</view>
+    </view>
+  </view>
+  <view class="home-indicator" />
+</view>

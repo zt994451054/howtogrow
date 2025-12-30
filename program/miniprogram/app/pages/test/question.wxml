@@ -1,0 +1,48 @@
+<view class="page">
+  <view class="status" style="height: {{statusBarHeight}}px;" />
+
+  <view class="header">
+    <view class="progress">
+      <view class="progress__bar">
+        <view class="progress__fill" style="width: {{progressPercent}}%;" />
+      </view>
+    </view>
+
+    <view class="actions row between">
+      <view class="icon-btn" bindtap="onPrev">
+        <ui-icon name="back" size="{{26}}" />
+      </view>
+      <view class="icon-btn close" bindtap="onClose">
+        <ui-icon name="close" size="{{24}}" />
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="body" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="title">{{currentItem.content}}</view>
+
+    <view class="swap" bindtap="onSwap">
+      <view class="swap__icon">⟳</view>
+      <view class="swap__text">换个题目</view>
+    </view>
+
+    <view class="options">
+      <view
+        wx:for="{{currentOptions}}"
+        wx:key="optionId"
+        class="opt {{item._selected ? 'opt--on' : 'opt--off'}}"
+        bindtap="onToggleOption"
+        data-option-id="{{item.optionId}}"
+      >
+        {{item.content}}
+      </view>
+    </view>
+    <view class="spacer" />
+  </scroll-view>
+
+  <view class="footer safe-bottom">
+    <button class="next {{canNext ? 'next--on' : 'next--off'}}" disabled="{{!canNext}}" bindtap="onNext">
+      {{isLast ? '提交' : '下一题'}}
+    </button>
+  </view>
+</view>

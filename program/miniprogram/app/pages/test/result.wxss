@@ -1,0 +1,241 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg-result);
+}
+
+.status {
+  background: transparent;
+}
+
+.top {
+  padding: 0 20rpx 12rpx;
+  align-items: center;
+}
+
+.spacer {
+  width: 72rpx;
+  height: 72rpx;
+}
+
+.close {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.top__title {
+  flex: 1;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.body {
+  height: calc(100vh - 260rpx);
+  padding: 0 32rpx;
+}
+
+.flag-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0 40rpx;
+}
+
+.flag {
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 9999rpx;
+  background: rgba(249, 115, 22, 0.12);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.flag__bar {
+  position: absolute;
+  left: 140rpx;
+  top: 60rpx;
+  width: 20rpx;
+  height: 190rpx;
+  background: var(--brand);
+  border-radius: 20rpx;
+}
+
+.flag__tag {
+  position: absolute;
+  left: 160rpx;
+  top: 86rpx;
+  width: 96rpx;
+  height: 80rpx;
+  background: rgba(253, 186, 116, 0.9);
+  border-radius: 10rpx;
+  color: #fff;
+  font-weight: 900;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 44rpx;
+  padding-bottom: 30rpx;
+}
+
+.block {
+  background: transparent;
+}
+
+.q {
+  align-items: flex-start;
+  gap: 18rpx;
+}
+
+.q__no {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 9999rpx;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 900;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6rpx;
+}
+
+.q__title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 40rpx;
+}
+
+.your {
+  margin-left: 66rpx;
+  margin-top: 16rpx;
+  border-left: 4rpx solid rgba(249, 115, 22, 0.7);
+  padding-left: 18rpx;
+}
+
+.your__label {
+  color: var(--brand);
+  font-size: 26rpx;
+  font-weight: 900;
+  margin-bottom: 8rpx;
+}
+
+.your__text {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  font-style: italic;
+  line-height: 38rpx;
+}
+
+.advice {
+  margin-left: 66rpx;
+  margin-top: 18rpx;
+}
+
+.advice__head {
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 10rpx;
+}
+
+.advice__icon {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 9999rpx;
+  background: #fff;
+  border: 2rpx solid rgba(17, 24, 39, 0.08);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 22rpx;
+}
+
+.advice__title {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 26rpx;
+}
+
+.advice__body {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 42rpx;
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.summary {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  box-shadow: var(--shadow-sm);
+  margin: 10rpx 0 24rpx;
+}
+
+.summary__title {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 26rpx;
+  margin-bottom: 12rpx;
+}
+
+.summary__text {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 40rpx;
+}
+
+.tail {
+  height: 120rpx;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx 28rpx;
+  background: rgba(255, 245, 242, 0.96);
+  backdrop-filter: blur(10px);
+  border-top: 1rpx solid rgba(243, 244, 246, 0.7);
+}
+
+.btn {
+  width: 100%;
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  padding: 26rpx 0;
+  font-size: 30rpx;
+  font-weight: 900;
+  box-shadow: var(--shadow-brand);
+}
+
+.btn-ghost {
+  margin-top: 18rpx;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
+  border-radius: var(--radius-pill);
+  padding: 22rpx 0;
+  font-size: 26rpx;
+  font-weight: 900;
+  border: 2rpx solid rgba(17, 24, 39, 0.06);
+}
+

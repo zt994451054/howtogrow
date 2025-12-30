@@ -1,0 +1,60 @@
+<view class="page">
+  <ui-header title="孩子管理" left="back" bind:left="onBack" />
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="wrap">
+      <view wx:for="{{children}}" wx:key="id" class="row-card row between">
+        <view class="row">
+          <view class="face {{item.gender == 1 ? 'boy' : item.gender == 2 ? 'girl' : 'unk'}}">
+            <text>{{item.gender == 1 ? '👦' : item.gender == 2 ? '👧' : '🙂'}}</text>
+          </view>
+          <view class="col meta">
+            <view class="name">{{item.nickname}}</view>
+            <view class="sub">{{item.age}}岁 · {{item.birthDate}}</view>
+          </view>
+        </view>
+        <view class="right" />
+      </view>
+
+      <view wx:if="{{isAdding}}" class="form">
+        <view class="form__title">添加新孩子</view>
+
+        <view class="field">
+          <view class="label">孩子昵称</view>
+          <input class="input" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNickname" focus="{{true}}" />
+        </view>
+
+        <view class="field">
+          <view class="label">性别</view>
+          <view class="row gender">
+            <view class="g {{gender == 1 ? 'on boy' : 'off'}}" bindtap="setBoy">
+              <text class="g__icon">👦</text>
+              <text class="g__text">男孩</text>
+            </view>
+            <view class="g {{gender == 2 ? 'on girl' : 'off'}}" bindtap="setGirl">
+              <text class="g__icon">👧</text>
+              <text class="g__text">女孩</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="field">
+          <view class="label">出生日期</view>
+          <picker mode="date" value="{{birthDate}}" start="1900-01-01" end="{{today}}" bindchange="onBirthDate">
+            <view class="date">{{birthDate || '请选择日期'}}</view>
+          </picker>
+        </view>
+
+        <view class="row actions">
+          <button class="save" loading="{{saving}}" bindtap="onSave">保存</button>
+          <button class="cancel" bindtap="onCancel">取消</button>
+        </view>
+      </view>
+
+      <button wx:else class="add" bindtap="onAdd">
+        <text class="add__icon">＋</text>
+        添加孩子
+      </button>
+    </view>
+  </scroll-view>
+</view>

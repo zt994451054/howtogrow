@@ -1,0 +1,38 @@
+<view class="page">
+  <view class="status" style="height: {{statusBarHeight}}px;" />
+
+  <view class="top">
+    <view class="back" bindtap="onBack">
+      <ui-icon name="back" size="{{26}}" />
+    </view>
+    <view class="center col">
+      <view class="t1">会员订阅</view>
+      <view class="t2 {{isSubscribed && !isExpired ? 'ok' : 'warn'}}">
+        <text wx:if="{{isSubscribed && !isExpired}}">有效期至 {{subscriptionEndAt}}</text>
+        <text wx:else>未订阅或已过期</text>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="panel">
+      <view class="h3">选择套餐</view>
+
+      <view wx:for="{{plans}}" wx:key="planId" class="plan {{selectedPlanId == item.planId ? 'on' : ''}}" bindtap="onSelect" data-id="{{item.planId}}">
+        <view class="col">
+          <view class="plan__name">{{item.name}}</view>
+          <view class="plan__sub">{{item.days}}天有效期</view>
+        </view>
+        <view class="plan__price">¥{{item.priceYuan}}</view>
+      </view>
+
+      <view wx:if="{{plans.length == 0}}" class="empty">暂无套餐</view>
+    </view>
+  </scroll-view>
+
+  <view class="footer safe-bottom">
+    <button class="buy {{selectedPlanId ? 'on' : 'off'}}" disabled="{{!selectedPlanId}}" loading="{{paying}}" bindtap="onBuy">
+      立即开通
+    </button>
+  </view>
+</view>

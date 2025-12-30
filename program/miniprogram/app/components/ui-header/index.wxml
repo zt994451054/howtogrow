@@ -1,0 +1,16 @@
+<view class="wrap" style="padding-top: {{statusBarHeight}}px;">
+  <view class="bar" style="height: {{navContentHeight}}px;">
+    <view class="side">
+      <view wx:if="{{left}}" class="btn" bindtap="onLeft">
+        <ui-icon name="{{left}}" size="{{24}}" />
+      </view>
+    </view>
+    <view class="title text-ellipsis">{{title}}</view>
+    <view class="side right">
+      <view wx:if="{{right}}" class="btn" bindtap="onRight">
+        <ui-icon name="{{right}}" size="{{22}}" />
+      </view>
+    </view>
+  </view>
+</view>
+

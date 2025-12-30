@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/test/index",
+    "pages/chat/index",
+    "pages/me/index",
+    "pages/test/intro",
+    "pages/test/question",
+    "pages/test/result",
+    "pages/me/children",
+    "pages/me/history",
+    "pages/me/history-detail",
+    "pages/me/growth-report",
+    "pages/me/subscription",
+    "pages/me/agreement"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundTextStyle": "light",
+    "backgroundColor": "#FFFFFF"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/test/index",
+        "text": "每日自测"
+      },
+      {
+        "pagePath": "pages/chat/index",
+        "text": "马上沟通"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "custom-tab-bar": "custom-tab-bar/index"
+  },
+  "sitemapLocation": "sitemap.json"
+}
+

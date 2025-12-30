@@ -1,0 +1,21 @@
+<view class="page">
+  <ui-header title="自测记录" left="back" bind:left="onBack" />
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="wrap">
+      <view wx:for="{{records}}" wx:key="id" class="card">
+        <view class="row between top">
+          <view class="row a">
+            <view class="icon">📅</view>
+            <view class="date">{{item.date}}</view>
+          </view>
+          <view class="chip">{{item.childName}}</view>
+        </view>
+        <view class="sub">完成了沟通能力自测</view>
+        <button class="btn" bindtap="onView" data-id="{{item.id}}">查看详情</button>
+      </view>
+
+      <view wx:if="{{records.length == 0}}" class="empty">暂无记录</view>
+    </view>
+  </scroll-view>
+</view>

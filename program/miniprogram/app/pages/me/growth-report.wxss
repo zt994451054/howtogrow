@@ -1,0 +1,267 @@
+.page {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.empty {
+  padding: 220rpx 48rpx 0;
+  text-align: center;
+}
+
+.empty__dot {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 9999rpx;
+  background: #f3f4f6;
+  position: relative;
+  margin-bottom: 24rpx;
+}
+
+.logo-smile {
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 52rpx;
+  height: 50rpx;
+  border-bottom: 8rpx solid rgba(249, 115, 22, 0.7);
+  border-radius: 0 0 200rpx 200rpx;
+}
+
+.logo-tail {
+  position: absolute;
+  right: 36rpx;
+  top: 32rpx;
+  width: 8rpx;
+  height: 40rpx;
+  background: rgba(249, 115, 22, 0.7);
+  border-radius: 8rpx;
+}
+
+.empty__t1 {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+.empty__t2 {
+  margin-top: 10rpx;
+  color: var(--text-muted);
+  font-size: 22rpx;
+}
+
+.select {
+  padding: 24rpx 32rpx 240rpx;
+  background: #f9fafb;
+  min-height: calc(100vh - 140rpx);
+}
+
+.select__h1 {
+  font-size: 44rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 10rpx;
+}
+
+.select__h2 {
+  font-size: 22rpx;
+  color: var(--text-muted);
+  margin-bottom: 24rpx;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24rpx;
+}
+
+.cell {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 28rpx 24rpx;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+}
+
+.avatar {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 9999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+}
+
+.avatar.boy {
+  background: rgba(59, 130, 246, 0.12);
+}
+.avatar.girl {
+  background: rgba(236, 72, 153, 0.12);
+}
+.avatar.unk {
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.name {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 26rpx;
+}
+
+.age {
+  font-size: 20rpx;
+  color: var(--text-muted);
+  background: #f9fafb;
+  padding: 6rpx 16rpx;
+  border-radius: var(--radius-pill);
+}
+
+.body {
+  height: calc(100vh - 140rpx);
+  background: #fff;
+}
+
+.report {
+  padding: 24rpx 32rpx 260rpx;
+}
+
+.report__top {
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.brand {
+  align-items: center;
+  gap: 14rpx;
+}
+
+.mini-logo {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 9999rpx;
+  background: var(--brand);
+  position: relative;
+}
+
+.mini-smile {
+  position: absolute;
+  left: 12rpx;
+  right: 12rpx;
+  top: 22rpx;
+  height: 22rpx;
+  border-bottom: 6rpx solid #fff;
+  border-radius: 0 0 200rpx 200rpx;
+}
+
+.mini-tail {
+  position: absolute;
+  right: 16rpx;
+  top: 14rpx;
+  width: 6rpx;
+  height: 18rpx;
+  background: #fff;
+  border-radius: 6rpx;
+}
+
+.brand__t1 {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 24rpx;
+}
+
+.brand__t2 {
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 18rpx;
+}
+
+.cta {
+  background: rgba(249, 115, 22, 0.14);
+  color: #7c2d12;
+  border-radius: var(--radius-pill);
+  padding: 10rpx 18rpx;
+  font-weight: 900;
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.cta__icon {
+  font-size: 18rpx;
+}
+
+.h1 {
+  margin-top: 18rpx;
+  font-size: 40rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.hint {
+  margin-top: 10rpx;
+  font-size: 20rpx;
+  color: var(--text-muted);
+}
+
+.chart-card {
+  margin-top: 18rpx;
+  background: #fff;
+  border-radius: 32rpx;
+  border: 2rpx solid rgba(243, 244, 246, 1);
+  box-shadow: var(--shadow-sm);
+  padding: 18rpx 12rpx;
+}
+
+.recent {
+  margin-top: 24rpx;
+}
+
+.recent__h {
+  align-items: center;
+  padding: 6rpx 2rpx 18rpx;
+}
+
+.recent__t {
+  font-weight: 900;
+  color: var(--text-primary);
+  font-size: 26rpx;
+}
+
+.recent__more {
+  color: var(--brand);
+  font-weight: 900;
+  font-size: 22rpx;
+}
+
+.recent__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+}
+
+.recent__card {
+  background: #f9fafb;
+  border-radius: 24rpx;
+  padding: 20rpx;
+  border: 2rpx solid rgba(243, 244, 246, 1);
+}
+
+.recent__date {
+  color: var(--text-muted);
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.recent__txt {
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 32rpx;
+}
+

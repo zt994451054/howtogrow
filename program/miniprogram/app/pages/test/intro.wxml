@@ -1,0 +1,16 @@
+<view class="page">
+  <ui-header title="{{childName}}的每日自测" left="back" bind:left="onBack" />
+
+  <view class="subhead">
+    <view class="subhead__title">{{childName}}的每日自测</view>
+    <view class="subhead__meta">今日进度 0/5</view>
+  </view>
+
+  <view class="body col center">
+    <view class="bubble">📝</view>
+    <view class="t1">准备好了吗？</view>
+    <view class="t2">接下来将开始关于 {{childName}} 的沟通能力测试</view>
+    <button class="btn" loading="{{starting}}" bindtap="onStart">开始测试</button>
+  </view>
+</view>
+

@@ -1,0 +1,67 @@
+<view class="page">
+  <ui-header title="成长报告" left="back" bind:left="onBack" />
+
+  <view wx:if="{{children.length == 0}}" class="empty col center">
+    <view class="empty__dot">
+      <view class="logo-smile" />
+      <view class="logo-tail" />
+    </view>
+    <view class="empty__t1">暂无孩子数据</view>
+    <view class="empty__t2">请先在“孩子管理”中添加孩子</view>
+  </view>
+
+  <view wx:elif="{{!selectedChildId}}" class="select">
+    <view class="select__h1">选择孩子</view>
+    <view class="select__h2">查看特定孩子的成长能力模型</view>
+    <view class="grid">
+      <view wx:for="{{children}}" wx:key="id" class="cell" bindtap="onPickChild" data-id="{{item.id}}">
+        <view class="avatar {{item.gender == 1 ? 'boy' : item.gender == 2 ? 'girl' : 'unk'}}">
+          <text>{{item.gender == 1 ? '👦' : item.gender == 2 ? '👧' : '🙂'}}</text>
+        </view>
+        <view class="name">{{item.nickname}}</view>
+        <view class="age">{{item.age}} 岁</view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view wx:else class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="report">
+      <view class="report__top row between">
+        <view class="brand row">
+          <view class="mini-logo">
+            <view class="mini-smile" />
+            <view class="mini-tail" />
+          </view>
+          <view class="col">
+            <view class="brand__t1">能力分析报告</view>
+            <view class="brand__t2">AGGREGATION: 5 TESTS/POINT</view>
+          </view>
+        </view>
+        <view class="cta" bindtap="goTest">
+          <text class="cta__icon">▶</text>
+          <text>开始测评</text>
+        </view>
+      </view>
+
+      <view class="h1">成长轨迹总览</view>
+      <view class="hint">每点聚合了连续5次测试的平均得分</view>
+
+      <view class="chart-card">
+        <ec-canvas id="growthChart" canvas-id="growthChart" ec="{{ec}}" />
+      </view>
+
+      <view class="recent">
+        <view class="recent__h row between">
+          <view class="recent__t">近期自测反馈</view>
+          <view class="recent__more">收起</view>
+        </view>
+        <view class="recent__grid">
+          <view wx:for="{{recentCards}}" wx:key="bizDate" class="recent__card">
+            <view class="recent__date">{{item.bizDate}}</view>
+            <view class="recent__txt">{{item.title}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
