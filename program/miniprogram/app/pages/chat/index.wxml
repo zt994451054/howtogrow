@@ -10,31 +10,33 @@
     </view>
   </view>
 
-  <view class="drawer-mask {{drawerOpen ? 'on' : ''}}" bindtap="closeDrawer" />
-  <view class="drawer {{drawerOpen ? 'on' : 'off'}}">
-    <view class="drawer__head">
-      <view class="row a">
-        <view class="logo">
-          <view class="logo__smile" />
-          <view class="logo__tail" />
-        </view>
-        <view class="col">
-          <view class="drawer__t1">历史对话</view>
-          <view class="drawer__t2">查看之前的咨询记录</view>
+  <view class="drawer-layer {{drawerOpen ? 'on' : ''}}">
+    <view class="drawer-mask" bindtap="closeDrawer" />
+    <view class="drawer">
+      <view class="drawer__head">
+        <view class="row a">
+          <view class="logo">
+            <view class="logo__smile" />
+            <view class="logo__tail" />
+          </view>
+          <view class="col">
+            <view class="drawer__t1">历史对话</view>
+            <view class="drawer__t2">查看之前的咨询记录</view>
+          </view>
         </view>
       </view>
+
+      <scroll-view class="drawer__body" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <button class="new" bindtap="startNewChat">✎ 开启新会话</button>
+        <view class="tag">最近</view>
+        <button wx:for="{{sessions}}" wx:key="sessionId" class="sess" bindtap="selectSession" data-id="{{item.sessionId}}">
+          会话 #{{item.sessionId}}
+        </button>
+        <view wx:if="{{sessions.length == 0}}" class="sess-empty">暂无会话</view>
+      </scroll-view>
+
+      <view class="drawer__foot">Howtotalk AI Assistant v1.0</view>
     </view>
-
-    <scroll-view class="drawer__body" scroll-y="true" enhanced="true" show-scrollbar="false">
-      <button class="new" bindtap="startNewChat">✎ 开启新会话</button>
-      <view class="tag">最近</view>
-      <button wx:for="{{sessions}}" wx:key="sessionId" class="sess" bindtap="selectSession" data-id="{{item.sessionId}}">
-        会话 #{{item.sessionId}}
-      </button>
-      <view wx:if="{{sessions.length == 0}}" class="sess-empty">暂无会话</view>
-    </scroll-view>
-
-    <view class="drawer__foot">Howtotalk AI Assistant v1.0</view>
   </view>
 
   <scroll-view class="messages" scroll-y="true" enhanced="true" show-scrollbar="false" scroll-into-view="{{scrollIntoId}}">

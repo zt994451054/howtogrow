@@ -35,24 +35,32 @@
   text-transform: uppercase;
 }
 
-.drawer-mask {
+.drawer-layer {
   position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.drawer-layer.on {
+  pointer-events: auto;
+}
+
+.drawer-mask {
+  position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(8px);
   opacity: 0;
-  pointer-events: none;
-  z-index: 40;
   transition: opacity 180ms ease;
 }
 
-.drawer-mask.on {
+.drawer-layer.on .drawer-mask {
   opacity: 1;
-  pointer-events: auto;
 }
 
 .drawer {
-  position: fixed;
+  position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
@@ -66,7 +74,7 @@
   flex-direction: column;
 }
 
-.drawer.on {
+.drawer-layer.on .drawer {
   transform: translateX(0);
 }
 
