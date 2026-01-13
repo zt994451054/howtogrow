@@ -29,24 +29,29 @@ echo "== Admin me =="
 curl -fsS "${BASE_URL}/api/v1/admin/auth/me" -H "Authorization: Bearer ${ADMIN_TOKEN}" | cat
 echo
 
-echo "== Miniprogram login (mock) =="
-MP_TOKEN="$(
-  curl -fsS "${BASE_URL}/api/v1/miniprogram/auth/wechat-login" \
-    -H 'Content-Type: application/json' \
-    -d '{"code":"mock:smoke_user"}' \
-  | sed -n 's/.*"token":"\\([^"]*\\)".*/\\1/p'
-)"
-if [ -z "${MP_TOKEN}" ]; then
-  echo "failed to parse miniprogram token" >&2
-  exit 1
-fi
-echo "miniprogram token ok"
+MP_CODE="${MP_CODE:-}"
+if [ -z "${MP_CODE}" ]; then
+  echo "== Miniprogram login =="
+  echo "skip miniprogram flow: set MP_CODE to a fresh wx.login() code" >&2
+else
+  echo "== Miniprogram login =="
+  MP_TOKEN="$(
+    curl -fsS "${BASE_URL}/api/v1/miniprogram/auth/wechat-login" \
+      -H 'Content-Type: application/json' \
+      -d "{\"code\":\"${MP_CODE}\"}" \
+    | sed -n 's/.*"token":"\\([^"]*\\)".*/\\1/p'
+  )"
+  if [ -z "${MP_TOKEN}" ]; then
+    echo "failed to parse miniprogram token" >&2
+    exit 1
+  fi
+  echo "miniprogram token ok"
 
-echo "== Miniprogram me =="
-curl -fsS "${BASE_URL}/api/v1/miniprogram/me" -H "Authorization: Bearer ${MP_TOKEN}" | cat
-echo
+  echo "== Miniprogram me =="
+  curl -fsS "${BASE_URL}/api/v1/miniprogram/me" -H "Authorization: Bearer ${MP_TOKEN}" | cat
+  echo
+fi
 
 echo "== Notes =="
 echo "- AI 对话/AI 总结需要订阅（user_account.subscription_end_at > now），否则会返回 SUBSCRIPTION_REQUIRED"
 echo "- 如需验证 SSE：先创建 session -> 发消息 -> 调用 stream"
-

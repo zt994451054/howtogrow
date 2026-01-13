@@ -27,7 +27,7 @@ public class AdminPlanService {
   @Transactional
   public void create(PlanCreateRequest request) {
     if (request.days() <= 0 || request.priceCent() < 0) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid plan");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "套餐参数不合法");
     }
     repo.create(request.name().trim(), request.days(), request.priceCent(), request.status());
   }
@@ -35,7 +35,7 @@ public class AdminPlanService {
   @Transactional
   public void update(long id, PlanUpdateRequest request) {
     if (request.days() <= 0 || request.priceCent() < 0) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid plan");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "套餐参数不合法");
     }
     repo.update(id, request.name().trim(), request.days(), request.priceCent(), request.status());
   }

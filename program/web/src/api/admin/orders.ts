@@ -5,6 +5,8 @@ export type OrderView = {
   orderId: number;
   orderNo: string;
   userId: number;
+  userNickname: string | null;
+  userAvatarUrl: string | null;
   planId: number;
   planName: string;
   amountCent: number;
@@ -19,4 +21,3 @@ export async function listOrders(params: { page: number; pageSize: number }): Pr
   const res = await http.get<ApiResponse<PageResponse<OrderView>>>("/api/v1/admin/orders", { params });
   return res.data.data;
 }
-

@@ -42,10 +42,23 @@ public class AiChatSessionRepository {
     return id.longValue();
   }
 
+  public void setTitleIfBlank(long sessionId, String title) {
+    if (title == null || title.isBlank()) {
+      return;
+    }
+    jdbc.update(
+        """
+        UPDATE ai_chat_session
+        SET title = :title, updated_at = NOW(3)
+        WHERE id = :id AND (title IS NULL OR title = '')
+        """,
+        Map.of("id", sessionId, "title", title));
+  }
+
   public Optional<AiChatSessionRow> findById(long sessionId) {
     var sql =
         """
-        SELECT id, user_id, child_id, status, last_active_at
+        SELECT id, user_id, child_id, title, status, last_active_at
         FROM ai_chat_session
         WHERE id = :id
         """;
@@ -56,7 +69,7 @@ public class AiChatSessionRepository {
   public List<AiChatSessionRow> listByUser(long userId, int limit) {
     var sql =
         """
-        SELECT id, user_id, child_id, status, last_active_at
+        SELECT id, user_id, child_id, title, status, last_active_at
         FROM ai_chat_session
         WHERE user_id = :userId
         ORDER BY last_active_at DESC, id DESC
@@ -86,10 +99,11 @@ public class AiChatSessionRepository {
         rs.getLong("id"),
         rs.getLong("user_id"),
         childId,
+        rs.getString("title"),
         rs.getString("status"),
         lastActiveAt);
   }
 
   public record AiChatSessionRow(
-      long id, long userId, Long childId, String status, Instant lastActiveAt) {}
+      long id, long userId, Long childId, String title, String status, Instant lastActiveAt) {}
 }

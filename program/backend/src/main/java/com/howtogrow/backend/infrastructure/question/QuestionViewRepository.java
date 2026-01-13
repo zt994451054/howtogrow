@@ -25,6 +25,8 @@ public class QuestionViewRepository {
           q.question_type,
           o.id AS option_id,
           o.content AS option_content,
+          o.suggest_flag,
+          o.improvement_tip,
           o.sort_no AS option_sort_no
         FROM question q
         JOIN question_option o ON o.question_id = q.id AND o.deleted_at IS NULL
@@ -43,6 +45,8 @@ public class QuestionViewRepository {
                 rs.getString("question_type"),
                 rs.getLong("option_id"),
                 rs.getString("option_content"),
+                rs.getInt("suggest_flag"),
+                rs.getString("improvement_tip"),
                 rs.getInt("option_sort_no")));
   }
 
@@ -52,6 +56,7 @@ public class QuestionViewRepository {
       String questionType,
       long optionId,
       String optionContent,
+      int suggestFlag,
+      String improvementTip,
       int optionSortNo) {}
 }
-

@@ -28,6 +28,8 @@ public class OrderQueryRepository {
           o.id,
           o.order_no,
           o.user_id,
+          u.nickname AS user_nickname,
+          u.avatar_url AS user_avatar_url,
           o.plan_id,
           p.name AS plan_name,
           o.amount_cent,
@@ -37,6 +39,7 @@ public class OrderQueryRepository {
           o.created_at,
           o.paid_at
         FROM purchase_order o
+        JOIN user_account u ON u.id = o.user_id
         JOIN subscription_plan p ON p.id = o.plan_id
         ORDER BY o.id DESC
         """;
@@ -59,6 +62,8 @@ public class OrderQueryRepository {
               rs.getLong("id"),
               rs.getString("order_no"),
               rs.getLong("user_id"),
+              rs.getString("user_nickname"),
+              rs.getString("user_avatar_url"),
               rs.getLong("plan_id"),
               rs.getString("plan_name"),
               rs.getInt("amount_cent"),
@@ -74,6 +79,8 @@ public class OrderQueryRepository {
       long id,
       String orderNo,
       long userId,
+      String userNickname,
+      String userAvatarUrl,
       long planId,
       String planName,
       int amountCent,

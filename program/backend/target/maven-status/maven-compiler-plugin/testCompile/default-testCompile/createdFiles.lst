@@ -1,3 +1,4 @@
+com/howtogrow/backend/service/miniprogram/AiChatTitleNormalizerTest.class
 com/howtogrow/backend/controller/DtoSchemaDescriptionTest.class
 com/howtogrow/backend/domain/time/AgeInMonthsCalculatorTest.class
 com/howtogrow/backend/auth/JwtServiceTest.class

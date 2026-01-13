@@ -4,7 +4,7 @@ import com.howtogrow.backend.api.ErrorCode;
 import com.howtogrow.backend.api.exception.AppException;
 import com.howtogrow.backend.controller.miniprogram.dto.SubscriptionOrderCreateResponse;
 import com.howtogrow.backend.controller.miniprogram.dto.SubscriptionPlanView;
-import com.howtogrow.backend.infrastructure.pay.WechatPayClientProvider;
+import com.howtogrow.backend.infrastructure.pay.WechatPayClient;
 import com.howtogrow.backend.infrastructure.subscription.PurchaseOrderRepository;
 import com.howtogrow.backend.infrastructure.subscription.SubscriptionPlanRepository;
 import com.howtogrow.backend.infrastructure.user.UserAccountRepository;
@@ -26,7 +26,7 @@ public class MiniprogramSubscriptionService {
   private final SubscriptionPlanRepository planRepo;
   private final PurchaseOrderRepository orderRepo;
   private final UserAccountRepository userRepo;
-  private final WechatPayClientProvider wechatPayClientProvider;
+  private final WechatPayClient wechatPayClient;
   private final Clock clock;
   private final SecureRandom random = new SecureRandom();
 
@@ -34,12 +34,12 @@ public class MiniprogramSubscriptionService {
       SubscriptionPlanRepository planRepo,
       PurchaseOrderRepository orderRepo,
       UserAccountRepository userRepo,
-      WechatPayClientProvider wechatPayClientProvider,
+      WechatPayClient wechatPayClient,
       Clock clock) {
     this.planRepo = planRepo;
     this.orderRepo = orderRepo;
     this.userRepo = userRepo;
-    this.wechatPayClientProvider = wechatPayClientProvider;
+    this.wechatPayClient = wechatPayClient;
     this.clock = clock;
   }
 
@@ -52,17 +52,15 @@ public class MiniprogramSubscriptionService {
   @Transactional
   public SubscriptionOrderCreateResponse createOrder(long userId, long planId) {
     var user =
-        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "user not found"));
+        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     var plan = planRepo.findActiveById(planId).orElse(null);
     if (plan == null || plan.days() <= 0 || plan.priceCent() < 0) {
-      throw new AppException(ErrorCode.NOT_FOUND, "plan not found");
+      throw new AppException(ErrorCode.NOT_FOUND, "套餐不存在");
     }
 
     var orderNo = generateOrderNo(userId);
     var payParams =
-        wechatPayClientProvider
-            .get()
-            .createJsapiPayParams(orderNo, plan.priceCent(), user.wechatOpenid());
+        wechatPayClient.createJsapiPayParams(orderNo, plan.priceCent(), user.wechatOpenid());
 
     var prepayId = extractPrepayId(payParams.packageValue());
     orderRepo.createOrder(orderNo, userId, planId, plan.priceCent(), prepayId);
@@ -86,7 +84,7 @@ public class MiniprogramSubscriptionService {
         return orderNo;
       }
     }
-    throw new AppException(ErrorCode.INTERNAL_ERROR, "orderNo generation failed");
+    throw new AppException(ErrorCode.INTERNAL_ERROR, "订单号生成失败");
   }
 
   private byte[] randomBytes(int size) {

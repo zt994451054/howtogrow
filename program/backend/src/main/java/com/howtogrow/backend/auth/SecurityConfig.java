@@ -11,15 +11,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter)
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      JwtAuthFilter jwtAuthFilter,
+      ApiSecurityExceptionHandlers apiSecurityExceptionHandlers)
       throws Exception {
     return http
         .cors(cors -> {})
         .csrf(csrf -> csrf.disable())
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            eh ->
+                eh.authenticationEntryPoint(apiSecurityExceptionHandlers)
+                    .accessDeniedHandler(apiSecurityExceptionHandlers))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/actuator/health")
+                    .permitAll()
+                    .requestMatchers("/error")
                     .permitAll()
                     .requestMatchers("/v3/api-docs/**")
                     .permitAll()

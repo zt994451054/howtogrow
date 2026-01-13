@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { listAssessments, type AssessmentView } from "@/api/admin/assessments";
+import { getApiBaseUrl } from "@/config/runtimeConfig";
 import { formatDateTime } from "@/utils/format";
 
 type PageState = {
@@ -12,6 +13,23 @@ type PageState = {
 const loading = ref(false);
 const items = ref<AssessmentView[]>([]);
 const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
+
+const DIM_SHORT: Record<string, string> = {
+  EMOTION_MANAGEMENT: "情绪",
+  COMMUNICATION_EXPRESSION: "沟通",
+  RULE_GUIDANCE: "规则",
+  RELATIONSHIP_BUILDING: "关系",
+  LEARNING_SUPPORT: "学习",
+};
+
+function resolveAvatarUrl(url: string | null | undefined): string | undefined {
+  const raw = (url || "").trim();
+  if (!raw) return undefined;
+  if (/^https?:\/\//i.test(raw) || raw.startsWith("data:")) return raw;
+  const base = getApiBaseUrl().replace(/\/+$/, "");
+  const path = raw.startsWith("/") ? raw : `/${raw}`;
+  return `${base}${path}`;
+}
 
 async function reload() {
   loading.value = true;
@@ -52,13 +70,43 @@ onMounted(() => {
     <el-table :data="items" v-loading="loading" style="width: 100%" table-layout="fixed">
       <el-table-column prop="assessmentId" label="ID" width="80" align="center" />
       <el-table-column prop="bizDate" label="日期" width="110" />
-      <el-table-column prop="status" label="状态" width="120" />
-      <el-table-column prop="userId" label="用户ID" width="90" align="center" />
-      <el-table-column prop="userNickname" label="用户昵称" width="140" show-overflow-tooltip />
-      <el-table-column prop="childId" label="孩子ID" width="90" align="center" />
-      <el-table-column prop="childNickname" label="孩子昵称" width="140" show-overflow-tooltip />
-      <el-table-column label="开始时间" width="170">
-        <template #default="{ row }">{{ formatDateTime(row.startedAt) }}</template>
+      <el-table-column label="用户" width="220">
+        <template #default="{ row }">
+          <div class="user">
+            <el-avatar :size="28" :src="resolveAvatarUrl(row.userAvatarUrl)">
+              {{ (row.userNickname || `#${row.userId}`).slice(0, 1) }}
+            </el-avatar>
+            <div class="user__meta">
+              <div class="user__name">{{ row.userNickname || `用户 #${row.userId}` }}</div>
+              <div class="user__id">ID: {{ row.userId }}</div>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="孩子" width="200" show-overflow-tooltip>
+        <template #default="{ row }">
+          <div class="child">
+            <div class="child__name">{{ row.childNickname || `孩子 #${row.childId}` }}</div>
+            <div class="child__id">ID: {{ row.childId }}</div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="5维度得分" min-width="340">
+        <template #default="{ row }">
+          <div class="dims">
+            <el-tag
+              v-for="d in row.dimensionScores"
+              :key="d.dimensionCode"
+              size="small"
+              effect="light"
+              :type="d.score > 0 ? 'success' : 'info'"
+              class="dims__tag"
+              :title="`${d.dimensionName}（${d.dimensionCode}）`"
+            >
+              {{ DIM_SHORT[d.dimensionCode] || d.dimensionName }} {{ d.score }}
+            </el-tag>
+          </div>
+        </template>
       </el-table-column>
       <el-table-column label="提交时间" width="170">
         <template #default="{ row }">{{ formatDateTime(row.submittedAt) }}</template>
@@ -99,5 +147,48 @@ onMounted(() => {
   margin-top: 12px;
   display: flex;
   justify-content: flex-end;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user__meta {
+  min-width: 0;
+}
+.user__name {
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user__id {
+  font-size: 12px;
+  color: #9aa4b2;
+  line-height: 16px;
+}
+
+.child__name {
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.child__id {
+  font-size: 12px;
+  color: #9aa4b2;
+  line-height: 16px;
+}
+
+.dims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.dims__tag {
+  margin: 0;
 }
 </style>

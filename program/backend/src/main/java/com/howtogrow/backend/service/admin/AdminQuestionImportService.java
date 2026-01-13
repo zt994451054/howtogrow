@@ -31,18 +31,18 @@ public class AdminQuestionImportService {
 
   public QuestionImportResponse importExcel(MultipartFile file) {
     if (file == null || file.isEmpty()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "file is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "请上传文件");
     }
     try (InputStream in = file.getInputStream();
         var workbook = WorkbookFactory.create(in)) {
       var sheet = workbook.getSheetAt(0);
       if (sheet == null) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "empty excel");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "Excel 为空");
       }
 
       var headerRow = sheet.getRow(sheet.getFirstRowNum());
       if (headerRow == null) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "missing header row");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "缺少表头行");
       }
 
       var headerIndex = parseHeaderIndex(headerRow);
@@ -64,7 +64,7 @@ public class AdminQuestionImportService {
           }
         } catch (Exception e) {
           for (var r : group) {
-            failures.add(new QuestionImportResponse.Failure(r.rowNum, "import failed"));
+            failures.add(new QuestionImportResponse.Failure(r.rowNum, "导入失败"));
           }
         }
       }
@@ -74,7 +74,7 @@ public class AdminQuestionImportService {
     } catch (AppException e) {
       throw e;
     } catch (Exception e) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid excel file");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "Excel 文件不合法");
     }
   }
 
@@ -150,7 +150,7 @@ public class AdminQuestionImportService {
       if (question != null) {
         lastQuestion = question;
       } else if (lastQuestion == null) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "问题 is required");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "问题不能为空");
       }
 
       var qtype =
@@ -173,7 +173,7 @@ public class AdminQuestionImportService {
         lastMinAge = parseRequiredInt(minAgeText, "适用最小年龄");
       }
       if (lastMinAge == null) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "适用最小年龄 is required");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "适用最小年龄不能为空");
       }
 
       var maxAgeText =
@@ -182,7 +182,7 @@ public class AdminQuestionImportService {
         lastMaxAge = parseRequiredInt(maxAgeText, "适用最大年龄");
       }
       if (lastMaxAge == null) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "适用最大年龄 is required");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "适用最大年龄不能为空");
       }
 
       var optionContent =
@@ -219,7 +219,7 @@ public class AdminQuestionImportService {
   private static String requiredText(Row row, Map<String, Integer> headerIndex, String header) {
     var idx = headerIndex.get(header);
     if (idx == null) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "missing column: " + header);
+      throw new AppException(ErrorCode.INVALID_REQUEST, "缺少列：" + header);
     }
     var text = cellText(row.getCell(idx));
     if (text.isBlank()) {
@@ -232,7 +232,7 @@ public class AdminQuestionImportService {
       Row row, Map<String, Integer> headerIndex, int idx, String fieldName) {
     var text = cellText(row.getCell(idx));
     if (text.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, fieldName + " is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, fieldName + "不能为空");
     }
     return text.trim();
   }
@@ -261,27 +261,27 @@ public class AdminQuestionImportService {
   private static int requiredInt(Row row, Map<String, Integer> headerIndex, String header) {
     var idx = headerIndex.get(header);
     if (idx == null) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "missing column: " + header);
+      throw new AppException(ErrorCode.INVALID_REQUEST, "缺少列：" + header);
     }
     var value = cellText(row.getCell(idx));
     if (value.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, header + " is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, header + "不能为空");
     }
     try {
       return Integer.parseInt(value.trim());
     } catch (NumberFormatException e) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, header + " must be integer");
+      throw new AppException(ErrorCode.INVALID_REQUEST, header + "必须为整数");
     }
   }
 
   private static int parseRequiredInt(String value, String field) {
     if (value == null || value.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, field + " is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, field + "不能为空");
     }
     try {
       return Integer.parseInt(value.trim());
     } catch (NumberFormatException e) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, field + " must be integer");
+      throw new AppException(ErrorCode.INVALID_REQUEST, field + "必须为整数");
     }
   }
 
@@ -317,12 +317,12 @@ public class AdminQuestionImportService {
     }
     var first = group.get(0);
     if (first.minAge < 0 || first.maxAge < 0 || first.minAge > 18 || first.maxAge > 18 || first.minAge > first.maxAge) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid age range");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "年龄范围不合法");
     }
 
     var questionType = normalizeQuestionType(first.questionType);
     if (questionRepo.existsSameQuestion(first.minAge, first.maxAge, questionType, first.questionContent)) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "duplicate question already exists");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "题目已存在");
     }
     var questionId = questionRepo.insertQuestion(first.questionContent, first.minAge, first.maxAge, questionType, 1);
 
@@ -330,7 +330,7 @@ public class AdminQuestionImportService {
     for (var row : group) {
       var optionContent = row.optionContent.trim();
       if (optionContent.isBlank()) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "option_content is required");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "选项内容不能为空");
       }
       var suggestFlag = row.suggestFlag == 0 ? 0 : 1;
       int sortNo = row.sortNo;
@@ -348,7 +348,7 @@ public class AdminQuestionImportService {
       var codes = splitCsv(row.dimensionCode);
       var scores = splitCsv(row.dimensionScore);
       if (codes.size() != scores.size()) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "dimension_code and dimension_score length mismatch");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "维度与分值数量不匹配");
       }
       var seen = new HashSet<String>();
       for (int i = 0; i < codes.size(); i++) {
@@ -356,11 +356,11 @@ public class AdminQuestionImportService {
         var score = parsePositiveInt(scores.get(i), "dimension_score");
         var dim = CapabilityDimension.fromCode(code).orElse(null);
         if (dim == null) {
-          throw new AppException(ErrorCode.INVALID_REQUEST, "dimension not found: " + code);
+          throw new AppException(ErrorCode.INVALID_REQUEST, "维度不存在：" + code);
         }
         var normalized = dim.code().toUpperCase(Locale.ROOT);
         if (!seen.add(normalized)) {
-          throw new AppException(ErrorCode.INVALID_REQUEST, "duplicate dimension: " + code);
+          throw new AppException(ErrorCode.INVALID_REQUEST, "维度重复：" + code);
         }
         questionRepo.insertOptionDimensionScore(optionId, normalized, score);
       }
@@ -381,11 +381,11 @@ public class AdminQuestionImportService {
 
   private static int parseSuggestFlag(String raw) {
     if (raw == null) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "选项标识 is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "选项标识不能为空");
     }
     var t = raw.trim();
     if (t.isEmpty()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "选项标识 is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "选项标识不能为空");
     }
     if ("不建议".equals(t) || "否".equals(t) || "0".equals(t)) {
       return 0;
@@ -393,7 +393,7 @@ public class AdminQuestionImportService {
     if ("建议".equals(t) || "正确".equals(t) || "是".equals(t) || "1".equals(t)) {
       return 1;
     }
-    throw new AppException(ErrorCode.INVALID_REQUEST, "invalid 选项标识: " + t);
+    throw new AppException(ErrorCode.INVALID_REQUEST, "选项标识不合法：" + t);
   }
 
   private static DimensionCsv parseDimensionScores(Row row, Map<String, Integer> headerIndex) {
@@ -420,7 +420,7 @@ public class AdminQuestionImportService {
       idx = headerIndex.get(keyOf(header2));
     }
     if (idx == null) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "missing column: " + header1);
+      throw new AppException(ErrorCode.INVALID_REQUEST, "缺少列：" + header1);
     }
     var raw = cellText(row.getCell(idx));
     if (raw.isBlank()) {
@@ -438,7 +438,7 @@ public class AdminQuestionImportService {
         return idx;
       }
     }
-    throw new AppException(ErrorCode.INVALID_REQUEST, "missing column: " + aliases[0]);
+    throw new AppException(ErrorCode.INVALID_REQUEST, "缺少列：" + aliases[0]);
   }
 
   private static boolean isBlankRow(Row row, Map<String, Integer> headerIndex) {
@@ -459,11 +459,11 @@ public class AdminQuestionImportService {
     try {
       int v = Integer.parseInt(value.trim());
       if (v <= 0) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, field + " must be positive");
+        throw new AppException(ErrorCode.INVALID_REQUEST, field + "必须为正数");
       }
       return v;
     } catch (NumberFormatException e) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, field + " must be integer");
+      throw new AppException(ErrorCode.INVALID_REQUEST, field + "必须为整数");
     }
   }
 

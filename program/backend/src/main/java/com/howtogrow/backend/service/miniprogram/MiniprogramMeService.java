@@ -16,7 +16,7 @@ public class MiniprogramMeService {
   }
 
   public MiniprogramMeResponse getMe(long userId) {
-    var user = userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "user not found"));
+    var user = userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     return new MiniprogramMeResponse(
         new MiniprogramUserView(
             user.id(),
@@ -27,7 +27,7 @@ public class MiniprogramMeService {
   }
 
   public void updateProfile(long userId, String nickname, String avatarUrl) {
-    var user = userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "user not found"));
+    var user = userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     userRepo.updateProfile(user.id(), nickname, avatarUrl);
   }
 }

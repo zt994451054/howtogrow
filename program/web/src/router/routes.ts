@@ -7,6 +7,7 @@ import QuestionsPage from "@/pages/QuestionsPage.vue";
 import PlansPage from "@/pages/PlansPage.vue";
 import QuotesPage from "@/pages/QuotesPage.vue";
 import UsersPage from "@/pages/UsersPage.vue";
+import ChildrenPage from "@/pages/ChildrenPage.vue";
 import OrdersPage from "@/pages/OrdersPage.vue";
 import AssessmentsPage from "@/pages/AssessmentsPage.vue";
 import PermissionsPage from "@/pages/rbac/PermissionsPage.vue";
@@ -55,6 +56,12 @@ export const routes: RouteRecordRaw[] = [
         name: "users",
         component: UsersPage,
         meta: { requiresAuth: true, permission: "USER:READ", title: "用户" }
+      },
+      {
+        path: "children",
+        name: "children",
+        component: ChildrenPage,
+        meta: { requiresAuth: true, permission: "USER:READ", title: "孩子" }
       },
       {
         path: "orders",

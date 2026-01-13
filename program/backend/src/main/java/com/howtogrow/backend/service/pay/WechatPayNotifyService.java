@@ -6,7 +6,6 @@ import com.github.binarywang.wxpay.exception.WxPayException;
 import com.howtogrow.backend.api.ErrorCode;
 import com.howtogrow.backend.api.exception.AppException;
 import com.howtogrow.backend.infrastructure.pay.WxJavaWechatPayClient;
-import com.howtogrow.backend.infrastructure.pay.WechatPayProperties;
 import com.howtogrow.backend.infrastructure.pay.WechatPayTransactionRepository;
 import com.howtogrow.backend.infrastructure.subscription.PurchaseOrderRepository;
 import com.howtogrow.backend.infrastructure.subscription.SubscriptionGrantRepository;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WechatPayNotifyService {
-  private final WechatPayProperties props;
   private final PurchaseOrderRepository orderRepo;
   private final SubscriptionPlanRepository planRepo;
   private final UserSubscriptionRepository userSubscriptionRepo;
@@ -32,7 +30,6 @@ public class WechatPayNotifyService {
   private final Clock clock;
 
   public WechatPayNotifyService(
-      WechatPayProperties props,
       PurchaseOrderRepository orderRepo,
       SubscriptionPlanRepository planRepo,
       UserSubscriptionRepository userSubscriptionRepo,
@@ -40,7 +37,6 @@ public class WechatPayNotifyService {
       WechatPayTransactionRepository txnRepo,
       WxJavaWechatPayClient wxJavaWechatPayClient,
       Clock clock) {
-    this.props = props;
     this.orderRepo = orderRepo;
     this.planRepo = planRepo;
     this.userSubscriptionRepo = userSubscriptionRepo;
@@ -51,16 +47,10 @@ public class WechatPayNotifyService {
   }
 
   /**
-   * 当前实现支持 mock 回调：在 `app.wechat-pay.mock-enabled=true` 时，body 可直接带交易字段。
-   * 非 mock 模式：使用 WxJava 验签并解密回调 resource（WeChat Pay v3）。
+   * 使用 WxJava 验签并解密回调 resource（WeChat Pay v3）。
    */
   @Transactional
   public void process(String eventId, String rawBody, JsonNode rawNode, SignatureHeader signatureHeader) {
-    if (props.mockEnabled()) {
-      processMock(eventId, rawNode);
-      return;
-    }
-
     if (signatureHeader == null
         || signatureHeader.getTimeStamp() == null
         || signatureHeader.getTimeStamp().isBlank()
@@ -70,10 +60,10 @@ public class WechatPayNotifyService {
         || signatureHeader.getSignature().isBlank()
         || signatureHeader.getSerial() == null
         || signatureHeader.getSerial().isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "missing wechat pay signature headers");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "缺少微信支付验签请求头");
     }
     if (rawBody == null || rawBody.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "empty body");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "请求体为空");
     }
 
     try {
@@ -81,7 +71,7 @@ public class WechatPayNotifyService {
       var parsed = wxPayService.parseOrderNotifyV3Result(rawBody, signatureHeader);
       var r = parsed == null ? null : parsed.getResult();
       if (r == null) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "invalid wechat pay notify");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "微信支付回调数据不合法");
       }
 
       var outTradeNo = requiredText(r.getOutTradeNo(), "out_trade_no");
@@ -119,40 +109,8 @@ public class WechatPayNotifyService {
           currency,
           successTime);
     } catch (WxPayException e) {
-      throw new AppException(ErrorCode.WECHAT_PAY_VERIFY_FAILED, "wechat pay verify failed");
+      throw new AppException(ErrorCode.WECHAT_PAY_VERIFY_FAILED, "微信支付验签失败");
     }
-  }
-
-  private void processMock(String eventId, JsonNode rawNode) {
-    var outTradeNo = requiredText(rawNode, "out_trade_no");
-    var transactionId = requiredText(rawNode, "transaction_id");
-    var tradeState = requiredText(rawNode, "trade_state");
-    if (!"SUCCESS".equalsIgnoreCase(tradeState)) {
-      return;
-    }
-
-    var amountNode = rawNode.get("amount");
-    var totalCent = requiredInt(amountNode, "total");
-    var currency = textOrDefault(amountNode, "currency", "CNY");
-    var successTime = parseSuccessTime(rawNode.get("success_time"));
-    if (successTime == null) {
-      successTime = Instant.now(clock);
-    }
-
-    processPaidTransaction(
-        eventId,
-        outTradeNo,
-        transactionId,
-        tradeState,
-        textOrEmpty(rawNode, "mchid"),
-        textOrEmpty(rawNode, "appid"),
-        textOrEmpty(rawNode, "trade_type"),
-        textOrEmpty(rawNode, "trade_state_desc"),
-        textOrEmpty(rawNode, "bank_type"),
-        textOrEmpty(rawNode.path("payer"), "openid"),
-        totalCent,
-        currency,
-        successTime);
   }
 
   private void processPaidTransaction(
@@ -172,15 +130,15 @@ public class WechatPayNotifyService {
     var order =
         orderRepo
             .findByOrderNo(outTradeNo)
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "order not found"));
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "订单不存在"));
     if (totalCent != order.amountCent()) {
-      throw new AppException(ErrorCode.WECHAT_PAY_AMOUNT_MISMATCH, "amount mismatch");
+      throw new AppException(ErrorCode.WECHAT_PAY_AMOUNT_MISMATCH, "支付金额不匹配");
     }
 
     var plan =
         planRepo
             .findById(order.planId())
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "plan not found"));
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "套餐不存在"));
 
     txnRepo.upsertTransaction(
         order.id(),
@@ -216,18 +174,18 @@ public class WechatPayNotifyService {
   private static String requiredText(JsonNode node, String field) {
     var text = textOrEmpty(node, field);
     if (text.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, field + " is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "缺少字段：" + field);
     }
     return text;
   }
 
   private static int requiredInt(JsonNode node, String field) {
     if (node == null || node.isNull()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, field + " is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "缺少字段：" + field);
     }
     var value = node.get(field);
     if (value == null || !value.isInt()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, field + " is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "字段必须为整数：" + field);
     }
     return value.asInt();
   }

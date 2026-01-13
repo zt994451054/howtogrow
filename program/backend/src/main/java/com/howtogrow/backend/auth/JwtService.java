@@ -45,7 +45,7 @@ public class JwtService {
       jwt.sign(new MACSigner(secretFor(audience)));
       return jwt.serialize();
     } catch (JOSEException e) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "jwt sign failed");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "服务异常");
     }
   }
 
@@ -54,7 +54,7 @@ public class JwtService {
     try {
       jwt = SignedJWT.parse(token);
     } catch (ParseException e) {
-      throw new AppException(ErrorCode.UNAUTHORIZED, "invalid token");
+      throw new AppException(ErrorCode.UNAUTHORIZED, "登录已失效，请重新登录");
     }
 
     var keyId = jwt.getHeader().getKeyID();
@@ -71,7 +71,7 @@ public class JwtService {
     if (verifyWith(jwt, Audience.MINIPROGRAM) || verifyWith(jwt, Audience.ADMIN)) {
       return toAuthUser(jwt);
     }
-    throw new AppException(ErrorCode.UNAUTHORIZED, "invalid token");
+    throw new AppException(ErrorCode.UNAUTHORIZED, "登录已失效，请重新登录");
   }
 
   private boolean verifyWith(SignedJWT jwt, Audience audience) {
@@ -93,23 +93,26 @@ public class JwtService {
     try {
       claims = jwt.getJWTClaimsSet();
     } catch (ParseException e) {
-      throw new AppException(ErrorCode.UNAUTHORIZED, "invalid token");
+      throw new AppException(ErrorCode.UNAUTHORIZED, "登录已失效，请重新登录");
     }
 
     var exp = claims.getExpirationTime();
     if (exp == null || exp.toInstant().isBefore(Instant.now(clock))) {
-      throw new AppException(ErrorCode.UNAUTHORIZED, "token expired");
+      throw new AppException(ErrorCode.UNAUTHORIZED, "登录已过期，请重新登录");
     }
 
     var sub = claims.getSubject();
     if (sub == null || sub.isBlank()) {
-      throw new AppException(ErrorCode.UNAUTHORIZED, "invalid token");
+      throw new AppException(ErrorCode.UNAUTHORIZED, "登录已失效，请重新登录");
     }
 
     var audClaim = claims.getAudience().stream().findFirst().orElse("");
     var audience =
         "admin".equalsIgnoreCase(audClaim) ? Audience.ADMIN : Audience.MINIPROGRAM;
-    return new AuthUser(Long.parseLong(sub), audience);
+    try {
+      return new AuthUser(Long.parseLong(sub), audience);
+    } catch (NumberFormatException e) {
+      throw new AppException(ErrorCode.UNAUTHORIZED, "登录已失效，请重新登录");
+    }
   }
 }
-

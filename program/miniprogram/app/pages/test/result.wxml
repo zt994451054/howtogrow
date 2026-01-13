@@ -2,7 +2,10 @@
   <view class="status" style="height: {{statusBarHeight}}px;" />
 
   <view class="top row between">
-    <view class="spacer" />
+    <view wx:if="{{mode == 'history'}}" class="back" bindtap="onBack">
+      <ui-icon name="back" size="{{24}}" />
+    </view>
+    <view wx:else class="spacer" />
     <view class="top__title" wx:if="{{mode == 'history'}}">测试详情</view>
     <view class="close" bindtap="onDone">
       <ui-icon name="close" size="{{24}}" />
@@ -25,16 +28,19 @@
         </view>
 
         <view class="your">
-          <view class="your__label">你的做法</view>
-          <view class="your__text">{{item.selected}}</view>
+          <view class="your__label">你的选择</view>
+          <view class="your__text">{{item.selectedText}}</view>
         </view>
 
-        <view class="advice">
-          <view class="advice__head row">
-            <view class="advice__icon">{{item.sentiment == 'positive' ? '✓' : '!'}}</view>
-            <view class="advice__title">{{item.adviceTitle}}</view>
+        <view class="opts">
+          <view class="opts__label">你的答案与建议</view>
+          <view wx:for="{{item.selectedOptions}}" wx:for-item="opt" wx:key="optionId" class="opt is-selected {{opt.suggestFlag == 1 ? 'is-ok' : 'is-warn'}}">
+            <view class="opt__head row">
+              <view class="opt__icon">{{opt.suggestFlag == 1 ? '✓' : '!'}}</view>
+              <view class="opt__content">{{opt.content}}</view>
+            </view>
+            <view wx:if="{{opt.improvementTip}}" class="opt__tip">{{opt.improvementTip}}</view>
           </view>
-          <view class="advice__body">{{item.advice}}</view>
         </view>
       </view>
     </view>

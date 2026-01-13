@@ -86,13 +86,13 @@ public class DailyAssessmentService {
 
     var submittedAt = Instant.now(clock);
     if (hasSubmittedToday(userId, childId, submittedAt)) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_ALREADY_SUBMITTED, "already submitted");
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_ALREADY_SUBMITTED, "今日测评已提交");
     }
 
     int ageYears = AgeInYearsCalculator.calculate(child.birthDate(), bizClock.today());
     var questionIds = questionRepo.pickRandomQuestionIds(ageYears, DAILY_QUESTION_COUNT);
     if (questionIds.size() < DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.QUESTION_POOL_EXHAUSTED, "question pool exhausted");
+      throw new AppException(ErrorCode.QUESTION_POOL_EXHAUSTED, "题库题目不足");
     }
 
     String sessionId = String.valueOf(submittedAt.toEpochMilli());
@@ -105,7 +105,7 @@ public class DailyAssessmentService {
 
   public DailyAssessmentReplaceResponse replace(long userId, String sessionId, long childId, int displayOrder) {
     if (displayOrder < 1 || displayOrder > DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid display_order");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "题目序号不合法");
     }
     var child = requireChildOwnedByUser(userId, childId);
     var session = requireSession(userId, childId, sessionId);
@@ -115,7 +115,7 @@ public class DailyAssessmentService {
     var newQuestionId =
         questionRepo
             .pickRandomQuestionIdExcluding(ageYears, List.copyOf(excluded))
-            .orElseThrow(() -> new AppException(ErrorCode.QUESTION_POOL_EXHAUSTED, "question pool exhausted"));
+            .orElseThrow(() -> new AppException(ErrorCode.QUESTION_POOL_EXHAUSTED, "没有可更换的问题了"));
 
     var updatedIds = new ArrayList<>(session.questionIdsByOrder());
     updatedIds.set(displayOrder - 1, newQuestionId);
@@ -134,23 +134,23 @@ public class DailyAssessmentService {
 
     var questionIdsByOrder = session.questionIdsByOrder();
     if (questionIdsByOrder == null || questionIdsByOrder.size() != DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid session questions");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "会话题目异常");
     }
 
     var answers = request.answers();
     if (answers == null || answers.size() != DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "answers must cover 5 questions");
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请完成 5 道题目后再提交");
     }
 
     var answerMap =
         answers.stream().collect(Collectors.toMap(DailyAssessmentAnswerRequest::questionId, a -> a, (a, b) -> b));
     if (answerMap.size() != DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "answers must cover 5 distinct questions");
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请完成 5 道不同题目后再提交");
     }
 
     var sessionQuestionSet = new HashSet<>(questionIdsByOrder);
     if (!answerMap.keySet().equals(sessionQuestionSet)) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "answers must match current questions");
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "提交答案与当前题目不匹配");
     }
 
     for (var questionId : questionIdsByOrder) {
@@ -159,7 +159,7 @@ public class DailyAssessmentService {
 
     var submittedAt = Instant.now(clock);
     if (hasSubmittedToday(userId, request.childId(), submittedAt)) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_ALREADY_SUBMITTED, "already submitted");
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_ALREADY_SUBMITTED, "今日测评已提交");
     }
 
     long assessmentId = assessmentRepo.insertSubmitted(userId, request.childId(), submittedAt);
@@ -174,7 +174,7 @@ public class DailyAssessmentService {
     for (var questionId : questionIdsByOrder) {
       var itemId = itemIdByQuestionId.get(questionId);
       if (itemId == null) {
-        throw new AppException(ErrorCode.INTERNAL_ERROR, "failed to persist assessment items");
+        throw new AppException(ErrorCode.INTERNAL_ERROR, "服务异常");
       }
       persistAnswer(assessmentId, itemId, questionId, answerMap.get(questionId));
     }
@@ -203,19 +203,19 @@ public class DailyAssessmentService {
 
   private void validateAnswer(long questionId, DailyAssessmentAnswerRequest answer) {
     if (answer == null) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "missing answer");
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "缺少答案");
     }
     var typeRow =
         questionRepo
             .findQuestionType(questionId)
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "question not found"));
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "题目不存在"));
 
     var optionIds = dedupeOptionIds(answer.optionIds());
     if ("SINGLE".equalsIgnoreCase(typeRow.questionType()) && optionIds.size() != 1) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "single choice must have exactly one option");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "单选题必须且只能选择 1 个选项");
     }
     if (!optionRepo.optionsBelongToQuestion(questionId, optionIds)) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "option does not belong to question");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "选项不属于该题目");
     }
   }
 
@@ -249,7 +249,13 @@ public class DailyAssessmentService {
       byQuestionId
           .get(row.questionId())
           .options
-          .add(new QuestionOptionView(row.optionId(), row.optionContent(), row.optionSortNo()));
+          .add(
+              new QuestionOptionView(
+                  row.optionId(),
+                  row.optionContent(),
+                  row.optionSortNo(),
+                  row.suggestFlag(),
+                  row.improvementTip()));
     }
 
     var out = new ArrayList<DailyAssessmentItemView>(questionIdsByOrder.size());
@@ -257,7 +263,7 @@ public class DailyAssessmentService {
       var questionId = questionIdsByOrder.get(i);
       var acc = byQuestionId.get(questionId);
       if (acc == null) {
-        throw new AppException(ErrorCode.INTERNAL_ERROR, "question view load failed");
+        throw new AppException(ErrorCode.INTERNAL_ERROR, "服务异常");
       }
       out.add(new DailyAssessmentItemView(i + 1, questionId, acc.content, acc.questionType, acc.options));
     }
@@ -267,35 +273,42 @@ public class DailyAssessmentService {
   private DailyAssessmentItemView loadItem(long questionId, int displayOrder) {
     var rows = questionViewRepo.listActiveQuestionOptionRows(List.of(questionId));
     if (rows.isEmpty()) {
-      throw new AppException(ErrorCode.NOT_FOUND, "question not found");
+      throw new AppException(ErrorCode.NOT_FOUND, "题目不存在");
     }
     var first = rows.get(0);
     var options =
         rows.stream()
-            .map(r -> new QuestionOptionView(r.optionId(), r.optionContent(), r.optionSortNo()))
+            .map(
+                r ->
+                    new QuestionOptionView(
+                        r.optionId(),
+                        r.optionContent(),
+                        r.optionSortNo(),
+                        r.suggestFlag(),
+                        r.improvementTip()))
             .toList();
     return new DailyAssessmentItemView(displayOrder, questionId, first.questionContent(), first.questionType(), options);
   }
 
   private DailyAssessmentSession requireSession(long userId, long childId, String sessionId) {
     if (sessionId == null || sessionId.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid session_id");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "会话ID不合法");
     }
     var session =
         sessionStore
             .find(userId, childId, sessionId)
-            .orElseThrow(() -> new AppException(ErrorCode.INVALID_REQUEST, "session expired"));
+            .orElseThrow(() -> new AppException(ErrorCode.INVALID_REQUEST, "会话已过期"));
     if (session.userId() != userId || session.childId() != childId) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
     return session;
   }
 
   private Child requireChildOwnedByUser(long userId, long childId) {
     var child =
-        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "child not found"));
+        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "孩子不存在"));
     if (child.userId() != userId) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
     return child;
   }
@@ -313,4 +326,3 @@ public class DailyAssessmentService {
     }
   }
 }
-

@@ -62,12 +62,12 @@ public class AdminRbacService {
     var code = normalizeCode(request.code());
     var name = request.name().trim();
     if (code.isBlank() || name.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid role");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "角色参数不合法");
     }
     try {
       roleRepo.create(code, name);
     } catch (DuplicateKeyException e) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "role already exists");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "角色已存在");
     }
   }
 
@@ -79,9 +79,9 @@ public class AdminRbacService {
             .stream()
             .filter(r -> r.id() == roleId)
             .findFirst()
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "role not found"));
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "角色不存在"));
     if ("SUPER_ADMIN".equalsIgnoreCase(role.code())) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "SUPER_ADMIN permissions are managed by seed");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "SUPER_ADMIN 权限由系统维护，不允许修改");
     }
 
     var codes =
@@ -92,7 +92,7 @@ public class AdminRbacService {
             .toList();
     var permissionIds = permissionRepo.listPermissionIdsByCodes(codes);
     if (permissionIds.size() != codes.size()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "some permissionCodes not found");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "部分 permissionCodes 不存在");
     }
     rolePermRepo.replaceRolePermissions(roleId, permissionIds);
   }
@@ -108,13 +108,13 @@ public class AdminRbacService {
   public void createAdminUser(AdminUserCreateRequest request) {
     var username = request.username().trim();
     if (username.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "username is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "用户名不能为空");
     }
     if ("admin".equalsIgnoreCase(username)) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "reserved username");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "该用户名不可用");
     }
     if (request.password().length() < 6) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "password too short");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "密码长度至少 6 位");
     }
     var roles = resolveRoleIds(request.roleCodes());
     var hash = passwordEncoder.encode(request.password());
@@ -122,7 +122,7 @@ public class AdminRbacService {
     try {
       adminUserId = adminUserRepo.create(username, hash);
     } catch (DuplicateKeyException e) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "username already exists");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "用户名已存在");
     }
     userRoleRepo.replaceUserRoles(adminUserId, roles);
   }
@@ -135,11 +135,11 @@ public class AdminRbacService {
             .stream()
             .filter(u -> u.id() == adminUserId)
             .findFirst()
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "admin user not found"));
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "管理员不存在"));
     if ("admin".equalsIgnoreCase(target.username())) {
       var requested = request.roleCodes().stream().map(this::normalizeCode).collect(Collectors.toSet());
       if (!requested.contains("SUPER_ADMIN")) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "cannot remove SUPER_ADMIN from admin");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "不允许移除 admin 的 SUPER_ADMIN 权限");
       }
     }
     var roles = resolveRoleIds(request.roleCodes());
@@ -152,7 +152,7 @@ public class AdminRbacService {
             ? List.<String>of()
             : roleCodes.stream().map(this::normalizeCode).filter(s -> !s.isBlank()).distinct().toList();
     if (codes.isEmpty()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "roleCodes is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "roleCodes 不能为空");
     }
     var roles = roleRepo.listAll();
     Map<String, Long> byCode =
@@ -162,7 +162,7 @@ public class AdminRbacService {
             .map(c -> byCode.get(c.toUpperCase(Locale.ROOT)))
             .toList();
     if (ids.stream().anyMatch(java.util.Objects::isNull)) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "some roleCodes not found");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "部分 roleCodes 不存在");
     }
     return ids.stream().map(Long::longValue).toList();
   }
@@ -174,4 +174,3 @@ public class AdminRbacService {
     return code.trim().toUpperCase(Locale.ROOT);
   }
 }
-

@@ -1,0 +1,33 @@
+2026-01-11 22:05:48.680 INFO  [] [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-01-11 22:05:48.785 INFO  [] [main] c.h.b.HowToGrowBackendApplication - Starting HowToGrowBackendApplication using Java 21.0.2 with PID 80682 (/Users/zhoutong/Documents/project/howtogrow/program/backend/target/classes started by zhoutong in /Users/zhoutong/Documents/project/howtogrow)
+2026-01-11 22:05:48.786 INFO  [] [main] c.h.b.HowToGrowBackendApplication - The following 1 profile is active: "dev"
+2026-01-11 22:05:50.439 INFO  [] [main] o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-11 22:05:50.445 INFO  [] [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-11 22:05:50.489 INFO  [] [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
+2026-01-11 22:05:51.045 INFO  [] [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-11 22:05:51.056 INFO  [] [main] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-01-11 22:05:51.058 INFO  [] [main] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-11 22:05:51.058 INFO  [] [main] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.33]
+2026-01-11 22:05:51.103 INFO  [] [main] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-01-11 22:05:51.103 INFO  [] [main] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2276 ms
+2026-01-11 22:05:52.115 WARN  [] [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 18594ab9-7be1-4e01-9198-60689e93c1e7
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-01-11 22:05:52.126 INFO  [] [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-01-11 22:05:52.401 INFO  [] [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+2026-01-11 22:05:53.011 INFO  [] [main] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-01-11 22:05:53.021 INFO  [] [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-11 22:05:53.035 INFO  [] [main] c.h.b.HowToGrowBackendApplication - Started HowToGrowBackendApplication in 5.128 seconds (process running for 7.307)
+2026-01-11 22:06:07.492 INFO  [] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-11 22:06:07.493 INFO  [] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-11 22:06:07.496 INFO  [] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-01-11 22:06:07.626 INFO  [trace-a6bc9340-b14b-4aba-9398-40b52ee39d6d] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-01-11 22:06:07.847 INFO  [trace-a6bc9340-b14b-4aba-9398-40b52ee39d6d] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@433a3f59
+2026-01-11 22:06:07.851 INFO  [trace-a6bc9340-b14b-4aba-9398-40b52ee39d6d] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-01-11 22:28:44.130 INFO  [] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-11 22:28:46.149 INFO  [] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-11 22:28:46.189 INFO  [] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-01-11 22:28:46.196 INFO  [] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

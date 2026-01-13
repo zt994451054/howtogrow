@@ -25,12 +25,12 @@ public class OssPublicUploader {
   public String uploadPublicObject(
       String objectKey, InputStream input, long contentLength, String contentType) {
     if (!props.enabled()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "oss is not configured");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "OSS 未配置");
     }
 
     var oss = ossProvider.getIfAvailable();
     if (oss == null) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "oss client is not available");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "OSS 客户端不可用");
     }
 
     var metadata = new ObjectMetadata();
@@ -54,7 +54,7 @@ public class OssPublicUploader {
 
     var endpoint = props.endpoint();
     if (endpoint == null || endpoint.isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "oss endpoint is missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "OSS 配置缺失：endpoint");
     }
 
     var endpointUri = toUri(endpoint);
@@ -76,4 +76,3 @@ public class OssPublicUploader {
     return s;
   }
 }
-

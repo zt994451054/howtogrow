@@ -19,27 +19,26 @@ public class EntitlementService {
 
   public boolean isSubscribed(long userId) {
     var user =
-        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "user not found"));
+        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     var endAt = user.subscriptionEndAt();
     return endAt != null && endAt.isAfter(Instant.now(clock));
   }
 
   public void requireCanStartDailyAssessment(long userId) {
     var user =
-        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "user not found"));
+        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     var subscribed = user.subscriptionEndAt() != null && user.subscriptionEndAt().isAfter(Instant.now(clock));
     if (!subscribed && user.freeTrialUsed()) {
-      throw new AppException(ErrorCode.FREE_TRIAL_ALREADY_USED, "free trial already used");
+      throw new AppException(ErrorCode.FREE_TRIAL_ALREADY_USED, "免费体验已使用，请开通会员");
     }
   }
 
   public void onDailyAssessmentSubmitted(long userId) {
     var user =
-        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "user not found"));
+        userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     var subscribed = user.subscriptionEndAt() != null && user.subscriptionEndAt().isAfter(Instant.now(clock));
     if (!subscribed && !user.freeTrialUsed()) {
       userRepo.markFreeTrialUsed(userId);
     }
   }
 }
-

@@ -8,6 +8,4 @@ public record WechatPayProperties(
     String mchSerialNo,
     String apiV3Key,
     String privateKeyPath,
-    String notifyUrl,
-    boolean mockEnabled) {}
-
+    String notifyUrl) {}

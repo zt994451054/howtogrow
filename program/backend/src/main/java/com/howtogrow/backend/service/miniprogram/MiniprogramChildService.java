@@ -31,7 +31,7 @@ public class MiniprogramChildService {
   @Transactional
   public ChildCreateResponse create(long userId, ChildCreateRequest request) {
     if (request.birthDate().isAfter(bizClock.today())) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "birthDate cannot be in the future");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "出生日期不能是未来时间");
     }
     var childId =
         childRepo.create(userId, request.nickname().trim(), request.gender(), request.birthDate());
@@ -41,12 +41,12 @@ public class MiniprogramChildService {
   @Transactional
   public void update(long userId, long childId, ChildUpdateRequest request) {
     if (request.birthDate().isAfter(bizClock.today())) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "birthDate cannot be in the future");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "出生日期不能是未来时间");
     }
     var existing =
-        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "child not found"));
+        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "孩子不存在"));
     if (existing.userId() != userId) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
     childRepo.update(childId, userId, request.nickname().trim(), request.gender(), request.birthDate());
   }
@@ -54,11 +54,10 @@ public class MiniprogramChildService {
   @Transactional
   public void delete(long userId, long childId) {
     var existing =
-        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "child not found"));
+        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "孩子不存在"));
     if (existing.userId() != userId) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
     childRepo.softDelete(childId, userId);
   }
 }
-

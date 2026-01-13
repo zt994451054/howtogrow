@@ -31,10 +31,7 @@ Component({
       if (!avatarUrl || !nickname) return;
 
       wx.showLoading({ title: "保存中..." });
-      const uploadPromise =
-        String(avatarUrl).startsWith("http") ? Promise.resolve(avatarUrl) : uploadAvatar(avatarUrl);
-
-      uploadPromise
+      uploadAvatar(avatarUrl)
         .then((url) => updateProfile({ nickname, avatarUrl: url }))
         .then(() => {
           wx.showToast({ title: "完善成功", icon: "success" });

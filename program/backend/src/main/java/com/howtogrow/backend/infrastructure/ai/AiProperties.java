@@ -7,5 +7,5 @@ public record AiProperties(
     String baseUrl,
     String apiKey,
     String model,
-    boolean mockEnabled,
-    String chatCompletionsPath) {}
+    String chatCompletionsPath,
+    boolean mockEnabled) {}

@@ -7,6 +7,8 @@ public record OrderView(
     @Schema(description = "订单ID") long orderId,
     @Schema(description = "订单号") String orderNo,
     @Schema(description = "用户ID") long userId,
+    @Schema(description = "用户昵称") String userNickname,
+    @Schema(description = "用户头像URL") String userAvatarUrl,
     @Schema(description = "套餐ID") long planId,
     @Schema(description = "套餐名称") String planName,
     @Schema(description = "订单金额（分）") int amountCent,

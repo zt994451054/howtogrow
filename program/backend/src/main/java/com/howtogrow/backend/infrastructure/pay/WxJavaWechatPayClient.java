@@ -27,13 +27,13 @@ public class WxJavaWechatPayClient implements WechatPayClient {
   @Override
   public PayParams createJsapiPayParams(String orderNo, int amountCent, String payerOpenid) {
     if (orderNo == null || orderNo.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "orderNo is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "订单号不能为空");
     }
     if (amountCent <= 0) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "amountCent must be positive");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "金额必须为正数");
     }
     if (payerOpenid == null || payerOpenid.isBlank()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "payerOpenid is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "用户 openid 不能为空");
     }
 
     var service = requireWxPayService();
@@ -53,7 +53,7 @@ public class WxJavaWechatPayClient implements WechatPayClient {
 
       WxPayUnifiedOrderV3Result res = service.createOrderV3(TradeTypeEnum.JSAPI, req);
       if (res == null || res.getPrepayId() == null || res.getPrepayId().isBlank()) {
-        throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay create order failed");
+        throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付下单失败");
       }
 
       var payInfo =
@@ -66,7 +66,7 @@ public class WxJavaWechatPayClient implements WechatPayClient {
           payInfo.getSignType(),
           payInfo.getPaySign());
     } catch (WxPayException e) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay create order failed");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付下单失败");
     }
   }
 
@@ -86,22 +86,22 @@ public class WxJavaWechatPayClient implements WechatPayClient {
 
   private WxPayService createWxPayService() {
     if (payProps.mchId() == null || payProps.mchId().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay mchId missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：mchId");
     }
     if (payProps.mchSerialNo() == null || payProps.mchSerialNo().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay mchSerialNo missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：mchSerialNo");
     }
     if (payProps.apiV3Key() == null || payProps.apiV3Key().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay apiV3Key missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：apiV3Key");
     }
     if (payProps.privateKeyPath() == null || payProps.privateKeyPath().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay privateKeyPath missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：privateKeyPath");
     }
     if (payProps.notifyUrl() == null || payProps.notifyUrl().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat pay notifyUrl missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：notifyUrl");
     }
     if (wechatProps.appid() == null || wechatProps.appid().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "wechat appid missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：appId");
     }
 
     var config = new WxPayConfig();

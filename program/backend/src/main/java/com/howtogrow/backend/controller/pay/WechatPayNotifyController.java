@@ -59,7 +59,7 @@ public class WechatPayNotifyController {
       eventRepo.markFailed(eventId, e.getMessage());
       throw e;
     } catch (Exception e) {
-      eventRepo.markFailed(eventId, "internal error");
+      eventRepo.markFailed(eventId, "服务异常");
       log.error(
           "wechat pay notify failed, eventId={}, eventType={}, outTradeNo={}, transactionId={}",
           eventId,
@@ -67,7 +67,7 @@ public class WechatPayNotifyController {
           textOrDefault(node, "out_trade_no", ""),
           textOrDefault(node, "transaction_id", ""),
           e);
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "internal error");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "服务异常");
     }
     return new NotifyAck("SUCCESS", "OK");
   }

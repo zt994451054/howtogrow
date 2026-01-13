@@ -29,6 +29,7 @@ public class AssessmentQueryRepository {
           a.id,
           a.user_id,
           u.nickname AS user_nickname,
+          u.avatar_url AS user_avatar_url,
           a.child_id,
           c.nickname AS child_nickname,
           DATE(a.submitted_at) AS biz_date,
@@ -52,6 +53,7 @@ public class AssessmentQueryRepository {
               rs.getLong("id"),
               rs.getLong("user_id"),
               rs.getString("user_nickname"),
+              rs.getString("user_avatar_url"),
               rs.getLong("child_id"),
               rs.getString("child_nickname"),
               rs.getObject("biz_date", LocalDate.class),
@@ -59,12 +61,40 @@ public class AssessmentQueryRepository {
         });
   }
 
+  public List<AssessmentDimensionScoreRow> listDimensionScoresByAssessmentIds(List<Long> assessmentIds) {
+    if (assessmentIds == null || assessmentIds.isEmpty()) {
+      return List.of();
+    }
+    var sql =
+        """
+        SELECT
+          assessment_id,
+          dimension_code,
+          SUM(score) AS score_sum
+        FROM daily_assessment_dimension_score
+        WHERE assessment_id IN (:assessmentIds)
+        GROUP BY assessment_id, dimension_code
+        ORDER BY assessment_id ASC, dimension_code ASC
+        """;
+    return jdbc.query(
+        sql,
+        Map.of("assessmentIds", assessmentIds),
+        (rs, rowNum) ->
+            new AssessmentDimensionScoreRow(
+                rs.getLong("assessment_id"),
+                rs.getString("dimension_code"),
+                rs.getLong("score_sum")));
+  }
+
   public record AssessmentRow(
       long id,
       long userId,
       String userNickname,
+      String userAvatarUrl,
       long childId,
       String childNickname,
       LocalDate bizDate,
       Instant submittedAt) {}
+
+  public record AssessmentDimensionScoreRow(long assessmentId, String dimensionCode, long score) {}
 }

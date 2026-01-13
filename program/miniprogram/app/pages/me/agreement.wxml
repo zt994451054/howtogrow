@@ -3,15 +3,37 @@
 
   <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view class="wrap">
-      <view class="h3">1. 服务条款</view>
-      <view class="p">欢迎使用 Howtotalk。在使用本应用之前，请仔细阅读以下条款…</view>
+      <view class="title">{{meta.appName}} 用户协议与隐私政策</view>
+      <view class="meta">
+        <text class="meta__item">版本：{{meta.version}}</text>
+        <text class="meta__dot">·</text>
+        <text class="meta__item">生效：{{meta.effectiveDate}}</text>
+        <text class="meta__dot">·</text>
+        <text class="meta__item">更新：{{meta.lastUpdatedDate}}</text>
+      </view>
 
-      <view class="h3">2. 隐私政策</view>
-      <view class="p">我们非常重视您的隐私。您的所有数据仅存储于本地或加密传输…</view>
-
-      <view class="h3">3. 订阅说明</view>
-      <view class="p">订阅服务为虚拟商品，一经售出概不退款。请在购买前确认套餐内容…</view>
+      <view wx:for="{{sections}}" wx:for-item="section" wx:key="id" class="section">
+        <view class="h3">{{section.title}}</view>
+        <view wx:for="{{section.blocks}}" wx:for-item="block" wx:key="index" class="block">
+          <view wx:if="{{block.type === 'p'}}" class="p">{{block.text}}</view>
+          <view wx:elif="{{block.type === 'list'}}" class="ul">
+            <view wx:for="{{block.items}}" wx:for-item="liText" wx:key="index" class="li">
+              <text class="li__dot">•</text>
+              <text class="li__text">{{liText}}</text>
+            </view>
+          </view>
+          <view wx:elif="{{block.type === 'contact'}}" class="contact">
+            <view class="contact__row row between">
+              <view class="contact__label">邮箱</view>
+              <view class="contact__right row">
+                <text class="contact__value" selectable="true">{{meta.contactEmail}}</text>
+                <view class="contact__btn" bindtap="onCopyEmail">复制</view>
+              </view>
+            </view>
+          </view>
+          <view wx:elif="{{block.type === 'note'}}" class="note">{{block.text}}</view>
+        </view>
+      </view>
     </view>
   </scroll-view>
 </view>
-

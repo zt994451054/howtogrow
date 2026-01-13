@@ -47,19 +47,11 @@
       <view class="hint">每点聚合了连续5次测试的平均得分</view>
 
       <view class="chart-card">
-        <ec-canvas id="growthChart" canvas-id="growthChart" ec="{{ec}}" />
-      </view>
-
-      <view class="recent">
-        <view class="recent__h row between">
-          <view class="recent__t">近期自测反馈</view>
-          <view class="recent__more">收起</view>
-        </view>
-        <view class="recent__grid">
-          <view wx:for="{{recentCards}}" wx:key="bizDate" class="recent__card">
-            <view class="recent__date">{{item.bizDate}}</view>
-            <view class="recent__txt">{{item.title}}</view>
-          </view>
+        <ec-canvas id="growthChart" class="chart" canvas-id="growthChart" ec="{{ec}}" bind:init="onEcInit" />
+        <view wx:if="{{reportEmpty}}" class="chart-empty col center">
+          <view class="chart-empty__t1">暂无测评数据</view>
+          <view class="chart-empty__t2">完成每日自测后，可查看 5 大能力维度的折线趋势</view>
+          <button class="chart-empty__btn" bindtap="goTest">去测评</button>
         </view>
       </view>
     </view>

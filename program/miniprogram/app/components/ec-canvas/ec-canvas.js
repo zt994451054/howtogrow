@@ -28,6 +28,36 @@ function compareVersion(v1, v2) {
   return 0
 }
 
+function getSdkVersion() {
+  try {
+    if (wx.getAppBaseInfo) {
+      const info = wx.getAppBaseInfo();
+      if (info && info.SDKVersion) return info.SDKVersion;
+    }
+  } catch (e) {}
+  try {
+    const sys = wx.getSystemInfoSync();
+    return sys && sys.SDKVersion ? sys.SDKVersion : '0.0.0';
+  } catch (e) {}
+  return '0.0.0';
+}
+
+function getPixelRatio() {
+  try {
+    if (wx.getWindowInfo) {
+      const info = wx.getWindowInfo();
+      const pr = info && info.pixelRatio;
+      if (typeof pr === 'number' && pr > 0) return pr;
+    }
+  } catch (e) {}
+  try {
+    const sys = wx.getSystemInfoSync();
+    const pr = sys && sys.pixelRatio;
+    if (typeof pr === 'number' && pr > 0) return pr;
+  } catch (e) {}
+  return 1;
+}
+
 Component({
   properties: {
     canvasId: {
@@ -78,7 +108,7 @@ Component({
 
   methods: {
     init: function (callback) {
-      const version = wx.getSystemInfoSync().SDKVersion
+      const version = getSdkVersion()
 
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
       const forceUseOldCanvas = this.data.forceUseOldCanvas;
@@ -150,7 +180,7 @@ Component({
           const canvasNode = res[0].node
           this.canvasNode = canvasNode
 
-          const canvasDpr = wx.getSystemInfoSync().pixelRatio
+          const canvasDpr = getPixelRatio()
           const canvasWidth = res[0].width
           const canvasHeight = res[0].height
 

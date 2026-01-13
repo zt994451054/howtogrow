@@ -35,7 +35,7 @@ public class AdminQuestionService {
   public QuestionDetailView detail(long questionId) {
     var rows = queryRepo.getQuestionDetail(questionId);
     if (rows.isEmpty()) {
-      throw new AppException(ErrorCode.NOT_FOUND, "question not found");
+      throw new AppException(ErrorCode.NOT_FOUND, "题目不存在");
     }
     var first = rows.get(0);
     Map<Long, QuestionDetailView.OptionView> options = new LinkedHashMap<>();

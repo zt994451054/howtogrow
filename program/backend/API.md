@@ -67,7 +67,7 @@
 - 题库导入：`POST /admin/questions/import-excel`（`multipart/form-data`，字段名 `file`）
 - 查询：`GET /admin/users` / `GET /admin/orders` / `GET /admin/assessments`（均为分页）
 
-### 支付回调（目前为 mock/占位）
+### 支付回调
 - `POST /pay/wechat/notify`
 
 ## 接口详情（关键参数）
@@ -104,9 +104,28 @@
 - Path：
   - `assessmentId`：自测ID（提交后返回）
 
+#### `GET /api/v1/miniprogram/assessments/daily/records`
+- Query：
+  - `limit`：返回条数（默认 20，最大 100）
+  - `offset`：偏移量（默认 0）
+- 响应 data：`DailyAssessmentRecordView[]`
+
+#### `GET /api/v1/miniprogram/assessments/daily/records/{assessmentId}`
+- Path：
+  - `assessmentId`：自测记录ID
+- 响应 data：`DailyAssessmentRecordDetailResponse`
+
 #### `GET /api/v1/miniprogram/ai/chat/sessions?limit=20`
 - Query：
   - `limit`：返回会话数上限（默认 20）
+
+#### `GET /api/v1/miniprogram/ai/chat/sessions/{sessionId}/messages?limit=20&beforeMessageId=...`
+- Path：
+  - `sessionId`：会话ID
+- Query：
+  - `limit`：返回消息数上限（默认 20，最大 100）
+  - `beforeMessageId`：仅返回 `messageId < beforeMessageId` 的消息（用于分页；可选）
+- 响应 data：`AiChatMessageView[]`（按消息时间倒序）
 
 #### `POST /api/v1/miniprogram/ai/chat/sessions/{sessionId}/messages` / `GET /api/v1/miniprogram/ai/chat/sessions/{sessionId}/stream`
 - Path：
@@ -172,10 +191,22 @@
   - `/orders`：`PageResponse<OrderView>`
   - `/assessments`：`PageResponse<AssessmentView>`
 
-### 支付回调（目前为 mock/占位）
+#### `GET /api/v1/admin/children`
+- Query：
+  - `page`：页码（从 1 开始）
+  - `pageSize`：每页条数（1-200）
+  - `userId`：用户ID（可选）
+  - `userNickname`：用户昵称关键词（可选）
+  - `childId`：孩子ID（可选）
+  - `childNickname`：孩子昵称关键词（可选）
+  - `gender`：性别：0未知 1男 2女（可选）
+  - `status`：状态：1启用 0删除（可选）
+- 响应 data：`PageResponse<AdminChildView>`
+
+### 支付回调
 
 #### `POST /api/v1/pay/wechat/notify`
-- Body：微信支付回调原始 JSON 字符串（目前仅做事件落库 + mock 幂等处理）
+- Body：微信支付回调原始 JSON 字符串（事件落库 + 验签/解密 + 发放订阅）
 - 响应：`NotifyAck`（注意：该接口不使用 `ApiResponse<T>`）
 
 ## 数据结构（DTO）
@@ -193,7 +224,7 @@
 #### `WechatLoginRequest`
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `code` | string | `wx.login()` 返回的 code；开发环境可传 `mock:<openid>` |
+| `code` | string | `wx.login()` 返回的 code |
 
 #### `WechatLoginResponse`
 | 字段 | 类型 | 说明 |
@@ -273,6 +304,8 @@
 | `optionId` | number | 选项ID |
 | `content` | string | 选项内容 |
 | `sortNo` | number | 排序号（升序） |
+| `suggestFlag` | number | 建议属性：1建议 0不建议 |
+| `improvementTip` | string/null | 改进建议文案（可选） |
 
 #### `DailyAssessmentReplaceRequest`
 | 字段 | 类型 | 说明 |
@@ -304,6 +337,32 @@
 | `assessmentId` | number | 自测记录ID（用于 AI 总结等后续接口） |
 | `dimensionScores` | array | `DimensionScoreView[]` |
 
+#### `DailyAssessmentRecordView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `assessmentId` | number | 自测记录ID |
+| `childId` | number | 孩子ID |
+| `childName` | string | 孩子昵称 |
+| `submittedAt` | string | 提交时间（ISO-8601） |
+| `aiSummary` | string/null | AI 总结内容（已生成则返回） |
+
+#### `DailyAssessmentRecordDetailResponse`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `assessmentId` | number | 自测记录ID |
+| `childId` | number | 孩子ID |
+| `childName` | string | 孩子昵称 |
+| `submittedAt` | string | 提交时间（ISO-8601） |
+| `aiSummary` | string/null | AI 总结内容（已生成则返回） |
+| `items` | array | `DailyAssessmentItemView[]` |
+| `answers` | array | `DailyAssessmentAnswerView[]` |
+
+#### `DailyAssessmentAnswerView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `questionId` | number | 题目ID |
+| `optionIds` | array | 选中选项ID列表 |
+
 #### `DimensionScoreView`
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
@@ -331,6 +390,7 @@
 | --- | --- | --- |
 | `sessionId` | number | 会话ID |
 | `childId` | number/null | 关联孩子ID（可选） |
+| `title` | string/null | 会话标题（可选；默认取用户首条提问） |
 | `status` | string | 状态：ACTIVE/CLOSED |
 | `lastActiveAt` | string | 最后活跃时间（ISO-8601） |
 
@@ -343,6 +403,14 @@
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `messageId` | number | 消息ID |
+
+#### `AiChatMessageView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `messageId` | number | 消息ID |
+| `role` | string | 角色：user/assistant/system |
+| `content` | string | 消息内容（Markdown/纯文本） |
+| `createdAt` | string | 消息时间（ISO-8601） |
 
 #### `GrowthReportResponse`
 | 字段 | 类型 | 说明 |
@@ -600,10 +668,12 @@
 | `orderId` | number | 订单ID |
 | `orderNo` | string | 订单号 |
 | `userId` | number | 用户ID |
+| `userNickname` | string/null | 用户昵称 |
+| `userAvatarUrl` | string/null | 用户头像URL |
 | `planId` | number | 套餐ID |
 | `planName` | string | 套餐名称 |
 | `amountCent` | number | 订单金额（分） |
-| `status` | string | 订单状态 |
+| `status` | string | 订单状态（`CREATED`待支付 / `PAID`已支付） |
 | `payTradeNo` | string/null | 支付平台交易号 |
 | `prepayId` | string/null | 微信预支付ID |
 | `createdAt` | string | 创建时间（ISO-8601） |
@@ -615,12 +685,37 @@
 | `assessmentId` | number | 自测ID |
 | `userId` | number | 用户ID |
 | `userNickname` | string/null | 用户昵称 |
+| `userAvatarUrl` | string/null | 用户头像URL |
 | `childId` | number | 孩子ID |
 | `childNickname` | string/null | 孩子昵称 |
 | `bizDate` | string | 业务日期（yyyy-MM-dd） |
-| `status` | string | 状态 |
-| `startedAt` | string | 开始时间（ISO-8601） |
 | `submittedAt` | string/null | 提交时间（可为空，ISO-8601） |
+| `emotionManagementScore` | number | 情绪管理力得分 |
+| `communicationExpressionScore` | number | 沟通表达力得分 |
+| `ruleGuidanceScore` | number | 规则引导力得分 |
+| `relationshipBuildingScore` | number | 关系建设力得分 |
+| `learningSupportScore` | number | 学习支持力得分 |
+| `dimensionScores` | array | `AssessmentDimensionScoreView[]` |
+
+#### `AssessmentDimensionScoreView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `dimensionCode` | string | 维度编码 |
+| `dimensionName` | string | 维度名称 |
+| `score` | number | 得分 |
+
+#### `AdminChildView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `childId` | number | 孩子ID |
+| `userId` | number | 所属用户ID |
+| `userNickname` | string/null | 用户昵称 |
+| `userAvatarUrl` | string/null | 用户头像URL |
+| `childNickname` | string | 孩子昵称 |
+| `gender` | number | 性别：0未知 1男 2女 |
+| `birthDate` | string | 出生日期（YYYY-MM-DD） |
+| `status` | number | 状态：1启用 0删除 |
+| `createdAt` | string | 创建时间（ISO-8601） |
 
 ### 支付回调（Pay）
 

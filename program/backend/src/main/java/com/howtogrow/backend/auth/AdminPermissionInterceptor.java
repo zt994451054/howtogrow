@@ -51,7 +51,7 @@ public class AdminPermissionInterceptor implements HandlerInterceptor {
         return true;
       }
     }
-    throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "permission denied");
+    throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
   }
 
   private static String[] findRequired(HandlerMethod hm) {

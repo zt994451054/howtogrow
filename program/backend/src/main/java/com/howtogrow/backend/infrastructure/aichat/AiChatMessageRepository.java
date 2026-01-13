@@ -9,6 +9,7 @@ import java.util.Optional;
 import com.howtogrow.backend.infrastructure.db.SqlPagination;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -56,6 +57,24 @@ public class AiChatMessageRepository {
     var rows = jdbc.query(sql, Map.of("sessionId", sessionId), ROW_MAPPER);
     java.util.Collections.reverse(rows);
     return rows;
+  }
+
+  public List<AiChatMessageRow> listPageDesc(long sessionId, int limit, Long beforeMessageId) {
+    var sql =
+        """
+        SELECT id, session_id, user_id, role, content, created_at
+        FROM ai_chat_message
+        WHERE session_id = :sessionId
+          AND (:beforeId IS NULL OR id < :beforeId)
+        ORDER BY id DESC
+        """;
+    sql = sql + SqlPagination.limit(limit);
+    return jdbc.query(
+        sql,
+        new MapSqlParameterSource()
+            .addValue("sessionId", sessionId)
+            .addValue("beforeId", beforeMessageId),
+        ROW_MAPPER);
   }
 
   public Optional<AiChatMessageRow> findById(long messageId) {

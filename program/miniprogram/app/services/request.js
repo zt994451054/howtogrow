@@ -9,17 +9,24 @@ class ApiError extends Error {
   }
 }
 
+const ERROR_TOAST_DURATION_MS = 3000;
+
 function joinUrl(base, path) {
   const trimmedBase = String(base).replace(/\/+$/, "");
   const trimmedPath = String(path).startsWith("/") ? path : `/${path}`;
   return `${trimmedBase}${trimmedPath}`;
 }
 
-function buildHeaders() {
+function buildAuthorizationHeader() {
   const token = getStorage(STORAGE_KEYS.token);
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
-  return headers;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function buildJsonHeaders() {
+  return {
+    "Content-Type": "application/json",
+    ...buildAuthorizationHeader(),
+  };
 }
 
 function handleAuthError() {
@@ -27,9 +34,18 @@ function handleAuthError() {
   removeStorage(STORAGE_KEYS.me);
 }
 
-function apiRequest(method, path, data) {
-  const url = joinUrl(API_BASE_URL, `${API_PREFIX}${path}`);
-  const header = buildHeaders();
+function showErrorToast(title) {
+  wx.showToast({ title: title || "请求失败", icon: "none", duration: ERROR_TOAST_DURATION_MS, mask: true });
+}
+
+function buildApiUrl(path) {
+  return joinUrl(API_BASE_URL, `${API_PREFIX}${path}`);
+}
+
+function apiRequest(method, path, data, options) {
+  const url = buildApiUrl(path);
+  const header = buildJsonHeaders();
+  const toastEnabled = options?.toast !== false;
 
   return new Promise((resolve, reject) => {
     wx.request({
@@ -41,20 +57,25 @@ function apiRequest(method, path, data) {
       success: (res) => {
         const payload = res.data;
         if (!payload) {
+          if (toastEnabled) showErrorToast("服务异常");
           reject(new ApiError("Empty response", "NETWORK_ERROR"));
           return;
         }
         if (payload.code !== "OK") {
           if (payload.code === "UNAUTHORIZED") handleAuthError();
-          reject(new ApiError(payload.message || "Request failed", payload.code, payload.traceId));
+          const message = payload.message || "请求失败";
+          if (toastEnabled) showErrorToast(message);
+          reject(new ApiError(message, payload.code, payload.traceId));
           return;
         }
         resolve(payload.data);
       },
-      fail: () => reject(new ApiError("Network error", "NETWORK_ERROR")),
+      fail: () => {
+        if (toastEnabled) showErrorToast("网络错误");
+        reject(new ApiError("Network error", "NETWORK_ERROR"));
+      },
     });
   });
 }
 
-module.exports = { apiRequest, ApiError };
-
+module.exports = { apiRequest, ApiError, buildApiUrl, buildAuthorizationHeader, handleAuthError, showErrorToast };

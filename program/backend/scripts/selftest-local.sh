@@ -294,14 +294,21 @@ PY
 [ -n "$IMPORTED_Q_ID" ]
 
 # ---------- Miniprogram flow ----------
-echo "== Miniprogram login (mock) =="
-MP_LOGIN="$(curl_json POST "${BASE_URL}/api/v1/miniprogram/auth/wechat-login" "{\"code\":\"mock:selftest_${SUFFIX}\"}")"
+echo "== Miniprogram login =="
+MP_CODE="${MP_CODE:-}"
+if [ -z "${MP_CODE}" ]; then
+  echo "MP_CODE is required (a fresh wx.login() code) to run real end-to-end flow." >&2
+  exit 1
+fi
+MP_LOGIN="$(curl_json POST "${BASE_URL}/api/v1/miniprogram/auth/wechat-login" "{\"code\":\"${MP_CODE}\"}")"
 assert_api_ok "$MP_LOGIN"
 MP_TOKEN="$(printf "%s" "$MP_LOGIN" | json_get data.token)"
 [ -n "$MP_TOKEN" ]
 AUTHZ_MP=(-H "Authorization: Bearer ${MP_TOKEN}")
 
-assert_api_ok "$(curl_json GET "${BASE_URL}/api/v1/miniprogram/me" "${AUTHZ_MP[@]}")"
+MP_ME="$(curl_json GET "${BASE_URL}/api/v1/miniprogram/me" "${AUTHZ_MP[@]}")"
+assert_api_ok "$MP_ME"
+SUB_END_AT="$(printf "%s" "$MP_ME" | json_get data.user.subscriptionEndAt)"
 
 echo "== Miniprogram child CRUD =="
 CHILD_BIRTH_DATE="$(python3 - <<'PY' "$AGE_YEAR"
@@ -408,35 +415,13 @@ assert_api_ok "$ORDER"
 ORDER_NO="$(printf "%s" "$ORDER" | json_get data.orderNo)"
 [ -n "$ORDER_NO" ]
 
-echo "== Pay notify (mock) -> subscription granted =="
-PAY_NOTIFY_BODY="$(python3 - <<'PY' "$ORDER_NO"
-import json,sys
-order_no=sys.argv[1]
-print(json.dumps({
-  "id":"evt_selftest_"+order_no,
-  "event_type":"TRANSACTION.SUCCESS",
-  "resource_type":"mock",
-  "summary":"selftest",
-  "out_trade_no": order_no,
-  "transaction_id": "4200000000000000",
-  "trade_state": "SUCCESS",
-  "amount": {"total": 990, "currency": "CNY"},
-  "success_time": "2025-12-28T00:00:00+08:00"
-}, ensure_ascii=False))
-PY
-)"
-ACK="$(curl_json POST "${BASE_URL}/api/v1/pay/wechat/notify" "$PAY_NOTIFY_BODY")"
-ACK_CODE="$(printf "%s" "$ACK" | json_get code)"
-if [ "$ACK_CODE" != "SUCCESS" ]; then
-  echo "expected pay notify ack code=SUCCESS, got: $ACK_CODE" >&2
-  echo "$ACK" >&2
+if [ -z "${SUB_END_AT}" ]; then
+  echo "== Subscription required =="
+  echo "当前账号未订阅，AI 总结/AI 对话接口会返回 SUBSCRIPTION_REQUIRED。" >&2
+  echo "已创建订单 orderNo=${ORDER_NO}，请在小程序内完成真实支付后再验证 AI 流程。" >&2
+  echo "或在数据库中为该用户设置 subscription_end_at 后重跑本脚本。" >&2
   exit 1
 fi
-
-ME_AFTER_PAY="$(curl_json GET "${BASE_URL}/api/v1/miniprogram/me" "${AUTHZ_MP[@]}")"
-assert_api_ok "$ME_AFTER_PAY"
-SUB_END="$(printf "%s" "$ME_AFTER_PAY" | json_get data.user.subscriptionEndAt)"
-[ -n "$SUB_END" ]
 
 echo "== AI summary (real) =="
 AI_SUMMARY="$(curl_json POST "${BASE_URL}/api/v1/miniprogram/assessments/daily/${ASSESSMENT_ID}/ai-summary" "${AUTHZ_MP[@]}")"

@@ -3,7 +3,7 @@
   background: #fff;
   display: flex;
   flex-direction: column;
-  padding-bottom: 220rpx;
+  padding-bottom: 0;
   box-sizing: border-box;
 }
 
@@ -67,8 +67,8 @@
   width: 75%;
   background: #fff;
   z-index: 50;
-  box-shadow: 0 30rpx 60rpx rgba(17, 24, 39, 0.2);
-  transform: translateX(-100%);
+  box-shadow: none;
+  transform: translateX(-110%);
   transition: transform 220ms ease-out;
   display: flex;
   flex-direction: column;
@@ -76,6 +76,7 @@
 
 .drawer-layer.on .drawer {
   transform: translateX(0);
+  box-shadow: 0 30rpx 60rpx rgba(17, 24, 39, 0.2);
 }
 
 .drawer__head {
@@ -130,7 +131,6 @@
 
 .drawer__body {
   flex: 1;
-  padding: 24rpx;
 }
 
 .new {
@@ -143,6 +143,11 @@
   font-size: 24rpx;
   font-weight: 900;
   margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.new::after {
+  border: none;
 }
 
 .tag {
@@ -164,6 +169,11 @@
   color: var(--text-secondary);
   font-size: 24rpx;
   margin-bottom: 10rpx;
+  box-sizing: border-box;
+}
+
+.sess::after {
+  border: none;
 }
 
 .sess-empty {
@@ -174,10 +184,20 @@
 
 .drawer__foot {
   padding: 20rpx 24rpx;
-  border-top: 1rpx solid var(--border);
   text-align: center;
   font-size: 20rpx;
   color: var(--text-muted);
+  position: relative;
+}
+
+.drawer__foot::before {
+  content: "";
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--border);
 }
 
 .messages {
@@ -185,6 +205,10 @@
   min-height: 0;
   background: rgba(249, 250, 251, 0.7);
   padding: 24rpx 24rpx;
+}
+
+.msg {
+  width: 100%;
 }
 
 .msg-list {
@@ -198,6 +222,7 @@
   flex-direction: row;
   align-items: flex-end;
   gap: 16rpx;
+  width: 100%;
 }
 
 .bubble-row.rev {
@@ -234,6 +259,22 @@
   white-space: pre-line;
 }
 
+/* towxml 默认正文样式会带外边距，这里收敛到气泡内 */
+.bubble.b-ai {
+  white-space: normal;
+}
+
+.bubble.b-ai .h2w__main {
+  margin: 0;
+  padding-top: 0;
+}
+
+.bubble.b-ai .h2w {
+  font-size: 28rpx;
+  line-height: 42rpx;
+  text-align: left;
+}
+
 .bubble.b-me {
   background: var(--brand);
   color: #fff;
@@ -248,6 +289,10 @@
 }
 
 .input {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 30;
   padding: 20rpx 24rpx 24rpx;
   background: #fff;
   border-top: 1rpx solid var(--border);

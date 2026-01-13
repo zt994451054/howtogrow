@@ -22,7 +22,7 @@ public class HttpAiClient implements AiClient {
   @Override
   public AiTextResponse generateShortSummary(String prompt) {
     if (props.apiKey() == null || props.apiKey().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI_API_KEY missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 配置缺失");
     }
     var req =
         new ChatCompletionsRequest(
@@ -30,7 +30,7 @@ public class HttpAiClient implements AiClient {
             List.of(
                 new ChatMessage(
                     "system",
-                    "你是正向育儿陪伴助手。请基于给定信息生成<=70字的共情、正向引导总结，不做诊断、不贴标签。"),
+                    "你是正向育儿陪伴助手。请基于给定信息生成<=200字的共情、正向引导总结，不做诊断、不贴标签。"),
                 new ChatMessage("user", prompt)),
             120);
 
@@ -42,12 +42,12 @@ public class HttpAiClient implements AiClient {
             .body(req)
             .retrieve()
             .onStatus(HttpStatusCode::isError, (request, response) -> {
-              throw new AppException(ErrorCode.INTERNAL_ERROR, "AI request failed");
+              throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 请求失败");
             })
             .body(ChatCompletionsResponse.class);
 
     if (resp == null || resp.choices == null || resp.choices.isEmpty()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI response invalid");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 响应异常");
     }
     var first = resp.choices.get(0);
     var content = first.message == null ? "" : first.message.content;
@@ -55,9 +55,6 @@ public class HttpAiClient implements AiClient {
       content = "";
     }
     content = content.trim();
-    if (content.length() > 120) {
-      content = content.substring(0, 120);
-    }
     Integer tokenUsage = resp.usage == null ? null : resp.usage.totalTokens;
     return new AiTextResponse(content, resp.model, tokenUsage);
   }

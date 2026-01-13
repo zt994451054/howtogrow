@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+  <springProperty scope="context" name="LOG_DIR" source="LOG_DIR" defaultValue="./logs"/>
+  <springProperty scope="context" name="LOG_LEVEL" source="LOG_LEVEL" defaultValue="INFO"/>
+
+  <property name="LOG_FILE" value="${LOG_DIR}/howtogrow-backend.log"/>
+  <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{traceId:-}] [%thread] %logger{36} - %msg%n%ex{full}"/>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE}</file>
+    <encoder>
+      <pattern>${PATTERN}</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_DIR}/howtogrow-backend.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxFileSize>50MB</maxFileSize>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>2GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <root level="${LOG_LEVEL}">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>
+

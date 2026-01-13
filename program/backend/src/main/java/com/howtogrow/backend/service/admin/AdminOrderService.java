@@ -24,6 +24,8 @@ public class AdminOrderService {
                         o.id(),
                         o.orderNo(),
                         o.userId(),
+                        o.userNickname(),
+                        o.userAvatarUrl(),
                         o.planId(),
                         o.planName(),
                         o.amountCent(),

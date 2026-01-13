@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS ai_assessment_summary (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   assessment_id BIGINT UNSIGNED NOT NULL COMMENT '自测记录ID',
   user_id BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
-  content VARCHAR(512) NOT NULL COMMENT 'AI 总结内容（≤70字，存储留冗余）',
+  content TEXT NOT NULL COMMENT 'AI 总结内容（≤70字，存储留冗余）',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   PRIMARY KEY (id),
   UNIQUE KEY uk_ai_summary_assessment (assessment_id),

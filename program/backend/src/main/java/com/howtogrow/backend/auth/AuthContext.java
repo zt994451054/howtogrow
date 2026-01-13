@@ -21,19 +21,18 @@ public final class AuthContext {
   }
 
   public static AuthUser requireMiniprogram() {
-    var user = currentUser().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "unauthorized"));
+    var user = currentUser().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "未登录"));
     if (user.audience() != Audience.MINIPROGRAM) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
     return user;
   }
 
   public static AuthUser requireAdmin() {
-    var user = currentUser().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "unauthorized"));
+    var user = currentUser().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "未登录"));
     if (user.audience() != Audience.ADMIN) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
     return user;
   }
 }
-

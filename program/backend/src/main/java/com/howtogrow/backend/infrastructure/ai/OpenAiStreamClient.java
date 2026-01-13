@@ -39,7 +39,7 @@ public class OpenAiStreamClient {
       Consumer<String> onDelta,
       Consumer<StreamDone> onDone) {
     if (props.apiKey() == null || props.apiKey().isBlank()) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "OPENAI_API_KEY missing");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 配置缺失");
     }
     var url = joinUrl(props.baseUrl(), props.chatCompletionsPath());
     var requestBody = buildRequestBody(messages);
@@ -58,11 +58,11 @@ public class OpenAiStreamClient {
     try {
       response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
     } catch (Exception e) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI request failed");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 请求失败");
     }
 
     if (response.statusCode() / 100 != 2) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI request failed");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 请求失败");
     }
 
     String modelName = props.model();
@@ -103,7 +103,7 @@ public class OpenAiStreamClient {
         }
       }
     } catch (Exception e) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI stream failed");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "AI 流式请求失败");
     }
 
     onDone.accept(new StreamDone(modelName, totalTokens));
@@ -145,4 +145,3 @@ public class OpenAiStreamClient {
 
   public record StreamDone(String modelName, Integer tokenUsage) {}
 }
-

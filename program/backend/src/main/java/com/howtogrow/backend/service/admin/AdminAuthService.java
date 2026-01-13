@@ -35,12 +35,12 @@ public class AdminAuthService {
     var admin =
         adminUserRepo
             .findByUsername(username.trim())
-            .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "invalid credentials"));
+            .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "账号或密码错误"));
     if (admin.status() != 1) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "admin disabled");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "账号已禁用");
     }
     if (!passwordEncoder.matches(password, admin.passwordHash())) {
-      throw new AppException(ErrorCode.UNAUTHORIZED, "invalid credentials");
+      throw new AppException(ErrorCode.UNAUTHORIZED, "账号或密码错误");
     }
     var token = jwtService.issue(Audience.ADMIN, admin.id());
     return new AdminLoginResponse(token, jwtProperties.ttlSeconds());
@@ -48,9 +48,8 @@ public class AdminAuthService {
 
   public AdminMeResponse me(long adminUserId) {
     var admin =
-        adminUserRepo.findById(adminUserId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "admin not found"));
+        adminUserRepo.findById(adminUserId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "管理员不存在"));
     var perms = rbacRepo.listPermissionCodes(adminUserId);
     return new AdminMeResponse(admin.id(), admin.username(), perms);
   }
 }
-

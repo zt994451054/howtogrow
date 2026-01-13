@@ -1,4 +1,4 @@
-<view class="page safe-bottom">
+<view class="page">
   <view class="status" style="height: {{statusBarHeight}}px;" />
   <view class="header row between">
     <view class="icon-btn" bindtap="openDrawer">
@@ -30,7 +30,7 @@
         <button class="new" bindtap="startNewChat">✎ 开启新会话</button>
         <view class="tag">最近</view>
         <button wx:for="{{sessions}}" wx:key="sessionId" class="sess" bindtap="selectSession" data-id="{{item.sessionId}}">
-          会话 #{{item.sessionId}}
+          {{item.title ? item.title : ('会话 #' + item.sessionId)}}
         </button>
         <view wx:if="{{sessions.length == 0}}" class="sess-empty">暂无会话</view>
       </scroll-view>
@@ -39,18 +39,30 @@
     </view>
   </view>
 
-  <scroll-view class="messages" scroll-y="true" enhanced="true" show-scrollbar="false" scroll-into-view="{{scrollIntoId}}">
+  <scroll-view
+    class="messages"
+    style="padding-bottom: {{bottomPadding}}px;"
+    scroll-y="true"
+    enhanced="true"
+    show-scrollbar="false"
+    scroll-into-view="{{scrollIntoId}}"
+    upper-threshold="80"
+    bindscrolltoupper="onMessagesScrollToUpper"
+  >
     <view class="msg-list">
       <view wx:for="{{messages}}" wx:key="id" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
         <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
           <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
             <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
           </view>
-          <view class="bubble {{item.role == 'user' ? 'b-me' : 'b-ai'}}">{{item.text}}</view>
+          <view wx:if="{{item.role == 'user'}}" class="bubble b-me">{{item.text}}</view>
+          <view wx:else class="bubble b-ai">
+            <towxml nodes="{{item.nodes}}"></towxml>
+          </view>
         </view>
       </view>
 
-      <view wx:if="{{typing}}" class="msg ai">
+      <!-- <view wx:if="{{typing}}" class="msg ai">
         <view class="bubble-row">
           <view class="avatar a-ai"><text>🤖</text></view>
           <view class="dots">
@@ -59,12 +71,12 @@
             <view class="dot" />
           </view>
         </view>
-      </view>
+      </view> -->
       <view id="bottom" />
     </view>
   </scroll-view>
 
-  <view class="input">
+  <view class="input" style="bottom: {{tabbarHeight}}px;">
     <view class="box row">
       <input class="ipt" placeholder="输入你的问题..." value="{{input}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend" />
       <view class="send {{inputTrim ? 'on' : 'off'}}" bindtap="onSend">➤</view>

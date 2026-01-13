@@ -7,13 +7,14 @@ import com.howtogrow.backend.controller.miniprogram.dto.AiChatCreateSessionReque
 import com.howtogrow.backend.controller.miniprogram.dto.AiChatCreateSessionResponse;
 import com.howtogrow.backend.controller.miniprogram.dto.AiChatMessageCreateRequest;
 import com.howtogrow.backend.controller.miniprogram.dto.AiChatMessageCreateResponse;
+import com.howtogrow.backend.controller.miniprogram.dto.AiChatMessageView;
 import com.howtogrow.backend.controller.miniprogram.dto.AiChatSessionView;
 import com.howtogrow.backend.service.miniprogram.AiChatService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,17 @@ public class MiniprogramAiChatController {
     return ApiResponse.ok(chatService.listSessions(user.userId(), limit), TraceId.current());
   }
 
+  @GetMapping("/sessions/{sessionId}/messages")
+  public ApiResponse<List<AiChatMessageView>> messages(
+      @Parameter(description = "会话ID") @PathVariable long sessionId,
+      @Parameter(description = "返回消息数上限（默认 20，最大 100）") @RequestParam(defaultValue = "20") int limit,
+      @Parameter(description = "仅返回 messageId < beforeMessageId 的消息（用于分页）")
+          @RequestParam(required = false)
+          Long beforeMessageId) {
+    var user = AuthContext.requireMiniprogram();
+    return ApiResponse.ok(chatService.listMessages(user.userId(), sessionId, limit, beforeMessageId), TraceId.current());
+  }
+
   @PostMapping("/sessions/{sessionId}/messages")
   public ApiResponse<AiChatMessageCreateResponse> createMessage(
       @Parameter(description = "会话ID") @PathVariable long sessionId,
@@ -54,9 +66,11 @@ public class MiniprogramAiChatController {
     return ApiResponse.ok(chatService.createUserMessage(user.userId(), sessionId, request.content()), TraceId.current());
   }
 
-  @GetMapping(value = "/sessions/{sessionId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter stream(@Parameter(description = "会话ID") @PathVariable long sessionId) throws IOException {
+  @GetMapping("/sessions/{sessionId}/stream")
+  public ResponseEntity<SseEmitter> stream(@Parameter(description = "会话ID") @PathVariable long sessionId) {
     var user = AuthContext.requireMiniprogram();
-    return chatService.streamAssistantReply(user.userId(), sessionId);
+    return ResponseEntity.ok()
+        .contentType(MediaType.TEXT_EVENT_STREAM)
+        .body(chatService.streamAssistantReply(user.userId(), sessionId));
   }
 }

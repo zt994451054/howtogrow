@@ -2,6 +2,7 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "ui-icon": "/components/ui-icon/index",
-    "auth-modal": "/components/auth-modal/index"
+    "auth-modal": "/components/auth-modal/index",
+    "towxml": "/towxml/towxml"
   }
 }

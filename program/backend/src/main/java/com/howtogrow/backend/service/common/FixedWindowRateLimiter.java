@@ -29,7 +29,7 @@ public class FixedWindowRateLimiter {
             return new Window(now.plus(windowSize), 1);
           }
           if (w.count + 1 > limit) {
-            throw new AppException(ErrorCode.RATE_LIMITED, "rate limited");
+            throw new AppException(ErrorCode.RATE_LIMITED, "请求过于频繁，请稍后再试");
           }
           return new Window(w.windowEnd, w.count + 1);
         });
@@ -37,4 +37,3 @@ public class FixedWindowRateLimiter {
 
   private record Window(Instant windowEnd, int count) {}
 }
-

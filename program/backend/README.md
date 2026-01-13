@@ -40,21 +40,35 @@ export OPENAI_MODEL='...'
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
+## 日志（控制台 + 文件）
+
+- 默认会同时输出到控制台与文件：
+  - 日志目录：`$LOG_DIR`（默认 `./logs`）
+  - 日志文件：`$LOG_DIR/howtogrow-backend.log`
+- 可通过环境变量调整：
+  - `LOG_DIR`：日志目录
+  - `LOG_LEVEL`：日志级别（默认 `INFO`）
+
+生产环境建议将容器内日志目录挂载到宿主机磁盘（示例）：
+```bash
+docker run --rm -p 8080:8080 -v /data/howtogrow/logs:/app/logs howtogrow-backend:latest
+```
+
 ## 数据库初始化方式
 - 以 `backend/db/schema.sql` 为准（包含默认 `admin/admin` 超级管理员 seed）。
 - `deploy/docker-compose.dev.yml`：首次启动 MySQL 会自动执行 `backend/db/schema.sql` 建表与初始化数据。
 
 ## 已实现接口（按技术方案）
-- 小程序登录：`POST /api/v1/miniprogram/auth/wechat-login`（`dev` 下支持 `code=mock:<openid>`）
+- 小程序登录：`POST /api/v1/miniprogram/auth/wechat-login`
 - 用户信息：`GET /api/v1/miniprogram/me`
 - 孩子管理：`/api/v1/miniprogram/children`
 - 每日自测：`/api/v1/miniprogram/assessments/daily/begin|sessions/{sessionId}/replace|sessions/{sessionId}/submit`
 - 成长报告：`GET /api/v1/miniprogram/reports/growth?childId=...&from=YYYY-MM-DD&to=YYYY-MM-DD`
 - 鸡汤语：`GET /api/v1/miniprogram/quotes/random`
-- AI 自测总结：`POST /api/v1/miniprogram/assessments/daily/{id}/ai-summary`（需要订阅；`dev` 默认 mock）
-- AI 实时对话：`/api/v1/miniprogram/ai/chat/sessions|sessions/{id}/messages|sessions/{id}/stream`（需要订阅；`dev` 默认 mock）
+- AI 自测总结：`POST /api/v1/miniprogram/assessments/daily/{id}/ai-summary`（需要订阅）
+- AI 实时对话：`/api/v1/miniprogram/ai/chat/sessions|sessions/{id}/messages|sessions/{id}/stream`（需要订阅）
 - 订阅套餐/下单：`GET /api/v1/miniprogram/subscriptions/plans`、`POST /api/v1/miniprogram/subscriptions/orders`
-- 微信支付回调（当前 mock 幂等落库/发放骨架）：`POST /api/v1/pay/wechat/notify`
+- 微信支付回调：`POST /api/v1/pay/wechat/notify`
 
 ## 运营端接口（MVP）
 - 运营登录：`POST /api/v1/admin/auth/login`

@@ -27,12 +27,12 @@ public class GrowthReportService {
 
   public GrowthReportResponse growth(long userId, long childId, LocalDate from, LocalDate to) {
     if (from == null || to == null || to.isBefore(from)) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "invalid date range");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "日期范围不合法");
     }
     var child =
-        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "child not found"));
+        childRepo.findById(childId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "孩子不存在"));
     if (child.userId() != userId) {
-      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "forbidden");
+      throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
 
     var rows = reportRepo.listDailyDimensionScores(userId, childId, from, to);

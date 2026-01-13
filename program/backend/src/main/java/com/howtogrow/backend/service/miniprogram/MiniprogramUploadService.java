@@ -30,15 +30,15 @@ public class MiniprogramUploadService {
 
   public String uploadAvatar(long userId, MultipartFile file) {
     if (file == null || file.isEmpty()) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "file is required");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "请上传文件");
     }
     if (file.getSize() > MAX_AVATAR_BYTES) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "file too large");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "文件过大");
     }
 
     var contentType = file.getContentType();
     if (contentType == null || !contentType.startsWith("image/")) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "only image files are allowed");
+      throw new AppException(ErrorCode.INVALID_REQUEST, "仅支持图片文件");
     }
 
     var extension = inferExtension(contentType, file.getOriginalFilename());
@@ -58,7 +58,7 @@ public class MiniprogramUploadService {
     try (var in = file.getInputStream()) {
       return uploader.uploadPublicObject(key, in, file.getSize(), contentType);
     } catch (IOException e) {
-      throw new AppException(ErrorCode.INTERNAL_ERROR, "failed to read file");
+      throw new AppException(ErrorCode.INTERNAL_ERROR, "读取文件失败");
     }
   }
 
@@ -91,4 +91,3 @@ public class MiniprogramUploadService {
     return s;
   }
 }
-

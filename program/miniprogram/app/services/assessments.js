@@ -13,9 +13,16 @@ function submitDailyAssessment(sessionId, payload) {
 }
 
 async function fetchAiSummary(assessmentId) {
-  const res = await apiRequest("POST", `/miniprogram/assessments/daily/${assessmentId}/ai-summary`);
+  const res = await apiRequest("POST", `/miniprogram/assessments/daily/${assessmentId}/ai-summary`, undefined, { toast: false });
   return res.content;
 }
 
-module.exports = { beginDailyAssessment, replaceDailyQuestion, submitDailyAssessment, fetchAiSummary };
+function listDailyRecords(limit, offset) {
+  return apiRequest("GET", "/miniprogram/assessments/daily/records", { limit: limit || 20, offset: offset || 0 });
+}
 
+function getDailyRecordDetail(assessmentId) {
+  return apiRequest("GET", `/miniprogram/assessments/daily/records/${assessmentId}`);
+}
+
+module.exports = { beginDailyAssessment, replaceDailyQuestion, submitDailyAssessment, fetchAiSummary, listDailyRecords, getDailyRecordDetail };
