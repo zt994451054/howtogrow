@@ -55,5 +55,5 @@ app:
     # 微信支付平台公钥（pem）路径；建议生产用文件挂载，开发可用 classpath:
     public-key-path: classpath:1584856071_20260118_cert/wechatpay_public_key.pem
 #    notify-url: https://hoofbound-mila-astrophysical.ngrok-free.dev/api/v1/pay/wechat/notify
-    notify-url: http://api.huangruoyi.cn:8080/api/v1/pay/wechat/notify
+    notify-url: https://api.huangruoyi.cn/api/v1/pay/wechat/notify
 

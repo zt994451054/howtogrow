@@ -33,10 +33,6 @@ services:
     depends_on:
       - mysql
       - redis
-    ports:
-      - "8080:8080"
-    env_file:
-      - ./.env
     environment:
       SPRING_PROFILES_ACTIVE: prod
     restart: unless-stopped
@@ -45,12 +41,27 @@ services:
     image: crpi-w1x1q83txaky0cp1.cn-hangzhou.personal.cr.aliyuncs.com/howtotalk/web:latest
     depends_on:
       - backend
-    ports:
-      - "80:80"
     environment:
       WEB_ENV: prod
-      BACKEND_PORT: 8080
-      API_BASE_URL: http://api.huangruoyi.cn:8080
+      BACKEND_PORT: 443
+      API_BASE_URL: https://api.huangruoyi.cn
+    # 由 gateway 统一对外暴露 80/443，这里仅在 Docker 内网提供服务
+    restart: unless-stopped
+
+  gateway:
+    image: crpi-w1x1q83txaky0cp1.cn-hangzhou.personal.cr.aliyuncs.com/howtotalk/nginx:1.27-alpine
+    depends_on:
+      - web
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /ssl:/etc/nginx/ssl:ro
+      # 可在宿主机该目录放置微信校验文件 MP_verify_*.txt
+      - /home/howtotalk/html:/usr/share/nginx/html:rw
+      # 需要新增/调整规则时，直接修改该文件并重启 gateway
+      - /home/howtotalk/gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
 
 volumes: {}
