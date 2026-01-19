@@ -25,7 +25,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  background: #fff;
+  border-radius: 9999rpx;
+  box-shadow: var(--shadow-sm);
+  border: 2rpx solid rgba(17, 24, 39, 0.06);
 }
 
 .close {
@@ -34,7 +38,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  background: #fff;
+  border-radius: 9999rpx;
+  box-shadow: var(--shadow-sm);
+  border: 2rpx solid rgba(17, 24, 39, 0.06);
+}
+
+.back:active,
+.close:active {
+  transform: scale(0.96);
 }
 
 .top__title {

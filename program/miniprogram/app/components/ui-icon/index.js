@@ -25,9 +25,10 @@ Component({
         edit: "✎",
         bookmark: "🔖",
         chevronRight: "›",
+        chevronDown: "⌄",
+        calendar: "📅",
       };
       return map[name] || "";
     },
   },
 });
-

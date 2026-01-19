@@ -1,39 +1,132 @@
 <view class="page">
-  <ui-header title="Howtotalk"  bind:left="onBookmark" />
+  <view class="status" style="height: {{statusBarHeight}}px;" />
 
-  <view class="content safe-bottom">
-    <view class="hero col center animate-fade-in">
-      <image class="logo" src="{{logoUrl}}" mode="aspectFit" />
-      <view class="quote">{{heroQuote}}</view>
-    </view>
-
-    <view class="section">
-      <view class="section__title">关于HOWTOTALK</view>
-      <view class="about">
-        <text>{{aboutText}}</text>
-        <text class="more">...more</text>
+  <view class="header row between" style="padding-top: {{headerPadTopPx}}px;">
+    <view class="row a">
+      <view class="avatar">
+        <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar__text">{{avatarText}}</view>
+      </view>
+      <view class="col">
+        <view class="greet">{{greetText}}</view>
       </view>
     </view>
+    <view class="icon-btn" bindtap="toggleChildMenu">
+      <ui-icon name="menu" size="{{24}}" />
+    </view>
+  </view>
 
-    <view class="section">
-      <view class="section__title">每日自测</view>
+  <view wx:if="{{menuOpen}}" class="menu-layer">
+    <view class="menu-mask" bindtap="closeChildMenu" />
+    <view class="menu-pop" style="top: {{menuPopoverTopPx}}px;">
+      <view class="menu-pop__title">切换孩子</view>
+      <view class="menu-pop__list">
+        <button
+          wx:for="{{children}}"
+          wx:key="id"
+          class="menu-item {{selectedChildId == item.id ? 'on' : ''}}"
+          bindtap="onPickChild"
+          data-id="{{item.id}}"
+        >
+          <view class="menu-item__row row between">
+            <view class="menu-item__name">{{item.nickname}}</view>
+            <view wx:if="{{selectedChildId == item.id}}" class="menu-item__dot" />
+          </view>
+        </button>
+        <button class="menu-item add" bindtap="onAddChild">＋ 添加新孩子</button>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view wx:if="{{children.length == 0}}" class="empty col center">
+      <view class="empty__logo">
+        <view class="logo-dot">
+          <view class="logo-smile" />
+          <view class="logo-tail" />
+        </view>
+      </view>
+      <view class="empty__title">还没有添加孩子</view>
+      <view class="empty__desc">添加孩子信息后\n即可开启每日觉察记录</view>
+      <button class="btn-primary" bindtap="onAddChild">添加孩子</button>
     </view>
 
-    <scroll-view class="courses" scroll-x="true" enhanced="true" show-scrollbar="false">
-      <view class="courses__row">
-        <view wx:for="{{courses}}" wx:key="id" class="course">
-          <image class="course__bg" src="{{item.imageUrl}}" mode="aspectFill" />
-          <view class="course__mask" />
-          <view class="course__inner">
-            <view class="course__brand">
-              <view class="mini-dot">L</view>
-              <view class="mini-text">howtotalk.</view>
+    <view wx:else class="wrap">
+      <view wx:if="{{banners.length}}" class="banner-wrap">
+        <swiper
+          class="banner"
+          autoplay="true"
+          circular="true"
+          interval="3500"
+          duration="400"
+          indicator-dots="{{false}}"
+          bindchange="onBannerChange"
+        >
+          <swiper-item wx:for="{{banners}}" wx:key="id">
+            <view class="banner__item" bindtap="onBannerTap" data-id="{{item.id}}">
+              <image class="banner__img" src="{{item.imageUrl}}" mode="aspectFill" />
+              <!-- <view class="banner__mask" /> -->
+              
             </view>
-            <view class="course__title">{{item.title}}</view>
-            <view class="course__sub">{{item.subtitle}}</view>
+          </swiper-item>
+        </swiper>
+
+        <view wx:if="{{banners.length > 1}}" class="banner-indicators row">
+          <view
+            wx:for="{{banners}}"
+            wx:key="id"
+            class="dot {{bannerIndex == index ? 'on' : ''}}"
+          />
+        </view>
+      </view>
+
+      <view class="month row between">
+        <view class="month__title">每日觉察</view>
+        <picker mode="date" fields="month" value="{{monthValue}}" start="{{minMonthStart}}" end="{{maxMonthEnd}}" bindchange="onMonthChange">
+          <view class="month__picker row a">
+            <view class="month__picker-text">{{monthText}}</view>
+            <view class="month__picker-icon">›</view>
+          </view>
+        </picker>
+      </view>
+
+      <view class="grid">
+        <view
+          wx:for="{{dayList}}"
+          wx:key="id"
+          class="obs"
+          bindtap="onOpenDay"
+          data-date="{{item.date}}"
+        >
+          <view class="thumb-wrap">
+            <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
+              <view class="thumb__inner">
+                <view class="date-tag {{item.isDone ? 'date-tag-done' : 'date-tag-undone'}}">
+                  <view class="date-tag__d">{{item.dayText}}</view>
+                  <view class="date-tag__w">{{item.weekday}}</view>
+                </view>
+
+                <image wx:if="{{item.isDone && item.imageUrl}}" class="thumb__img" src="{{item.imageUrl}}" mode="aspectFill" />
+
+                <view wx:if="{{!item.isDone}}" class="plus">＋</view>
+
+                <!-- Default badge for every card; keep it inside the card, but carve a corner arc under it. -->
+                <view class="mood-notch" />
+                <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}}">
+                  <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                  <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
+                  <view wx:else class="mood__blank" />
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <view class="foot">
+            <view class="foot__t text-ellipsis {{item.isDone ? '' : 'muted'}}">{{item.title}}</view>
+            <view class="foot__s text-ellipsis">{{item.content}}</view>
           </view>
         </view>
       </view>
-    </scroll-view>
-  </view>
+    </view>
+  </scroll-view>
 </view>

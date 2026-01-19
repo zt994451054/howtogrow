@@ -1,7 +1,11 @@
 <view class="page">
-  <ui-header title="孩子管理" left="back" bind:left="onBack" />
+  <ui-header
+    title="{{formMode === 'add' ? '添加孩子' : formMode === 'edit' ? '编辑孩子' : '孩子管理'}}"
+    left="back"
+    bind:left="onHeaderLeft"
+  />
 
-  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+  <scroll-view wx:if="{{!formMode}}" class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view class="wrap">
       <view wx:for="{{children}}" wx:key="id" class="row-card row between">
         <view class="row">
@@ -10,7 +14,7 @@
           </view>
           <view class="col meta">
             <view class="name">{{item.nickname}}</view>
-            <view class="sub">{{item.age}}岁 · {{item.birthDate}}</view>
+            <view class="sub">{{item.age}}岁 · {{item.birthDate}} · {{item.parentIdentity}}</view>
           </view>
         </view>
         <view class="right">
@@ -21,52 +25,75 @@
             data-nickname="{{item.nickname}}"
             data-gender="{{item.gender}}"
             data-birth-date="{{item.birthDate}}"
+            data-parent-identity="{{item.parentIdentity}}"
           >
             编辑
           </view>
         </view>
       </view>
 
-      <view wx:if="{{formMode}}" class="form">
-        <view class="form__title">{{formMode === 'add' ? '添加新孩子' : '编辑孩子'}}</view>
+      <button class="add" bindtap="onAdd">
+        <text class="add__icon">＋</text>
+        添加孩子
+      </button>
+    </view>
+  </scroll-view>
 
-        <view class="field">
-          <view class="label">孩子昵称</view>
-          <input class="input" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNickname" focus="{{true}}" />
+  <view wx:else class="form-page">
+    <scroll-view class="form-body" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view class="form-wrap">
+        <view class="gender-pick row center">
+          <view class="gender-option col center {{gender == 1 ? 'on' : 'off'}}" bindtap="setBoy">
+            <view class="gender-circle boy {{gender == 1 ? 'on' : ''}}">
+              <text class="gender-emoji">👦</text>
+            </view>
+            <view class="gender-label boy {{gender == 1 ? 'on' : ''}}">男孩</view>
+          </view>
+          <view class="gender-option col center {{gender == 2 ? 'on' : 'off'}}" bindtap="setGirl">
+            <view class="gender-circle girl {{gender == 2 ? 'on' : ''}}">
+              <text class="gender-emoji">👧</text>
+            </view>
+            <view class="gender-label girl {{gender == 2 ? 'on' : ''}}">女孩</view>
+          </view>
         </view>
 
         <view class="field">
-          <view class="label">性别</view>
-          <view class="row gender">
-            <view class="g {{gender == 1 ? 'on boy' : 'off'}}" bindtap="setBoy">
-              <text class="g__icon">👦</text>
-              <text class="g__text">男孩</text>
-            </view>
-            <view class="g {{gender == 2 ? 'on girl' : 'off'}}" bindtap="setGirl">
-              <text class="g__icon">👧</text>
-              <text class="g__text">女孩</text>
-            </view>
+          <view class="label">孩子昵称</view>
+          <view class="input-wrap">
+            <input class="input" placeholder="请输入孩子的小名" value="{{nickname}}" bindinput="onNickname" focus="{{true}}" />
           </view>
         </view>
 
         <view class="field">
           <view class="label">出生日期</view>
           <picker mode="date" value="{{birthDate}}" start="1900-01-01" end="{{today}}" bindchange="onBirthDate">
-            <view class="date">{{birthDate || '请选择日期'}}</view>
+            <view class="input-wrap row between a">
+              <view class="date-text {{birthDate ? '' : 'muted'}}">{{birthDate || '年 / 月 / 日'}}</view>
+              <view class="input-icon">📅</view>
+            </view>
           </picker>
         </view>
 
-        <view class="row actions">
-          <button class="save" loading="{{saving}}" bindtap="onSave">保存</button>
-          <button class="cancel" bindtap="onCancel">取消</button>
+        <view class="field">
+          <view class="label">我是孩子的…</view>
+          <view class="relation-grid">
+            <view
+              wx:for="{{parentIdentityOptions}}"
+              wx:key="*this"
+              class="relation {{parentIdentity == item ? 'on' : ''}}"
+              bindtap="onPickParentIdentity"
+              data-value="{{item}}"
+            >
+              {{item}}
+            </view>
+          </view>
         </view>
       </view>
+    </scroll-view>
 
-      <button wx:else class="add" bindtap="onAdd">
-        <text class="add__icon">＋</text>
-        添加孩子
-      </button>
+    <view class="form-footer safe-bottom">
+      <button class="save-info" loading="{{saving}}" bindtap="onSave">保存信息</button>
     </view>
-  </scroll-view>
+  </view>
   <auth-modal show="{{showAuthModal}}" bind:success="onAuthSuccess" bind:close="onAuthClose" />
 </view>

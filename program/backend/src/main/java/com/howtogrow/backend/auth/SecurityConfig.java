@@ -38,6 +38,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/api/v1/miniprogram/auth/**")
                     .permitAll()
+                    .requestMatchers("/api/v1/miniprogram/banners/**")
+                    .permitAll()
                     .requestMatchers("/api/v1/admin/auth/**")
                     .permitAll()
                     .requestMatchers("/api/v1/pay/**")

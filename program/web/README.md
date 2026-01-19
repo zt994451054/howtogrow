@@ -10,6 +10,11 @@
 - 本地开发：`program/web/public/config.js`
 - Docker/Nginx：容器启动时会生成 `/usr/share/nginx/html/config.js`（见 `program/web/docker-entrypoint.d/10-gen-config.sh`）
 
+## H5（小程序 WebView）
+
+- Banner H5 详情页（无需登录）：`/h5/banners/:id`
+- 页面数据来源：`GET /api/v1/miniprogram/banners/:id`
+
 ## 常见问题
 
 ### 启动报错：esbuild 平台不匹配

@@ -23,6 +23,7 @@ import com.howtogrow.backend.infrastructure.child.ChildRepository;
 import com.howtogrow.backend.infrastructure.question.QuestionOptionRepository;
 import com.howtogrow.backend.infrastructure.question.QuestionRepository;
 import com.howtogrow.backend.infrastructure.question.QuestionViewRepository;
+import com.howtogrow.backend.infrastructure.trouble.DailyTroubleRecordRepository;
 import com.howtogrow.backend.service.common.EntitlementService;
 import java.time.Clock;
 import java.time.Instant;
@@ -40,7 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DailyAssessmentService {
-  private static final int DAILY_QUESTION_COUNT = 5;
+  private static final int MIN_QUESTION_COUNT = 5;
+  private static final int MAX_QUESTION_COUNT = 10;
   private static final ZoneId BIZ_ZONE = ZoneId.of("Asia/Shanghai");
 
   private final BizClock bizClock;
@@ -54,6 +56,7 @@ public class DailyAssessmentService {
   private final AssessmentScoreRepository scoreRepo;
   private final DailyAssessmentSessionStore sessionStore;
   private final EntitlementService entitlementService;
+  private final DailyTroubleRecordRepository troubleRecordRepo;
 
   public DailyAssessmentService(
       BizClock bizClock,
@@ -66,7 +69,8 @@ public class DailyAssessmentService {
       DailyAssessmentItemRepository itemRepo,
       AssessmentScoreRepository scoreRepo,
       DailyAssessmentSessionStore sessionStore,
-      EntitlementService entitlementService) {
+      EntitlementService entitlementService,
+      DailyTroubleRecordRepository troubleRecordRepo) {
     this.bizClock = bizClock;
     this.clock = clock;
     this.childRepo = childRepo;
@@ -78,6 +82,7 @@ public class DailyAssessmentService {
     this.scoreRepo = scoreRepo;
     this.sessionStore = sessionStore;
     this.entitlementService = entitlementService;
+    this.troubleRecordRepo = troubleRecordRepo;
   }
 
   public DailyAssessmentBeginResponse begin(long userId, long childId) {
@@ -90,8 +95,8 @@ public class DailyAssessmentService {
     }
 
     int ageYears = AgeInYearsCalculator.calculate(child.birthDate(), bizClock.today());
-    var questionIds = questionRepo.pickRandomQuestionIds(ageYears, DAILY_QUESTION_COUNT);
-    if (questionIds.size() < DAILY_QUESTION_COUNT) {
+    var questionIds = pickQuestionsForToday(userId, childId, ageYears);
+    if (questionIds.size() < MIN_QUESTION_COUNT) {
       throw new AppException(ErrorCode.QUESTION_POOL_EXHAUSTED, "题库题目不足");
     }
 
@@ -104,11 +109,15 @@ public class DailyAssessmentService {
   }
 
   public DailyAssessmentReplaceResponse replace(long userId, String sessionId, long childId, int displayOrder) {
-    if (displayOrder < 1 || displayOrder > DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.INVALID_REQUEST, "题目序号不合法");
-    }
     var child = requireChildOwnedByUser(userId, childId);
     var session = requireSession(userId, childId, sessionId);
+    var questionIds = session.questionIdsByOrder();
+    if (questionIds == null || questionIds.size() < MIN_QUESTION_COUNT || questionIds.size() > MAX_QUESTION_COUNT) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "会话题目异常");
+    }
+    if (displayOrder < 1 || displayOrder > questionIds.size()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "题目序号不合法");
+    }
 
     int ageYears = AgeInYearsCalculator.calculate(child.birthDate(), bizClock.today());
     var excluded = session.servedQuestionIds() == null ? Set.<Long>of() : session.servedQuestionIds();
@@ -133,28 +142,44 @@ public class DailyAssessmentService {
     var session = requireSession(userId, request.childId(), sessionId);
 
     var questionIdsByOrder = session.questionIdsByOrder();
-    if (questionIdsByOrder == null || questionIdsByOrder.size() != DAILY_QUESTION_COUNT) {
+    if (questionIdsByOrder == null || questionIdsByOrder.size() < MIN_QUESTION_COUNT || questionIdsByOrder.size() > MAX_QUESTION_COUNT) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "会话题目异常");
     }
 
     var answers = request.answers();
-    if (answers == null || answers.size() != DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请完成 5 道题目后再提交");
+    if (answers == null || answers.size() < MIN_QUESTION_COUNT) {
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请至少完成 5 道题目后再提交");
+    }
+    if (answers.size() > MAX_QUESTION_COUNT) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "最多提交 10 道题目");
     }
 
     var answerMap =
         answers.stream().collect(Collectors.toMap(DailyAssessmentAnswerRequest::questionId, a -> a, (a, b) -> b));
-    if (answerMap.size() != DAILY_QUESTION_COUNT) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请完成 5 道不同题目后再提交");
+    if (answerMap.size() != answers.size()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "提交答案包含重复题目");
+    }
+    if (answerMap.size() < MIN_QUESTION_COUNT) {
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请至少完成 5 道不同题目后再提交");
     }
 
     var sessionQuestionSet = new HashSet<>(questionIdsByOrder);
-    if (!answerMap.keySet().equals(sessionQuestionSet)) {
-      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "提交答案与当前题目不匹配");
+    for (var qid : answerMap.keySet()) {
+      if (!sessionQuestionSet.contains(qid)) {
+        throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "提交答案与当前题目不匹配");
+      }
     }
 
+    var answeredQuestionIds = new ArrayList<Long>();
     for (var questionId : questionIdsByOrder) {
-      validateAnswer(questionId, answerMap.get(questionId));
+      var a = answerMap.get(questionId);
+      if (a != null) {
+        validateAnswer(questionId, a);
+        answeredQuestionIds.add(questionId);
+      }
+    }
+    if (answeredQuestionIds.size() < MIN_QUESTION_COUNT) {
+      throw new AppException(ErrorCode.DAILY_ASSESSMENT_INCOMPLETE, "请至少完成 5 道题目后再提交");
     }
 
     var submittedAt = Instant.now(clock);
@@ -167,11 +192,14 @@ public class DailyAssessmentService {
     var itemIdByQuestionId = new HashMap<Long, Long>();
     for (int i = 0; i < questionIdsByOrder.size(); i++) {
       var qid = questionIdsByOrder.get(i);
+      if (!answerMap.containsKey(qid)) {
+        continue;
+      }
       var itemId = itemRepo.insertItem(assessmentId, qid, i + 1);
       itemIdByQuestionId.put(qid, itemId);
     }
 
-    for (var questionId : questionIdsByOrder) {
+    for (var questionId : answeredQuestionIds) {
       var itemId = itemIdByQuestionId.get(questionId);
       if (itemId == null) {
         throw new AppException(ErrorCode.INTERNAL_ERROR, "服务异常");
@@ -192,6 +220,39 @@ public class DailyAssessmentService {
                         r.dimensionCode(), CapabilityDimension.displayNameOf(r.dimensionCode()), r.score()))
             .toList();
     return new DailyAssessmentSubmitResponse(assessmentId, dimensionScores);
+  }
+
+  private List<Long> pickQuestionsForToday(long userId, long childId, int ageYears) {
+    var picked = new ArrayList<Long>();
+    var served = new HashSet<Long>();
+
+    var today = bizClock.today();
+    var troubleSceneIds = troubleRecordRepo.listActiveSceneIds(userId, childId, today);
+    if (troubleSceneIds != null && !troubleSceneIds.isEmpty()) {
+      var preferred =
+          questionRepo.pickRandomQuestionIdsByTroubleScenes(ageYears, troubleSceneIds, List.of(), MAX_QUESTION_COUNT);
+      for (var id : preferred) {
+        if (id != null && served.add(id)) {
+          picked.add(id);
+        }
+      }
+    }
+
+    if (picked.size() < MAX_QUESTION_COUNT) {
+      var fill =
+          questionRepo.pickRandomQuestionIdsExcluding(
+              ageYears, List.copyOf(served), MAX_QUESTION_COUNT - picked.size());
+      for (var id : fill) {
+        if (id != null && served.add(id)) {
+          picked.add(id);
+        }
+      }
+    }
+
+    if (picked.size() > MAX_QUESTION_COUNT) {
+      return picked.subList(0, MAX_QUESTION_COUNT);
+    }
+    return picked;
   }
 
   private boolean hasSubmittedToday(long userId, long childId, Instant now) {

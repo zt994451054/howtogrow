@@ -1,0 +1,12 @@
+target/*
+!target/*.jar
+.git/
+.idea/
+.vscode/
+**/*.log
+.DS_Store
+**/.DS_Store
+
+# Avoid accidentally baking local payment certs/keys into the image build context.
+src/main/resources/*_cert/
+src/main/resources/1584856071_20260118_cert/

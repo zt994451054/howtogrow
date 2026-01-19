@@ -66,14 +66,14 @@ Page({
   goHistory() {
     wx.navigateTo({ url: "/pages/me/history" });
   },
-  goGrowth() {
-    wx.navigateTo({ url: "/pages/me/growth-report" });
-  },
   goSubscription() {
     wx.navigateTo({ url: "/pages/me/subscription" });
   },
   goAgreement() {
     wx.navigateTo({ url: "/pages/me/agreement" });
+  },
+  goProfile() {
+    wx.navigateTo({ url: "/pages/me/profile" });
   },
   onAuthSuccess() {
     const nav = this.data.pendingNav;

@@ -1,5 +1,8 @@
 com/howtogrow/backend/service/miniprogram/AiChatTitleNormalizerTest.class
-com/howtogrow/backend/controller/DtoSchemaDescriptionTest.class
+com/howtogrow/backend/service/miniprogram/MiniprogramMeServiceTest.class
 com/howtogrow/backend/domain/time/AgeInMonthsCalculatorTest.class
 com/howtogrow/backend/auth/JwtServiceTest.class
+com/howtogrow/backend/service/miniprogram/MiniprogramNicknameGeneratorTest.class
+com/howtogrow/backend/service/miniprogram/MiniprogramLoginServiceConcurrencyTest.class
+com/howtogrow/backend/controller/DtoSchemaDescriptionTest.class
 com/howtogrow/backend/service/common/FixedWindowRateLimiterTest.class

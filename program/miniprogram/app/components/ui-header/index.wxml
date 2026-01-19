@@ -1,4 +1,4 @@
-<view class="wrap" style="padding-top: {{statusBarHeight}}px;">
+<view class="wrap" style="padding-top: {{safeTopPaddingPx}}px;">
   <view class="bar" style="height: {{navContentHeight}}px;">
     <view class="side">
       <view wx:if="{{left}}" class="btn" bindtap="onLeft">
@@ -16,4 +16,3 @@
     </view>
   </view>
 </view>
-

@@ -1,0 +1,10 @@
+target/
+logs/
+*.log
+.DS_Store
+**/.DS_Store
+
+# Do not commit certs/keys; mount them via secrets/volumes instead.
+src/main/resources/*_cert/
+src/main/resources/1584856071_20260118_cert/
+

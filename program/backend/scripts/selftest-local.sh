@@ -175,7 +175,7 @@ curl_json POST "${BASE_URL}/api/v1/admin/plans" \
   "{\"name\":\"${PLAN_NAME}\",\"days\":30,\"priceCent\":990,\"status\":1}" \
   "${AUTHZ_ADMIN[@]}" >/dev/null
 curl_json POST "${BASE_URL}/api/v1/admin/quotes" \
-  "{\"content\":\"${QUOTE_CONTENT}\",\"status\":1}" \
+  "{\"content\":\"${QUOTE_CONTENT}\",\"scene\":\"每日觉察\",\"minAge\":0,\"maxAge\":18,\"status\":1}" \
   "${AUTHZ_ADMIN[@]}" >/dev/null
 
 PLAN_LIST="$(curl_json GET "${BASE_URL}/api/v1/admin/plans" "${AUTHZ_ADMIN[@]}")"
@@ -191,12 +191,13 @@ PY
 )"
 [ -n "$PLAN_ID" ]
 
-QUOTE_LIST="$(curl_json GET "${BASE_URL}/api/v1/admin/quotes" "${AUTHZ_ADMIN[@]}")"
+QUOTE_LIST="$(curl_json GET "${BASE_URL}/api/v1/admin/quotes?page=1&pageSize=50" "${AUTHZ_ADMIN[@]}")"
 assert_api_ok "$QUOTE_LIST"
 QUOTE_ID="$(python3 - <<'PY' "$QUOTE_LIST" "$QUOTE_CONTENT"
 import json,sys
 resp=json.loads(sys.argv[1]); content=sys.argv[2]
-for q in resp.get("data",[]) or []:
+items=(resp.get("data") or {}).get("items") or []
+for q in items:
   if q.get("content")==content and q.get("status")==1:
     print(q.get("id")); sys.exit(0)
 print("")
@@ -209,7 +210,7 @@ curl_json PUT "${BASE_URL}/api/v1/admin/plans/${PLAN_ID}" \
   "{\"name\":\"${PLAN_NAME}\",\"days\":30,\"priceCent\":990,\"status\":1}" \
   "${AUTHZ_ADMIN[@]}" >/dev/null
 curl_json PUT "${BASE_URL}/api/v1/admin/quotes/${QUOTE_ID}" \
-  "{\"content\":\"${QUOTE_CONTENT} (updated)\",\"status\":1}" \
+  "{\"content\":\"${QUOTE_CONTENT} (updated)\",\"scene\":\"每日觉察\",\"minAge\":0,\"maxAge\":18,\"status\":1}" \
   "${AUTHZ_ADMIN[@]}" >/dev/null
 
 # ---------- Question pool (5 questions) ----------

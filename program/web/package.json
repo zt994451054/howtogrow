@@ -13,6 +13,7 @@
     "reinstall": "node ./scripts/reinstall-deps.mjs"
   },
   "dependencies": {
+    "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.7.9",
     "element-plus": "^2.3.14",
     "pinia": "^2.0.36",

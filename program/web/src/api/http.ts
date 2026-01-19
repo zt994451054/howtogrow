@@ -84,6 +84,16 @@ export function createHttpClient(): AxiosInstance {
 
       const traceId = extractTraceId(error);
       const suffix = traceId ? `（traceId: ${traceId}）` : "";
+
+      if (error instanceof AxiosError && isApiResponse(error.response?.data)) {
+        const message =
+          typeof error.response?.data?.message === "string" && error.response?.data?.message.trim()
+            ? error.response.data.message.trim()
+            : "请求失败";
+        ElMessage.error(`${message}${suffix}`);
+        return Promise.reject(error);
+      }
+
       ElMessage.error(`请求失败${suffix}`);
       return Promise.reject(error);
     }

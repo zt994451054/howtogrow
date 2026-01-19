@@ -6,6 +6,7 @@ import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.controller.admin.dto.QuestionDetailView;
 import com.howtogrow.backend.controller.admin.dto.QuestionSummaryView;
 import com.howtogrow.backend.domain.capability.CapabilityDimension;
+import com.howtogrow.backend.infrastructure.admin.QuestionAdminRepository;
 import com.howtogrow.backend.infrastructure.admin.QuestionQueryRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,9 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdminQuestionService {
   private final QuestionQueryRepository queryRepo;
+  private final QuestionAdminRepository writeRepo;
 
-  public AdminQuestionService(QuestionQueryRepository queryRepo) {
+  public AdminQuestionService(QuestionQueryRepository queryRepo, QuestionAdminRepository writeRepo) {
     this.queryRepo = queryRepo;
+    this.writeRepo = writeRepo;
   }
 
   public PageResponse<QuestionSummaryView> list(Integer ageYear, int page, int pageSize) {
@@ -75,7 +78,14 @@ public class AdminQuestionService {
                             .sorted(Comparator.comparingInt(ds -> CapabilityDimension.sortNoOf(ds.dimensionCode())))
                             .toList()))
             .toList();
+    var troubleSceneIds = writeRepo.listTroubleSceneIdsByQuestion(questionId);
     return new QuestionDetailView(
-        first.questionId(), first.minAge(), first.maxAge(), first.questionType(), first.questionContent(), optionViews);
+        first.questionId(),
+        first.minAge(),
+        first.maxAge(),
+        first.questionType(),
+        first.questionContent(),
+        troubleSceneIds,
+        optionViews);
   }
 }

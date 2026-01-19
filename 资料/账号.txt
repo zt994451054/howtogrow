@@ -1,3 +1,27 @@
 小程序：
 wx708361aab07c9b7a
 a9ed0b219a95bf05255ce64c8f259103
+
+
+
+阿里云：
+
+winston@1369298217079613.onaliyun.com
+
+P#jbGFs(|SdIbUVsCm6KD(gk7l5CMgc3
+
+LTAI5tKivhkaVvzeNb8CsU2n
+
+M9yoQMAhmJ5HjE2ECpQzqOWFr7BV5V
+
+
+
+微信商户：
+
+    操作密码：llhr811709_
+
+
+ssh:
+ip:8.137.77.135
+账号：root
+密码：dMsq3TVWHrNC8P1zBiR9

@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import StatusTag from "@/components/StatusTag.vue";
 import { listDimensions, type DimensionView } from "@/api/admin/dimensions";
+import { listAllTroubleScenes, type TroubleSceneView } from "@/api/admin/trouble-scenes";
 import {
   createQuestion,
   deleteQuestion,
@@ -27,6 +28,7 @@ const items = ref<QuestionSummaryView[]>([]);
 const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
 
 const dimensions = ref<DimensionView[]>([]);
+const troubleScenes = ref<TroubleSceneView[]>([]);
 
 const editorVisible = ref(false);
 const editorTitle = ref("新增题目");
@@ -48,6 +50,7 @@ async function reload() {
 
 async function loadReferenceData() {
   dimensions.value = await listDimensions();
+  troubleScenes.value = await listAllTroubleScenes();
 }
 
 function openCreate() {
@@ -169,6 +172,7 @@ onMounted(async () => {
       :title="editorTitle"
       :initial="editorInitial"
       :dimensions="dimensions"
+      :trouble-scenes="troubleScenes.map((s) => ({ id: s.id, name: s.name }))"
       @submit="onSubmit"
     />
 

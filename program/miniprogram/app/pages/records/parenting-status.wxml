@@ -1,0 +1,55 @@
+<view class="page">
+  <ui-header title="育儿状态" left="back" bind:left="onBack" />
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view wx:if="{{children.length == 0}}" class="empty col center">
+      <view class="empty__title">还没有添加孩子</view>
+      <view class="empty__desc">请先在“孩子管理”中添加孩子</view>
+    </view>
+
+    <view wx:else class="wrap">
+      <view class="card">
+        <view class="card__title">选择孩子</view>
+        <view class="children">
+          <view
+            wx:for="{{children}}"
+            wx:key="id"
+            class="child {{childId == item.id ? 'on' : ''}}"
+            bindtap="onPickChild"
+            data-id="{{item.id}}"
+            data-name="{{item.nickname}}"
+          >
+            <view class="child__name">{{item.nickname}}</view>
+            <view class="child__sub">{{item.age}}岁</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="card">
+        <view class="card__title">记录日期</view>
+        <picker mode="date" value="{{recordDate}}" start="1900-01-01" end="{{today}}" bindchange="onRecordDate">
+          <view class="date">{{recordDate}}</view>
+        </picker>
+      </view>
+
+      <view class="card">
+        <view class="card__title">选择状态（10选1）</view>
+        <view class="grid">
+          <view
+            wx:for="{{statusOptions}}"
+            wx:key="code"
+            class="tag {{statusCode == item.code ? 'on' : ''}}"
+            bindtap="onSelectStatus"
+            data-code="{{item.code}}"
+          >
+            <image class="tag__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+            <view class="tag__label">{{item.code}}</view>
+          </view>
+        </view>
+      </view>
+
+      <button class="btn-primary" loading="{{saving}}" bindtap="onSave">保存</button>
+    </view>
+  </scroll-view>
+</view>
+

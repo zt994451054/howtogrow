@@ -12,5 +12,4 @@ if [ ! -f /docker-entrypoint-initdb.d/schema.sql ]; then
 fi
 
 echo "Initializing schema for database: ${MYSQL_DATABASE}"
-mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" "${MYSQL_DATABASE}" < /docker-entrypoint-initdb.d/schema.sql
-
+mysql --default-character-set=utf8mb4 -uroot -p"${MYSQL_ROOT_PASSWORD}" "${MYSQL_DATABASE}" < /docker-entrypoint-initdb.d/schema.sql

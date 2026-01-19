@@ -1,0 +1,150 @@
+<view class="page">
+  <view class="status" style="height: {{statusBarHeight}}px;" />
+
+  <!-- 顶部参考「每日觉察」页面：头像问候 + 菜单 -->
+  <view class="header row between" style="padding-top: {{headerPadTopPx}}px;">
+    <view class="row a">
+      <view class="avatar">
+        <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar__text">{{avatarText}}</view>
+      </view>
+      <view class="col">
+        <view class="greet">{{greetText}}</view>
+      </view>
+    </view>
+    <view class="icon-btn" bindtap="toggleChildMenu">
+      <ui-icon name="menu" size="{{24}}" />
+    </view>
+  </view>
+
+  <view wx:if="{{menuOpen}}" class="menu-layer">
+    <view class="menu-mask" bindtap="closeChildMenu" />
+    <view class="menu-pop" style="top: {{menuPopoverTopPx}}px;">
+      <view class="menu-pop__title">切换孩子</view>
+      <view class="menu-pop__list">
+        <button
+          wx:for="{{children}}"
+          wx:key="id"
+          class="menu-item {{selectedChildId == item.id ? 'on' : ''}}"
+          bindtap="onPickChild"
+          data-id="{{item.id}}"
+        >
+          <view class="menu-item__row row between">
+            <view class="menu-item__name">{{item.nickname}}</view>
+            <view wx:if="{{selectedChildId == item.id}}" class="menu-item__dot" />
+          </view>
+        </button>
+        <button class="menu-item add" bindtap="onAddChild">＋ 添加新孩子</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用页面原生滚动：避免 canvas 在 scroll-view 中随滚动出现抖动/漂浮 -->
+  <view class="body safe-bottom">
+    <view wx:if="{{!childrenLoaded}}" class="loading">加载中…</view>
+
+    <view wx:elif="{{children.length == 0}}" class="empty col center">
+      <view class="empty__logo">
+        <view class="logo-dot">
+          <view class="logo-smile" />
+          <view class="logo-tail" />
+        </view>
+      </view>
+      <view class="empty__title">还没有添加孩子</view>
+      <view class="empty__desc">添加孩子信息后\n即可开启家长曲线</view>
+      <button class="btn-primary" bindtap="onAddChild">添加孩子</button>
+    </view>
+
+    <view wx:else class="wrap">
+      <view class="section-head row between">
+        <view class="section-head__title">我的成长曲线</view>
+        <view class="date-chip row a" bindtap="onPickDateRange">
+          <ui-icon name="calendar" size="{{18}}" />
+          <view class="date-chip__text">{{rangeLabel}}</view>
+          <ui-icon name="chevronDown" size="{{18}}" />
+        </view>
+      </view>
+
+      <view class="chart-card">
+        <ec-canvas
+          id="parentCurveChart"
+          style="display: block; width: 100%; height: 520rpx;"
+          canvas-id="parentCurveChart"
+          ec="{{ec}}"
+          bind:init="onEcInit"
+        />
+        <view wx:if="{{chartEmpty}}" class="chart-empty col center">
+          <view class="chart-empty__t1">暂无数据</view>
+          <view class="chart-empty__t2">完成每日自测后，可查看 5 大维度的趋势变化</view>
+          <button class="chart-empty__btn" bindtap="goTest">去测评</button>
+        </view>
+      </view>
+
+      <view class="dim-pills">
+        <button
+          wx:for="{{dimensions}}"
+          wx:key="code"
+          class="dim-pill {{item._on ? 'on' : 'off'}}"
+          style="border-color: {{item.color}}; color: {{item.color}};"
+          bindtap="onToggleDimension"
+          data-code="{{item.code}}"
+        >
+          {{item.label}}
+        </button>
+      </view>
+
+      <view class="persist col center">
+        <view class="persist__icon">
+          <ui-icon name="bookmark" size="{{28}}" />
+        </view>
+        <view class="persist__name">{{progressName}}</view>
+        <view class="persist__desc">
+          在此期间坚持进步了 <text class="persist__num">{{persistenceDays}}</text> 天
+        </view>
+        <view class="persist__hint">你的每次觉察，都是孩子成长路上最珍贵的礼物</view>
+      </view>
+
+      <view class="mood-card">
+        <view class="mood-card__head col center">
+          <view class="mood-card__title">我的育儿状态分布</view>
+          <view class="mood-card__sub">已记录 {{statusTotalDays}} 天</view>
+        </view>
+
+        <view class="mood-grid">
+          <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-item">
+            <view class="mood-item__pct">{{item.percentage}}%</view>
+            <view class="mood-item__bar" style="height: {{item.barHeight}}rpx; background: {{item.color}};" />
+            <view class="mood-item__face" style="background: {{item.bg}}; color: {{item.color}};">
+              <image wx:if="{{item.imageUrl}}" class="mood-item__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+              <view wx:else>{{item.emoji}}</view>
+            </view>
+            <view class="mood-item__label">{{item.label}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="section row between">
+        <view class="section__title">我的困扰分布</view>
+        <view class="more row a" bindtap="goTroubles">
+          <view class="more__text">更多</view>
+          <view class="more__icon">›</view>
+        </view>
+      </view>
+
+      <view wx:if="{{troubleLoading}}" class="loading">加载中…</view>
+      <view wx:elif="{{topTroubles.length == 0}}" class="trouble-empty">暂无数据</view>
+      <view wx:else class="troubles">
+        <view wx:for="{{topTroubles}}" wx:key="rank" class="trouble">
+          <view class="trouble__rank">{{item.rank}}</view>
+          <view class="trouble__icon">
+            <image wx:if="{{item.logoUrl}}" class="trouble__img" src="{{item.logoUrl}}" mode="aspectFill" />
+            <view wx:else class="trouble__fallback">{{item.shortName}}</view>
+          </view>
+          <view class="trouble__name">{{item.name}}</view>
+        </view>
+      </view>
+
+      <view class="footer-hint">你的每次觉察，都是孩子成长路上最珍贵的礼物</view>
+    </view>
+  </view>
+</view>

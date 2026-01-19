@@ -1,19 +1,31 @@
 import { http } from "@/api/http";
-import type { ApiResponse } from "@/api/types";
+import type { ApiResponse, PageResponse } from "@/api/types";
 
 export type QuoteView = {
   id: number;
   content: string;
+  scene: string;
+  minAge: number;
+  maxAge: number;
   status: number;
 };
 
 export type QuoteUpsertRequest = {
   content: string;
+  scene: string;
+  minAge: number;
+  maxAge: number;
   status: number;
 };
 
-export async function listQuotes(): Promise<QuoteView[]> {
-  const res = await http.get<ApiResponse<QuoteView[]>>("/api/v1/admin/quotes");
+export async function listQuotes(params: {
+  page: number;
+  pageSize: number;
+  scene?: string;
+  status?: number;
+  keyword?: string;
+}): Promise<PageResponse<QuoteView>> {
+  const res = await http.get<ApiResponse<PageResponse<QuoteView>>>("/api/v1/admin/quotes", { params });
   return res.data.data;
 }
 
@@ -28,4 +40,3 @@ export async function updateQuote(id: number, request: QuoteUpsertRequest): Prom
 export async function deleteQuote(id: number): Promise<void> {
   await http.delete<ApiResponse<unknown>>(`/api/v1/admin/quotes/${id}`);
 }
-

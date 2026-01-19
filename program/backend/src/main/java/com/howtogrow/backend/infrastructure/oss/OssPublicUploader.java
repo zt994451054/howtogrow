@@ -48,9 +48,9 @@ public class OssPublicUploader {
 
   private String buildPublicUrl(String objectKey) {
     var base = props.publicBaseUrl();
-    if (base != null && !base.isBlank()) {
-      return trimTrailingSlash(base) + "/" + objectKey;
-    }
+//    if (base != null && !base.isBlank()) {
+//      return trimTrailingSlash(base) + "/" + objectKey;
+//    }
 
     var endpoint = props.endpoint();
     if (endpoint == null || endpoint.isBlank()) {

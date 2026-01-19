@@ -3,7 +3,7 @@
 
   <view class="header">
     <view class="profile row">
-      <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" />
+      <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" bindtap="goProfile" />
       <view class="profile__meta col">
         <view class="nickname">{{nickname}}</view>
         <view class="subline">
@@ -14,7 +14,7 @@
           <view wx:else class="badge warn" bindtap="goSubscription">
             <view wx:if="{{isSubscribed && isExpired}}" class="warn__text">已过期 ({{subscriptionEndAt}})</view>
             <view wx:else class="warn__text">未订阅会员</view>
-            <view class="warn__cta">去订阅 &gt;</view>
+            <view class="warn__cta">去订阅</view>
           </view>
         </view>
       </view>
@@ -39,17 +39,6 @@
         <view class="col">
           <view class="item__title">自测记录</view>
           <view class="item__sub">查看历史自测分析与建议</view>
-        </view>
-      </view>
-      <ui-icon name="chevronRight" size="{{22}}" />
-    </view>
-
-    <view class="item" bindtap="goGrowth">
-      <view class="item__left row">
-        <view class="dot purple">📈</view>
-        <view class="col">
-          <view class="item__title">成长报告</view>
-          <view class="item__sub">五维能力发展趋势分析</view>
         </view>
       </view>
       <ui-icon name="chevronRight" size="{{22}}" />
@@ -84,4 +73,3 @@
   
   <auth-modal show="{{showAuthModal}}" bind:success="onAuthSuccess" />
 </view>
-

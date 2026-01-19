@@ -4,6 +4,7 @@ import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
 import com.howtogrow.backend.auth.AuthContext;
 import com.howtogrow.backend.controller.miniprogram.dto.UploadAvatarResponse;
+import com.howtogrow.backend.controller.miniprogram.dto.UploadDiaryImageResponse;
 import com.howtogrow.backend.service.miniprogram.MiniprogramUploadService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.MediaType;
@@ -29,5 +30,12 @@ public class MiniprogramUploadController {
     var url = uploadService.uploadAvatar(user.userId(), file);
     return ApiResponse.ok(new UploadAvatarResponse(url), TraceId.current());
   }
-}
 
+  @PostMapping(value = "/diary-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ApiResponse<UploadDiaryImageResponse> uploadDiaryImage(
+      @Parameter(description = "育儿日记配图") @RequestPart("file") MultipartFile file) {
+    var user = AuthContext.requireMiniprogram();
+    var url = uploadService.uploadDiaryImage(user.userId(), file);
+    return ApiResponse.ok(new UploadDiaryImageResponse(url), TraceId.current());
+  }
+}

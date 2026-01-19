@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background: #f9fafb;
+  background: var(--bg-page);
 }
 
 .body {
@@ -67,108 +67,6 @@
   background: rgba(249, 115, 22, 0.12);
 }
 
-.form {
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 24rpx;
-  border: 4rpx solid rgba(249, 115, 22, 0.15);
-  box-shadow: var(--shadow-sm);
-}
-
-.form__title {
-  font-weight: 900;
-  color: var(--brand);
-  font-size: 24rpx;
-  margin-bottom: 18rpx;
-}
-
-.field {
-  margin-bottom: 18rpx;
-}
-
-.label {
-  font-size: 20rpx;
-  color: var(--text-muted);
-  margin-left: 6rpx;
-  margin-bottom: 8rpx;
-}
-
-.input {
-  background: #f3f4f6;
-  border-radius: 18rpx;
-  padding: 18rpx 20rpx;
-  font-size: 26rpx;
-  color: var(--text-primary);
-}
-
-.gender {
-  gap: 18rpx;
-}
-
-.g {
-  flex: 1;
-  border-radius: 18rpx;
-  padding: 18rpx 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
-  border: 2rpx solid transparent;
-  background: #f3f4f6;
-  color: var(--text-secondary);
-}
-
-.g.on.boy {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
-  color: #2563eb;
-}
-
-.g.on.girl {
-  background: rgba(236, 72, 153, 0.12);
-  border-color: rgba(236, 72, 153, 0.25);
-  color: #db2777;
-}
-
-.g__icon {
-  font-size: 32rpx;
-}
-
-.g__text {
-  font-weight: 900;
-  font-size: 24rpx;
-}
-
-.date {
-  background: #f3f4f6;
-  border-radius: 18rpx;
-  padding: 18rpx 20rpx;
-  font-size: 26rpx;
-  color: var(--text-primary);
-}
-
-.actions {
-  gap: 18rpx;
-  margin-top: 16rpx;
-}
-
-.save {
-  flex: 1;
-  background: var(--brand);
-  color: #fff;
-  border-radius: 18rpx;
-  padding: 18rpx 0;
-  font-size: 26rpx;
-  font-weight: 900;
-  box-shadow: var(--shadow-brand);
-}
-
-.cancel {
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 26rpx;
-}
-
 .add {
   margin-top: 18rpx;
   width: 100%;
@@ -187,4 +85,164 @@
 
 .add__icon {
   font-size: 32rpx;
+}
+
+.a {
+  align-items: center;
+}
+
+.form-page {
+  position: relative;
+  min-height: calc(100vh - 140rpx);
+  background: #fff;
+}
+
+.form-body {
+  height: calc(100vh - 140rpx);
+}
+
+.form-wrap {
+  padding: 22rpx 32rpx 240rpx;
+}
+
+.gender-pick {
+  gap: 80rpx;
+  margin-top: 10rpx;
+  margin-bottom: 22rpx;
+}
+
+.gender-option {
+  gap: 14rpx;
+}
+
+.gender-circle {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 9999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(243, 244, 246, 1);
+  border: 6rpx solid transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+.gender-circle.boy.on {
+  background: rgba(59, 130, 246, 0.10);
+  border-color: rgba(191, 219, 254, 1);
+}
+
+.gender-circle.girl.on {
+  background: rgba(236, 72, 153, 0.10);
+  border-color: rgba(251, 207, 232, 1);
+}
+
+.gender-emoji {
+  font-size: 88rpx;
+  line-height: 1;
+}
+
+.gender-label {
+  font-size: 24rpx;
+  font-weight: 900;
+  color: rgba(156, 163, 175, 1);
+}
+
+.gender-label.boy.on {
+  color: rgba(59, 130, 246, 1);
+}
+
+.gender-label.girl.on {
+  color: rgba(236, 72, 153, 1);
+}
+
+.field {
+  margin-top: 22rpx;
+}
+
+.label {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  font-weight: 900;
+  margin-bottom: 10rpx;
+}
+
+.input-wrap {
+  background: #fff;
+  border-radius: 18rpx;
+  border: 2rpx solid rgba(255, 237, 213, 1);
+  padding: 18rpx 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(17, 24, 39, 0.04);
+}
+
+.input {
+  font-size: 26rpx;
+  color: var(--text-primary);
+}
+
+.date-text {
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.muted {
+  color: rgba(156, 163, 175, 1);
+  font-weight: 700;
+}
+
+.input-icon {
+  color: rgba(156, 163, 175, 1);
+  font-size: 26rpx;
+}
+
+.relation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx 18rpx;
+}
+
+.relation {
+  background: #fff;
+  border: 2rpx solid rgba(229, 231, 235, 1);
+  border-radius: 16rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: 900;
+  color: var(--text-secondary);
+}
+
+.relation.on {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  box-shadow: var(--shadow-brand);
+}
+
+.form-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  padding: 18rpx 32rpx 22rpx;
+  border-top: 2rpx solid rgba(243, 244, 246, 0.8);
+  z-index: 30;
+}
+
+.save-info {
+  width: 100% !important;
+  height: 92rpx;
+  border-radius: 46rpx;
+  background: var(--brand) !important;
+  color: #fff !important;
+  font-size: 30rpx;
+  font-weight: 900;
+  box-shadow: var(--shadow-brand);
+}
+
+.save-info::after {
+  border: none;
 }

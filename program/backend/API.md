@@ -27,6 +27,7 @@
 - `gender`：0未知 1男 2女
 - `questionType`：`SINGLE`/`MULTI`
 - 分页：`page` 从 1 开始；`pageSize` 默认 20，最大 200
+- 年龄：均为**周岁（整数，含边界）**，中国时区口径
 
 ## 接口一览（按端）
 
@@ -37,6 +38,14 @@
 - `POST /miniprogram/children`（新增孩子）
 - `PUT /miniprogram/children/{childId}`（更新孩子）
 - `DELETE /miniprogram/children/{childId}`（删除孩子）
+- `GET /miniprogram/banners`（Banner 列表：最多 5 个上架，按 sort 升序）
+- `GET /miniprogram/banners/{id}`（Banner 详情：富文本 HTML）
+- `GET /miniprogram/awareness/monthly?childId=...&month=YYYY-MM`（每日觉察月度概览：该月每日育儿状态/烦恼场景/自测/育儿日记）
+- `GET /miniprogram/trouble-scenes`（烦恼场景列表：仅未删除）
+- `GET /miniprogram/troubles/daily?childId=...&recordDate=YYYY-MM-DD`（查询每日烦恼记录；recordDate 不传默认今天）
+- `PUT /miniprogram/troubles/daily`（提交/更新每日烦恼记录：可补录，仅修改不删除，至少选 1 个场景）
+- `GET /miniprogram/parenting-status/daily?childId=...&recordDate=YYYY-MM-DD`（查询每日育儿状态；recordDate 不传默认今天）
+- `PUT /miniprogram/parenting-status/daily`（提交/更新每日育儿状态：可补录，仅修改不删除）
 - `POST /miniprogram/assessments/daily/begin`（开始每日自测：不落库，返回会话ID+题目）
 - `POST /miniprogram/assessments/daily/sessions/{sessionId}/replace`（换题：基于会话）
 - `POST /miniprogram/assessments/daily/sessions/{sessionId}/submit`（提交作答：基于会话，落库一次性提交）
@@ -46,7 +55,8 @@
 - `POST /miniprogram/ai/chat/sessions/{sessionId}/messages`（发送消息）
 - `GET /miniprogram/ai/chat/sessions/{sessionId}/stream`（SSE 流式回复）
 - `GET /miniprogram/reports/growth?childId=1&from=2025-12-01&to=2025-12-28`（成长报告）
-- `GET /miniprogram/quotes/random`（随机鸡汤语）
+- `GET /miniprogram/reports/persistence?childId=1`（坚持进步：从首次记录到今日的天数，含首日/今日，最小为1）
+- `GET /miniprogram/quotes/random?childId=...&scene=...`（按场景+孩子周岁随机鸡汤语；无数据返回 `data=[]`）
 - `GET /miniprogram/subscriptions/plans`（订阅套餐列表）
 - `POST /miniprogram/subscriptions/orders`（创建订阅订单）
 
@@ -62,9 +72,14 @@
 - `PUT /admin/rbac/admin-users/{adminUserId}/roles`（更新管理员角色）
 - 能力维度（只读）：`GET /admin/dimensions`
 - 套餐：`GET/POST /admin/plans`，`PUT/DELETE /admin/plans/{id}`
-- 鸡汤语：`GET/POST /admin/quotes`，`PUT/DELETE /admin/quotes/{id}`
+- 鸡汤语：`GET /admin/quotes`（分页 `page/pageSize`；筛选：`scene/status/keyword`）、`POST /admin/quotes`、`PUT/DELETE /admin/quotes/{id}`
+- Banner：`GET /admin/banners`（分页 `page/pageSize`；筛选：`status/keyword`）、`POST /admin/banners`、`PUT/DELETE /admin/banners/{id}`（上架≤5）
+- 烦恼场景：`GET /admin/trouble-scenes`（分页 `page/pageSize`；筛选：`keyword/ageYear`）、`POST /admin/trouble-scenes`、`PUT/DELETE /admin/trouble-scenes/{id}`（名称未删除唯一；需填写最小/最大年龄；删除会解除题目关联）
+- AI 快捷问题：`GET /admin/ai-quick-questions`（分页 `page/pageSize`；筛选：`status/keyword`）、`POST /admin/ai-quick-questions`、`PUT/DELETE /admin/ai-quick-questions/{id}`
+- 烦恼场景导入：`POST /admin/trouble-scenes/import-excel`（`multipart/form-data`，字段名 `file`；任一错误整体失败）
+- 上传：`POST /admin/uploads/public`（`multipart/form-data`，字段名 `file`，后端转存 OSS 并返回 URL）
 - 题库：`GET /admin/questions`，`GET /admin/questions/{questionId}`，`POST /admin/questions`，`PUT/DELETE /admin/questions/{questionId}`
-- 题库导入：`POST /admin/questions/import-excel`（`multipart/form-data`，字段名 `file`）
+- 题库导入：`POST /admin/questions/import-excel`（`multipart/form-data`，字段名 `file`；包含烦恼场景名称时需完全匹配，任一错误整体失败）
 - 查询：`GET /admin/users` / `GET /admin/orders` / `GET /admin/assessments`（均为分页）
 
 ### 支付回调
@@ -92,13 +107,56 @@
   - 字段名：`file`（头像文件，`image/*`）
 - 响应 data：`UploadAvatarResponse`
 
+#### `POST /api/v1/miniprogram/uploads/diary-image`
+- `multipart/form-data`：
+  - 字段名：`file`（育儿日记配图，`image/*`）
+- 响应 data：`UploadDiaryImageResponse`
+
 #### `PUT /api/v1/miniprogram/children/{childId}` / `DELETE /api/v1/miniprogram/children/{childId}`
 - Path：
   - `childId`：孩子ID
+> 新增/更新孩子时需填写 `parentIdentity`（爸爸/妈妈/奶奶/爷爷/外公/外婆）。
+
+#### `GET /api/v1/miniprogram/banners` / `GET /api/v1/miniprogram/banners/{id}`
+- `GET /.../banners` 响应 data：`BannerListItemView[]`
+- `GET /.../banners/{id}` 响应 data：`BannerDetailView`
+
+#### `GET /api/v1/miniprogram/awareness/monthly`
+- Query：
+  - `childId`：孩子ID（必填）
+  - `month`：月份（必填，格式 `YYYY-MM`，且不早于 `2025-06`）
+- 规则：
+  - 若 `month` 为当前月份（中国时区口径），返回日期范围为 `YYYY-MM-01..今天`，不包含未来日期。
+- 响应 data：`MonthlyAwarenessResponse`
+
+#### `GET /api/v1/miniprogram/trouble-scenes`
+- 响应 data：`TroubleSceneView[]`
+
+#### `GET /api/v1/miniprogram/troubles/daily` / `PUT /api/v1/miniprogram/troubles/daily`
+- `GET` Query：
+  - `childId`：孩子ID
+  - `recordDate`：可选，默认今天
+- `PUT` Body(JSON)：`DailyTroubleRecordUpsertRequest`（`sceneIds` 至少 1 个，可补录、可修改、不可删除）
+- 响应 data：`DailyTroubleRecordView`（`GET` 无记录时为 `null`）
+
+#### `GET /api/v1/miniprogram/parenting-status/daily` / `PUT /api/v1/miniprogram/parenting-status/daily`
+- `GET` Query：
+  - `childId`：孩子ID
+  - `recordDate`：可选，默认今天
+- `PUT` Body(JSON)：`DailyParentingStatusUpsertRequest`（10 种状态单选，可补录、可修改、不可删除）
+- 响应 data：`DailyParentingStatusView`（`GET` 无记录时为 `null`）
+
+#### `GET /api/v1/miniprogram/diary/daily` / `PUT /api/v1/miniprogram/diary/daily`
+- `GET` Query：
+  - `childId`：孩子ID
+  - `recordDate`：可选，默认今天
+- `PUT` Body(JSON)：`DailyParentingDiaryUpsertRequest`（可补录、可修改、不可删除）
+- 响应 data：`DailyParentingDiaryView`（`GET` 无记录时为 `null`）
 
 #### `POST /api/v1/miniprogram/assessments/daily/sessions/{sessionId}/replace` / `POST /api/v1/miniprogram/assessments/daily/sessions/{sessionId}/submit`
 - Path：
   - `sessionId`：自测会话ID
+> 每日自测：出题优先匹配“今日烦恼记录 + 年龄”，不足再补全其他题；题数 5-10，做满 5 题后可随时提交（最多 10 题）。
 
 #### `POST /api/v1/miniprogram/assessments/daily/{assessmentId}/ai-summary`
 - Path：
@@ -143,6 +201,11 @@
   - `from`：开始日期（`yyyy-MM-dd`）
   - `to`：结束日期（`yyyy-MM-dd`）
 - 响应 data：`GrowthReportResponse`
+
+#### `GET /api/v1/miniprogram/reports/persistence`
+- Query：
+  - `childId`：孩子ID
+- 响应 data：`AwarenessPersistenceResponse`
 
 ### 运营端（Admin）
 
@@ -244,6 +307,7 @@
 | `id` | number | 用户ID |
 | `nickname` | string/null | 昵称（可为空） |
 | `avatarUrl` | string/null | 头像URL（可为空） |
+| `birthDate` | string/null | 出生日期（YYYY-MM-DD，可为空） |
 | `subscriptionEndAt` | string/null | 订阅到期时间（可为空，ISO-8601） |
 | `freeTrialUsed` | boolean | 是否已使用免费体验 |
 
@@ -252,6 +316,7 @@
 | --- | --- | --- |
 | `nickname` | string | 昵称 |
 | `avatarUrl` | string | 头像URL |
+| `birthDate` | string/null | 出生日期（YYYY-MM-DD，可选） |
 
 #### `UploadAvatarResponse`
 | 字段 | 类型 | 说明 |
@@ -426,10 +491,76 @@
 | `bizDate` | string | 业务日期（YYYY-MM-DD） |
 | `dimensionScores` | array | `DimensionScoreView[]` |
 
+#### `AwarenessPersistenceResponse`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `childId` | number | 孩子ID |
+| `firstRecordDate` | string | 首次记录日期（YYYY-MM-DD；若无任何记录则为今日） |
+| `today` | string | 今日（YYYY-MM-DD，中国时区口径） |
+| `persistenceDays` | number | 坚持进步天数（含首日/今日，最小为1） |
+
 #### `QuoteResponse`
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `content` | string | 鸡汤语内容 |
+
+#### `MonthlyAwarenessResponse`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `childId` | number | 孩子ID |
+| `month` | string | 月份（YYYY-MM） |
+| `days` | array | `MonthlyAwarenessDayView[]` |
+
+#### `MonthlyAwarenessDayView`（`MonthlyAwarenessResponse.days[]`）
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `recordDate` | string | 日期（YYYY-MM-DD） |
+| `parentingStatusCode` | string | 育儿状态（失望/平静/乐观/难过/无奈/愤怒/欣慰/担忧/开心/绝望；为空表示未记录） |
+| `parentingStatusMoodId` | string | 育儿状态表情ID（disappointed/calm/optimistic/happy/sad/worried/helpless/angry/relieved/desperate；为空表示未记录） |
+| `troubleScenes` | array | `MonthlyAwarenessTroubleSceneView[]` |
+| `assessment` | object | `MonthlyAwarenessAssessmentView`（为空表示未完成） |
+| `diary` | object | `MonthlyAwarenessDiaryView`（为空表示未记录） |
+
+#### `MonthlyAwarenessTroubleSceneView`（`MonthlyAwarenessDayView.troubleScenes[]`）
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `id` | number | 场景ID |
+| `name` | string | 场景名称 |
+| `logoUrl` | string | 场景 Logo URL |
+
+#### `MonthlyAwarenessAssessmentView`（`MonthlyAwarenessDayView.assessment`）
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `assessmentId` | number | 自测记录ID |
+| `submittedAt` | string | 提交时间（ISO-8601，+08:00） |
+| `aiSummary` | string | AI 总结（可选） |
+
+#### `MonthlyAwarenessDiaryView`（`MonthlyAwarenessDayView.diary`）
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `content` | string | 日记内容 |
+| `imageUrl` | string | 配图 URL（可选） |
+
+#### `DailyParentingDiaryView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `childId` | number | 孩子ID |
+| `recordDate` | string | 记录日期（YYYY-MM-DD） |
+| `content` | string | 日记内容 |
+| `imageUrl` | string | 配图 URL（可选） |
+
+#### `DailyParentingDiaryUpsertRequest`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `childId` | number | 孩子ID |
+| `recordDate` | string | 记录日期（YYYY-MM-DD；可选，默认今天） |
+| `content` | string | 日记内容（可为空；但 content/imageUrl 至少 1 个不为空） |
+| `imageUrl` | string | 配图 URL（可选） |
+
+#### `UploadDiaryImageResponse`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `url` | string | 图片 URL |
 
 #### `SubscriptionPlanView`
 | 字段 | 类型 | 说明 |

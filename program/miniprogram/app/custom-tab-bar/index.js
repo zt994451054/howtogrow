@@ -1,38 +1,40 @@
+const { STORAGE_KEYS } = require("../services/config");
+const { getStorage } = require("../services/storage");
+const { formatDateYmd } = require("../utils/date");
+
 Component({
   data: {
     selected: 0,
-    list: [
-      {
-        pagePath: "/pages/home/index",
-        text: "首页",
-        iconPath: "/assets/tab/home.png",
-        selectedIconPath: "/assets/tab/home-active.png",
-      },
-      {
-        pagePath: "/pages/test/index",
-        text: "每日自测",
-        iconPath: "/assets/tab/test.png",
-        selectedIconPath: "/assets/tab/test-active.png",
-      },
-      {
-        pagePath: "/pages/chat/index",
-        text: "马上沟通",
-        iconPath: "/assets/tab/chat.png",
-        selectedIconPath: "/assets/tab/chat-active.png",
-      },
-      {
-        pagePath: "/pages/me/index",
-        text: "我的",
-        iconPath: "/assets/tab/me.png",
-        selectedIconPath: "/assets/tab/me-active.png",
-      },
-    ],
   },
   methods: {
     onTap(e) {
       const { index, path } = e.currentTarget.dataset;
       wx.switchTab({ url: path });
       this.setData({ selected: Number(index) });
+    },
+    onMoodTap() {
+      const childId =
+        Number(getStorage(STORAGE_KEYS.navHomeSelectedChildId) || 0) ||
+        Number(getStorage(STORAGE_KEYS.navCurveSelectedChildId) || 0);
+
+      if (!childId) {
+        wx.switchTab({ url: "/pages/home/index" });
+        this.setData({ selected: 0 });
+        wx.showToast({ title: "请先选择孩子", icon: "none" });
+        return;
+      }
+
+      const date = formatDateYmd(new Date());
+      const url = `/pages/home/detail?childId=${encodeURIComponent(String(childId))}&date=${encodeURIComponent(date)}&open=status`;
+
+      wx.switchTab({
+        url: "/pages/home/index",
+        success: () => {
+          // Ensure the tab switch completes so the next `navigateTo` has a clean stack.
+          setTimeout(() => wx.navigateTo({ url }), 50);
+        },
+      });
+      this.setData({ selected: 0 });
     },
   },
 });

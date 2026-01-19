@@ -7,7 +7,7 @@
 - 用户与孩子：`user_account`、`child`
 - 题库：`question`、`question_option`、`option_dimension_score`
 - 每日自测：`daily_assessment`、`daily_assessment_item`、`daily_assessment_answer`、`daily_assessment_dimension_score`
-- AI 能力：`ai_assessment_summary`、`ai_chat_session`、`ai_chat_message`
+- AI 能力：`ai_assessment_summary`、`ai_chat_session`、`ai_chat_message`、`ai_agent_quick_question`
 - 订阅与支付：`subscription_plan`、`purchase_order`、`subscription_grant`、`wechat_pay_transaction`、`wechat_pay_notify_event`
 - 运营端权限：`admin_user`、`admin_role`、`admin_permission`、`admin_user_role`、`admin_role_permission`
 - 内容：`quote`
@@ -74,6 +74,12 @@
 
 - `child (0..1) <- ai_chat_session.child_id`
   - 说明：会话可选关联某个孩子，便于对话上下文带上年龄/性别等信息（仍需在服务端做用户归属校验）。
+
+### 2.6 AI 会话式 Agent 快捷问题（运营端配置）
+- `ai_agent_quick_question`
+  - 说明：
+    - 用于运营端配置“会话式 Agent”的快捷提问（按钮/标签），小程序端展示给用户一键发送（展示文案即 `prompt`）。
+    - 该表仅存最小必要字段（`prompt/status/sort_no` + 时间字段）；若后续需要区分多个 Agent，可新增 `agent_code` 或新增 `ai_agent` 表建立关联。
 
 ### 2.6 订阅与支付（微信支付 v3，小程序 JSAPI）
 - `subscription_plan (1) -> (N) purchase_order`

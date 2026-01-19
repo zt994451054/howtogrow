@@ -10,5 +10,5 @@ public record OssProperties(
     String accessKeySecret,
     String bucket,
     String publicBaseUrl,
-    String avatarPrefix) {}
-
+    String avatarPrefix,
+    String diaryPrefix) {}

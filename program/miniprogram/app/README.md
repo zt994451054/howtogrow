@@ -11,4 +11,5 @@
 ## 配置
 
 - API Base：在 `program/miniprogram/app/services/config.js` 修改 `API_BASE_URL`
+- H5 域名端口：在 `program/miniprogram/app/services/config.js` 修改 `H5_BASE_URL`（用于 WebView 打开 `/h5/banners/{bannerId}`；本地默认 `http://localhost:5173`）
 - 需要后端支持的接口定义见：`program/backend/API.md`

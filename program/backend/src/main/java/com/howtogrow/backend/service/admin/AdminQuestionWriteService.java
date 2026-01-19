@@ -5,7 +5,10 @@ import com.howtogrow.backend.api.exception.AppException;
 import com.howtogrow.backend.controller.admin.dto.QuestionUpsertRequest;
 import com.howtogrow.backend.domain.capability.CapabilityDimension;
 import com.howtogrow.backend.infrastructure.admin.QuestionAdminRepository;
+import com.howtogrow.backend.infrastructure.trouble.TroubleSceneRepository;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminQuestionWriteService {
   private final QuestionAdminRepository questionRepo;
+  private final TroubleSceneRepository sceneRepo;
 
-  public AdminQuestionWriteService(QuestionAdminRepository questionRepo) {
+  public AdminQuestionWriteService(QuestionAdminRepository questionRepo, TroubleSceneRepository sceneRepo) {
     this.questionRepo = questionRepo;
+    this.sceneRepo = sceneRepo;
   }
 
   @Transactional
@@ -31,6 +36,7 @@ public class AdminQuestionWriteService {
             request.maxAge(),
             normalizeType(request.questionType()),
             request.status());
+    questionRepo.replaceQuestionTroubleScenes(questionId, normalizeSceneIds(request.troubleSceneIds()));
     insertOptions(questionId, request);
     return questionId;
   }
@@ -45,6 +51,7 @@ public class AdminQuestionWriteService {
         request.maxAge(),
         normalizeType(request.questionType()),
         request.status());
+    questionRepo.replaceQuestionTroubleScenes(questionId, normalizeSceneIds(request.troubleSceneIds()));
 
     var optionIds = questionRepo.listOptionIdsByQuestion(questionId);
     questionRepo.deleteOptionDimensionScores(optionIds);
@@ -58,6 +65,7 @@ public class AdminQuestionWriteService {
     questionRepo.deleteOptionDimensionScores(optionIds);
     questionRepo.softDeleteOptions(questionId);
     questionRepo.softDeleteQuestion(questionId);
+    questionRepo.replaceQuestionTroubleScenes(questionId, List.of());
   }
 
   private void validate(QuestionUpsertRequest request) {
@@ -69,6 +77,14 @@ public class AdminQuestionWriteService {
     }
     if (request.minAge() > request.maxAge()) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "minAge 必须小于等于 maxAge");
+    }
+
+    var sceneIds = normalizeSceneIds(request.troubleSceneIds());
+    if (!sceneIds.isEmpty()) {
+      var existing = sceneRepo.listActiveIds(sceneIds);
+      if (existing.size() != sceneIds.size()) {
+        throw new AppException(ErrorCode.INVALID_REQUEST, "烦恼场景不存在或已删除");
+      }
     }
 
     for (var opt : request.options()) {
@@ -120,5 +136,19 @@ public class AdminQuestionWriteService {
     }
     var trimmed = text.trim();
     return trimmed.isBlank() ? null : trimmed;
+  }
+
+  private static List<Long> normalizeSceneIds(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    var seen = new HashSet<Long>();
+    var out = new ArrayList<Long>();
+    for (var id : ids) {
+      if (id != null && id > 0 && seen.add(id)) {
+        out.add(id);
+      }
+    }
+    return out;
   }
 }

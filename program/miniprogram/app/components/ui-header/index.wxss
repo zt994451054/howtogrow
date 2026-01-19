@@ -25,12 +25,20 @@
 }
 
 .btn {
-  width: 64rpx;
-  height: 64rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
+  background: #fff;
+  border-radius: 9999rpx;
+  box-shadow: var(--shadow-sm);
+  border: 2rpx solid rgba(17, 24, 39, 0.06);
+}
+
+.btn:active {
+  transform: scale(0.96);
 }
 
 .center-content {
@@ -54,4 +62,3 @@
   color: var(--text-primary);
   text-transform: uppercase;
 }
-

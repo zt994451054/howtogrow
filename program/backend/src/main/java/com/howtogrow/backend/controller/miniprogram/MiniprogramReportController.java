@@ -3,7 +3,9 @@ package com.howtogrow.backend.controller.miniprogram;
 import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
 import com.howtogrow.backend.auth.AuthContext;
+import com.howtogrow.backend.controller.miniprogram.dto.AwarenessPersistenceResponse;
 import com.howtogrow.backend.controller.miniprogram.dto.GrowthReportResponse;
+import com.howtogrow.backend.service.miniprogram.AwarenessPersistenceService;
 import com.howtogrow.backend.service.miniprogram.GrowthReportService;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.time.LocalDate;
@@ -17,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/miniprogram/reports")
 public class MiniprogramReportController {
   private final GrowthReportService reportService;
+  private final AwarenessPersistenceService persistenceService;
 
-  public MiniprogramReportController(GrowthReportService reportService) {
+  public MiniprogramReportController(
+      GrowthReportService reportService, AwarenessPersistenceService persistenceService) {
     this.reportService = reportService;
+    this.persistenceService = persistenceService;
   }
 
   @GetMapping("/growth")
@@ -31,5 +36,12 @@ public class MiniprogramReportController {
           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
     var user = AuthContext.requireMiniprogram();
     return ApiResponse.ok(reportService.growth(user.userId(), childId, from, to), TraceId.current());
+  }
+
+  @GetMapping("/persistence")
+  public ApiResponse<AwarenessPersistenceResponse> persistence(
+      @Parameter(description = "孩子ID") @RequestParam long childId) {
+    var user = AuthContext.requireMiniprogram();
+    return ApiResponse.ok(persistenceService.get(user.userId(), childId), TraceId.current());
   }
 }

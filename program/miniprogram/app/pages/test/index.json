@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "ui-header": "/components/ui-header/index",
-    "auth-modal": "/components/auth-modal/index"
-  }
-}

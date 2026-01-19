@@ -61,6 +61,37 @@ public class DailyAssessmentHistoryRepository {
     return rows.stream().findFirst();
   }
 
+  public List<RecordRow> listByUserIdAndChildIdBetween(
+      long userId, long childId, Instant fromInclusive, Instant toExclusive) {
+    var sql =
+        """
+        SELECT
+          a.id AS assessment_id,
+          a.child_id,
+          c.nickname AS child_name,
+          a.submitted_at,
+          s.content AS ai_summary
+        FROM daily_assessment a
+        LEFT JOIN child c ON c.id = a.child_id
+        LEFT JOIN ai_assessment_summary s
+          ON s.assessment_id = a.id
+         AND s.user_id = a.user_id
+        WHERE a.user_id = :userId
+          AND a.child_id = :childId
+          AND a.submitted_at >= :fromInclusive
+          AND a.submitted_at < :toExclusive
+        ORDER BY a.submitted_at ASC, a.id ASC
+        """;
+    return jdbc.query(
+        sql,
+        Map.of(
+            "userId", userId,
+            "childId", childId,
+            "fromInclusive", Timestamp.from(fromInclusive),
+            "toExclusive", Timestamp.from(toExclusive)),
+        RECORD_MAPPER);
+  }
+
   public List<ItemRow> listItems(long assessmentId) {
     var sql =
         """

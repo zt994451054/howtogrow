@@ -14,6 +14,7 @@ public record QuestionUpsertRequest(
     @Schema(description = "适用最大年龄（整数，单位：岁，含边界）") @NotNull @Min(0) @Max(18) Integer maxAge,
     @Schema(description = "题型：SINGLE/MULTI") @NotBlank String questionType,
     @Schema(description = "题干内容") @NotBlank String content,
+    @Schema(description = "关联烦恼场景ID列表（可为空）") List<Long> troubleSceneIds,
     @Schema(description = "状态：0禁用 1启用") @NotNull @Min(0) @Max(1) Integer status,
     @Schema(description = "选项列表") @NotEmpty @Valid List<OptionUpsert> options) {
 

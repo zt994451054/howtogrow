@@ -50,7 +50,7 @@
     bindscrolltoupper="onMessagesScrollToUpper"
   >
     <view class="msg-list">
-      <view wx:for="{{messages}}" wx:key="id" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
+      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
         <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
           <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
             <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
@@ -58,6 +58,22 @@
           <view wx:if="{{item.role == 'user'}}" class="bubble b-me">{{item.text}}</view>
           <view wx:else class="bubble b-ai">
             <towxml nodes="{{item.nodes}}"></towxml>
+          </view>
+        </view>
+
+        <view
+          wx:if="{{idx == 0 && !typing && quickQuestions.length > 0 && messages.length <= 1}}"
+          class="quick"
+        >
+          <view
+            wx:for="{{quickQuestions}}"
+            wx:key="*this"
+            wx:for-item="qq"
+            class="quick__chip"
+            bindtap="onQuickQuestionTap"
+            data-prompt="{{qq}}"
+          >
+            {{qq}}
           </view>
         </view>
       </view>

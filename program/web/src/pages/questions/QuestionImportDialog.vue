@@ -49,7 +49,7 @@ async function onSelectFile(e: Event) {
     <div class="uploader">
       <input type="file" accept=".xlsx" :disabled="uploading" @change="onSelectFile" />
       <el-text type="info">
-        限制：.xlsx，≤5MB；一行一个选项；同一问题多个选项请复制多行（问题/题型/年龄可在后续行留空沿用上一行）。
+        限制：.xlsx，≤5MB；一行一个选项；同一问题多个选项请复制多行（问题/题型/年龄可在后续行留空沿用上一行）；烦恼场景用英文逗号分隔填写“场景名称”（必须完全匹配且未删除，任一错误将整体失败）。
       </el-text>
     </div>
 
@@ -85,4 +85,3 @@ async function onSelectFile(e: Event) {
   margin-top: 16px;
 }
 </style>
-

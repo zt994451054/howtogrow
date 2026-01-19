@@ -1,3 +1,5 @@
 /program/backend/target/
 /program/backend/.m2repo/
 /program/.m2/
+/program/backend/.m2/
+/logs/

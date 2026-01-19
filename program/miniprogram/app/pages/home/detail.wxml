@@ -1,0 +1,233 @@
+<view class="page">
+  <ui-header title="{{title}}" left="back" bind:left="onBack" avoidMenu="{{true}}" />
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="wrap animate-fade-in">
+      <view wx:if="{{greetText}}" class="greet">{{greetText}}</view>
+
+      <view class="quote">{{quote}}</view>
+
+      <view class="timeline">
+        <view class="timeline__line" />
+
+        <view
+          wx:for="{{items}}"
+          wx:key="id"
+          class="item {{item.done ? 'done' : 'todo'}} {{item.isLast ? 'item-last' : ''}}"
+          bindtap="onTapItem"
+          data-id="{{item.id}}"
+        >
+          <view class="item__icon {{item.done ? 'on' : ''}}">
+            <image
+              wx:if="{{item.id == 'parentingStatus' && item.done && item.statusImageUrl}}"
+              class="item__icon-img"
+              src="{{item.statusImageUrl}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+            />
+            <view wx:else class="obs-icon obs-icon--{{item.icon}}">
+              <view wx:if="{{item.icon == 'status'}}" class="obs-icon__status">
+                <view class="obs-icon__status-eye left" />
+                <view class="obs-icon__status-eye right" />
+                <view class="obs-icon__status-mouth" />
+              </view>
+              <view wx:elif="{{item.icon == 'troubles'}}" class="obs-icon__troubles">
+                <view class="obs-icon__troubles-bump top" />
+                <view class="obs-icon__troubles-bump right" />
+              </view>
+              <view wx:elif="{{item.icon == 'mirror'}}" class="obs-icon__mirror">
+                <view class="obs-icon__mirror-clip" />
+                <view class="obs-icon__mirror-line l1" />
+                <view class="obs-icon__mirror-line l2" />
+                <view class="obs-icon__mirror-line l3" />
+              </view>
+              <view wx:elif="{{item.icon == 'diary'}}" class="obs-icon__diary">
+                <view class="obs-icon__diary-page left" />
+                <view class="obs-icon__diary-page right" />
+                <view class="obs-icon__diary-seam" />
+              </view>
+              <view wx:elif="{{item.icon == 'expert'}}" class="obs-icon__expert">
+                <view class="obs-icon__expert-cap" />
+                <view class="obs-icon__expert-base" />
+                <view class="obs-icon__expert-tassel" />
+                <view class="obs-icon__expert-tassel-dot" />
+              </view>
+            </view>
+          </view>
+
+          <view class="item__body">
+            <view class="item__title">{{item.title}}</view>
+            <view class="item__desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading">加载中…</view>
+    </view>
+  </scroll-view>
+
+  <!-- 育儿状态（全屏） -->
+  <view wx:if="{{showStatusSheet}}" class="overlay">
+    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
+    <view class="overlay__header row between">
+      <view class="overlay__back" bindtap="closeSheets">‹</view>
+      <view class="overlay__title">{{dateSlash}}育儿状态</view>
+      <view class="overlay__spacer" />
+    </view>
+
+    <view class="overlay__quote">{{statusQuote}}</view>
+
+    <view class="mood-area">
+      <view class="mood-center">
+        <view class="mood-center__circle">
+          <image wx:if="{{statusSelected.imageUrl}}" class="mood-center__img" src="{{statusSelected.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+          <view wx:else class="mood-center__emoji">{{statusSelected.emoji}}</view>
+        </view>
+        <view class="mood-center__text">
+          <view class="mood-center__line">让情绪被看见</view>
+          <view class="mood-center__line">也让爱被察觉</view>
+        </view>
+      </view>
+
+      <view class="mood-orbit">
+        <view
+          wx:for="{{statusOrbitOptions}}"
+          wx:key="code"
+          class="mood-option {{statusDraftCode == item.code ? 'on' : ''}}"
+          style="left: {{item.left}}%; top: {{item.top}}%;"
+          bindtap="onPickStatus"
+          data-code="{{item.code}}"
+        >
+          <view class="mood-option__circle">
+            <image wx:if="{{item.imageUrl}}" class="mood-option__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+            <view wx:else class="mood-option__emoji">{{item.emoji}}</view>
+          </view>
+          <view class="mood-option__label">{{item.code}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="overlay__footer safe-bottom">
+      <button class="overlay__btn" loading="{{statusSaving}}" bindtap="onSaveStatus">确 定</button>
+    </view>
+  </view>
+
+  <!-- 烦恼存档（全屏） -->
+  <view wx:if="{{showTroubleSheet}}" class="overlay">
+    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
+    <view class="overlay__header row between">
+      <view class="overlay__back" bindtap="closeSheets">‹</view>
+      <view class="overlay__title">{{dateSlash}}烦恼存档</view>
+      <view class="overlay__spacer" />
+    </view>
+
+    <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view class="trouble-hero">
+        <view class="trouble-hero__ball">
+          <view class="trouble-hero__tile t1" />
+          <view class="trouble-hero__tile t2" />
+          <view class="trouble-hero__tile t3" />
+          <view class="trouble-hero__tile t4" />
+          <view class="trouble-hero__bar" />
+        </view>
+        <view class="trouble-hero__title">{{troubleQuote}}</view>
+      </view>
+
+      <view wx:if="{{troubleLoading}}" class="sheet__loading">加载中…</view>
+      <view wx:else class="trouble-select-grid">
+        <view
+          wx:for="{{troubleScenes}}"
+          wx:key="id"
+          class="trouble-chip"
+          bindtap="onToggleTrouble"
+          data-id="{{item.id}}"
+        >
+          <view class="trouble-chip__circle {{item.selected ? 'on' : ''}}">
+            <image wx:if="{{item.logoUrl}}" class="trouble-chip__logo" src="{{item.logoUrl}}" mode="aspectFill" />
+            <view wx:else class="trouble-chip__fallback">{{item.shortName}}</view>
+          </view>
+          <view class="trouble-chip__label {{item.selected ? 'on' : ''}}">{{item.name}}</view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="overlay__footer safe-bottom">
+      <button
+        class="overlay__btn {{troubleDraftIds.length ? '' : 'overlay__btn--disabled'}}"
+        loading="{{troubleSaving}}"
+        disabled="{{!troubleDraftIds.length}}"
+        bindtap="onSaveTroubles"
+      >
+        确 定 {{troubleDraftIds.length ? '(' + troubleDraftIds.length + ')' : ''}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 育儿日记（全屏） -->
+  <view wx:if="{{showDiarySheet}}" class="overlay">
+    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
+    <view class="overlay__header row between">
+      <view class="overlay__back" bindtap="closeSheets">‹</view>
+      <view class="overlay__title">{{dateSlash}}育儿日记</view>
+      <view class="overlay__spacer" />
+    </view>
+
+    <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view class="diary-wrap">
+        <view class="diary-prompt">
+          <view class="diary-prompt__head row">
+            <view class="diary-prompt__spark">✦</view>
+            <view class="diary-prompt__label">灵感胶囊</view>
+          </view>
+          <view class="diary-prompt__box">
+            <view class="diary-prompt__text">{{diaryPromptText}}</view>
+            <view class="diary-prompt__actions row">
+              <button class="diary-prompt__use" bindtap="onUseDiaryPrompt">一键使用</button>
+              <button class="diary-prompt__next" loading="{{diaryPromptLoading}}" disabled="{{diaryPromptLoading}}" bindtap="onNextDiaryPrompt">换一句</button>
+            </view>
+          </view>
+        </view>
+
+        <view class="diary-editor">
+          <textarea
+            class="diary-editor__input"
+            placeholder="记录当下的感受，哪怕只是只言片语..."
+            value="{{diaryDraftContent}}"
+            maxlength="200"
+            auto-height="true"
+            bindinput="onDiaryInput"
+          />
+          <view class="diary-editor__count">{{diaryDraftLength}}/200</view>
+        </view>
+
+        <view class="diary-photo">
+          <view class="diary-photo__head row">
+            <view class="diary-photo__camera">📷</view>
+            <view class="diary-photo__label">定格瞬间 (可选)</view>
+          </view>
+
+          <view wx:if="{{diaryDraftImageUrl}}" class="diary-photo__preview">
+            <image class="diary-photo__img" src="{{diaryDraftImageUrl}}" mode="aspectFill" bindtap="onPreviewDiaryImage" />
+            <view class="diary-photo__remove" bindtap="onRemoveDiaryImage">×</view>
+          </view>
+
+          <button wx:else class="diary-photo__add" bindtap="onPickDiaryImage">
+            <view class="diary-photo__plus">+</view>
+            <view class="diary-photo__add-text">添加照片</view>
+          </button>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="overlay__footer safe-bottom">
+      <button
+        class="overlay__btn {{diaryCanSubmit ? '' : 'overlay__btn--disabled'}}"
+        loading="{{diarySaving}}"
+        disabled="{{!diaryCanSubmit}}"
+        bindtap="onSaveDiary"
+      >
+        完成日记
+      </button>
+    </view>
+  </view>
+</view>

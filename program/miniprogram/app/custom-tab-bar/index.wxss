@@ -14,6 +14,7 @@
   align-items: center;
   justify-content: space-around;
   padding: 18rpx 24rpx 10rpx;
+  position: relative;
 }
 
 .tabbar__item {
@@ -45,6 +46,95 @@
   font-size: 20rpx;
   font-weight: 600;
   letter-spacing: 1rpx;
+}
+
+.tabbar__center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 60rpx;
+  width: 120rpx;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.center-btn {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 9999rpx;
+  background: rgba(249, 115, 22, 1);
+  border: 10rpx solid #fff;
+  box-shadow: 0 22rpx 46rpx rgba(249, 115, 22, 0.28), 0 0 0 8rpx rgba(249, 115, 22, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.center-btn:active {
+  transform: scale(0.96);
+}
+
+.center-logo {
+  position: relative;
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.center-logo__curve {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6rpx;
+  height: 34rpx;
+  border: 8rpx solid #fff;
+  border-top: none;
+  border-radius: 0 0 9999rpx 9999rpx;
+  opacity: 0.96;
+}
+
+.center-logo__stem {
+  position: absolute;
+  right: 0;
+  top: 6rpx;
+  width: 8rpx;
+  height: 26rpx;
+  background: #fff;
+  border-radius: 9999rpx;
+  opacity: 0.96;
+}
+
+.icon-chart {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6rpx;
+  color: #9ca3af;
+}
+
+.icon-chart.is-active {
+  color: var(--brand);
+}
+
+.icon-chart .bar {
+  width: 8rpx;
+  border-radius: 9999rpx;
+  background: currentColor;
+}
+
+.icon-chart .b1 {
+  height: 16rpx;
+}
+
+.icon-chart .b2 {
+  height: 28rpx;
+}
+
+.icon-chart .b3 {
+  height: 22rpx;
 }
 
 .home-indicator {

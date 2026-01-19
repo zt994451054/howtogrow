@@ -110,31 +110,32 @@ Component({
     init: function (callback) {
       const version = getSdkVersion()
 
-      const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
+      const canIUse2dCanvas = !!(wx.canIUse && wx.canIUse('canvas.type.2d'));
+      const canUseNewCanvas = canIUse2dCanvas && compareVersion(version, '2.9.0') >= 0;
       const forceUseOldCanvas = this.data.forceUseOldCanvas;
       const isUseNewCanvas = canUseNewCanvas && !forceUseOldCanvas;
-      this.setData({ isUseNewCanvas });
+      this.setData({ isUseNewCanvas }, () => {
+        if (forceUseOldCanvas && canUseNewCanvas) {
+          console.warn('开发者强制使用旧canvas,建议关闭');
+        }
 
-      if (forceUseOldCanvas && canUseNewCanvas) {
-        console.warn('开发者强制使用旧canvas,建议关闭');
-      }
+        if (isUseNewCanvas) {
+          // 2.9.0+ 可以使用 <canvas type="2d"></canvas>
+          this.initByNewWay(callback);
+          return;
+        }
 
-      if (isUseNewCanvas) {
-        // console.log('微信基础库版本大于2.9.0，开始使用<canvas type="2d"/>');
-        // 2.9.0 可以使用 <canvas type="2d"></canvas>
-        this.initByNewWay(callback);
-      } else {
         const isValid = compareVersion(version, '1.9.91') >= 0
         if (!isValid) {
           console.error('微信基础库版本过低，需大于等于 1.9.91。'
             + '参见：https://github.com/ecomfe/echarts-for-weixin'
             + '#%E5%BE%AE%E4%BF%A1%E7%89%88%E6%9C%AC%E8%A6%81%E6%B1%82');
           return;
-        } else {
-          console.warn('建议将微信基础库调整大于等于2.9.0版本。升级后绘图将有更好性能');
-          this.initByOldWay(callback);
         }
-      }
+
+        console.warn('建议将微信基础库调整大于等于2.9.0版本。升级后绘图将有更好性能');
+        this.initByOldWay(callback);
+      });
     },
 
     initByOldWay(callback) {
@@ -177,12 +178,17 @@ Component({
         .select('.ec-canvas')
         .fields({ node: true, size: true })
         .exec(res => {
-          const canvasNode = res[0].node
+          const node = res && res[0] ? res[0] : null;
+          const canvasNode = node && node.node ? node.node : null;
+          if (!canvasNode) {
+            console.warn('ec-canvas initByNewWay: canvas node not found');
+            return;
+          }
           this.canvasNode = canvasNode
 
           const canvasDpr = getPixelRatio()
-          const canvasWidth = res[0].width
-          const canvasHeight = res[0].height
+          const canvasWidth = node.width
+          const canvasHeight = node.height
 
           const ctx = canvasNode.getContext('2d')
 
@@ -244,6 +250,7 @@ Component({
     },
 
     touchStart(e) {
+      if (this.data.ec && this.data.ec.disableTouch) return;
       if (this.chart && e.touches.length > 0) {
         var touch = e.touches[0];
         var handler = this.chart.getZr().handler;
@@ -266,6 +273,7 @@ Component({
     },
 
     touchMove(e) {
+      if (this.data.ec && this.data.ec.disableTouch) return;
       if (this.chart && e.touches.length > 0) {
         var touch = e.touches[0];
         var handler = this.chart.getZr().handler;
@@ -281,6 +289,7 @@ Component({
     },
 
     touchEnd(e) {
+      if (this.data.ec && this.data.ec.disableTouch) return;
       if (this.chart) {
         const touch = e.changedTouches ? e.changedTouches[0] : {};
         var handler = this.chart.getZr().handler;

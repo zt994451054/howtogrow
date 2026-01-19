@@ -8,6 +8,10 @@ function listChatSessions(limit = 20) {
   return apiRequest("GET", `/miniprogram/ai/chat/sessions?limit=${encodeURIComponent(String(limit))}`);
 }
 
+function listChatQuickQuestions(limit = 6) {
+  return apiRequest("GET", `/miniprogram/ai/chat/quick-questions?limit=${encodeURIComponent(String(limit))}`);
+}
+
 function listChatMessages(sessionId, limit = 20, beforeMessageId) {
   const query = [];
   query.push(`limit=${encodeURIComponent(String(limit))}`);
@@ -162,4 +166,4 @@ function streamChat(sessionId, handlers) {
   };
 }
 
-module.exports = { createChatSession, listChatSessions, listChatMessages, sendChatMessage, streamChat };
+module.exports = { createChatSession, listChatSessions, listChatQuickQuestions, listChatMessages, sendChatMessage, streamChat };

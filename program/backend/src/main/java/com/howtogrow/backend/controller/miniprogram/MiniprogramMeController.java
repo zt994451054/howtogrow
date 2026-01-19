@@ -31,7 +31,7 @@ public class MiniprogramMeController {
   @PostMapping("/me/profile")
   public ApiResponse<Void> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
     var user = AuthContext.requireMiniprogram();
-    meService.updateProfile(user.userId(), request.nickname(), request.avatarUrl());
+    meService.updateProfile(user.userId(), request.nickname(), request.avatarUrl(), request.birthDate());
     return ApiResponse.ok(null, TraceId.current());
   }
 }

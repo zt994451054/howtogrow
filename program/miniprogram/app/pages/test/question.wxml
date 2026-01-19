@@ -41,8 +41,18 @@
   </scroll-view>
 
   <view class="footer safe-bottom">
-    <button class="next {{canNext ? 'next--on' : 'next--off'}}" disabled="{{!canNext}}" bindtap="onNext">
-      {{isLast ? '提交' : '下一题'}}
-    </button>
+    <view wx:if="{{answeredCount < 5}}">
+      <button class="next {{canNext ? 'next--on' : 'next--off'}}" disabled="{{!canNext}}" bindtap="onNext">
+        {{isLast ? '提交' : '下一题'}}
+      </button>
+    </view>
+    <view wx:else class="dual">
+      <button class="btn {{canContinue ? 'btn--on' : 'btn--off'}}" disabled="{{!canContinue}}" bindtap="onContinue">
+        继续做题
+      </button>
+      <button class="btn primary {{canSubmit ? 'btn--on' : 'btn--off'}}" disabled="{{!canSubmit}}" bindtap="onSubmit">
+        提交
+      </button>
+    </view>
   </view>
 </view>

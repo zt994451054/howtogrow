@@ -11,6 +11,7 @@ import com.howtogrow.backend.controller.miniprogram.dto.AiChatMessageView;
 import com.howtogrow.backend.controller.miniprogram.dto.AiChatSessionView;
 import com.howtogrow.backend.infrastructure.aichat.AiChatMessageRepository;
 import com.howtogrow.backend.infrastructure.aichat.AiChatSessionRepository;
+import com.howtogrow.backend.infrastructure.aichat.AiQuickQuestionRepository;
 import com.howtogrow.backend.infrastructure.ai.AiChatClient;
 import com.howtogrow.backend.infrastructure.ai.OpenAiStreamClient;
 import com.howtogrow.backend.config.RateLimitProperties;
@@ -41,6 +42,7 @@ public class AiChatService {
   private final SubscriptionService subscriptionService;
   private final AiChatSessionRepository sessionRepo;
   private final AiChatMessageRepository messageRepo;
+  private final AiQuickQuestionRepository quickQuestionRepo;
   private final OpenAiStreamClient openAiStreamClient;
   private final ObjectMapper objectMapper;
   private final TaskExecutor taskExecutor;
@@ -51,6 +53,7 @@ public class AiChatService {
       SubscriptionService subscriptionService,
       AiChatSessionRepository sessionRepo,
       AiChatMessageRepository messageRepo,
+      AiQuickQuestionRepository quickQuestionRepo,
       OpenAiStreamClient openAiStreamClient,
       ObjectMapper objectMapper,
       TaskExecutor taskExecutor,
@@ -59,11 +62,21 @@ public class AiChatService {
     this.subscriptionService = subscriptionService;
     this.sessionRepo = sessionRepo;
     this.messageRepo = messageRepo;
+    this.quickQuestionRepo = quickQuestionRepo;
     this.openAiStreamClient = openAiStreamClient;
     this.objectMapper = objectMapper;
     this.taskExecutor = taskExecutor;
     this.rateLimiter = rateLimiter;
     this.rateLimitProperties = rateLimitProperties;
+  }
+
+  public List<String> listQuickQuestions(long userId, int limit) {
+    subscriptionService.requireSubscribed(userId);
+    var safeLimit = Math.max(1, Math.min(20, limit));
+    return quickQuestionRepo.listActivePrompts(safeLimit).stream()
+        .map(AiChatService::safeText)
+        .filter(s -> s != null)
+        .toList();
   }
 
   @Transactional
@@ -204,4 +217,9 @@ public class AiChatService {
         .toList();
   }
 
+  private static String safeText(String text) {
+    if (text == null) return null;
+    var t = text.trim();
+    return t.isBlank() ? null : t;
+  }
 }

@@ -1,0 +1,49 @@
+<view class="page">
+  <ui-header title="个人信息" left="back" bind:left="onBack" />
+
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
+    <view class="wrap">
+      <button
+        class="avatar-sec col center avatar-btn"
+        open-type="chooseAvatar"
+        bindchooseavatar="onChooseAvatar"
+        disabled="{{uploading || saving}}"
+      >
+        <view class="avatar-wrap">
+          <image wx:if="{{avatarUrl}}" class="avatar" src="{{avatarUrl}}" mode="aspectFill" />
+          <view wx:else class="avatar-fallback">＋</view>
+          <view class="avatar-badge">📷</view>
+        </view>
+        <view class="avatar-tip">点击头像设置</view>
+      </button>
+
+      <view class="card">
+        <view class="field">
+          <view class="label">昵称</view>
+          <input
+            class="input"
+            type="nickname"
+            placeholder="请输入昵称"
+            value="{{nickname}}"
+            maxlength="20"
+            bindinput="onNicknameInput"
+          />
+        </view>
+
+        <view class="divider" />
+
+        <view class="field">
+          <view class="label">出生日期（选填）</view>
+          <picker mode="date" value="{{birthDate}}" start="1900-01-01" end="{{today}}" bindchange="onPickBirthDate">
+            <view class="picker">
+              <view class="picker__text {{birthDate ? '' : 'muted'}}">{{birthDate || '请选择'}}</view>
+              <view class="picker__icon">›</view>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <button class="btn" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">保存</button>
+    </view>
+  </scroll-view>
+</view>

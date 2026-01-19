@@ -5,5 +5,10 @@ function fetchGrowthReport(childId, from, to) {
   return apiRequest("GET", `/miniprogram/reports/growth?${qs}`);
 }
 
-module.exports = { fetchGrowthReport };
+function fetchAwarenessPersistence(childId, options) {
+  const cid = Number(childId || 0);
+  if (!cid) return Promise.resolve(null);
+  return apiRequest("GET", "/miniprogram/reports/persistence", { childId: cid }, options);
+}
 
+module.exports = { fetchGrowthReport, fetchAwarenessPersistence };

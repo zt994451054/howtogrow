@@ -1,5 +1,5 @@
 const { API_BASE_URL, API_PREFIX, STORAGE_KEYS } = require("./config");
-const { getStorage, removeStorage } = require("./storage");
+const { getStorage, removeStorage, setStorage } = require("./storage");
 
 class ApiError extends Error {
   constructor(message, code, traceId) {
@@ -42,10 +42,61 @@ function buildApiUrl(path) {
   return joinUrl(API_BASE_URL, `${API_PREFIX}${path}`);
 }
 
+function wxLogin() {
+  return new Promise((resolve, reject) => {
+    wx.login({
+      success: (res) => (res.code ? resolve(res.code) : reject(new Error("empty code"))),
+      fail: () => reject(new Error("wx.login failed")),
+    });
+  });
+}
+
+let reloginPromise = null;
+
+function startRelogin() {
+  if (reloginPromise) return reloginPromise;
+  reloginPromise = (async () => {
+    const code = await wxLogin();
+    const url = buildApiUrl("/miniprogram/auth/wechat-login");
+    const header = { "Content-Type": "application/json" };
+
+    const payload = await new Promise((resolve, reject) => {
+      wx.request({
+        url,
+        method: "POST",
+        data: { code },
+        header,
+        timeout: 15000,
+        success: (res) => resolve(res?.data),
+        fail: () => reject(new ApiError("Network error", "NETWORK_ERROR")),
+      });
+    });
+
+    if (!payload || payload.code !== "OK" || !payload.data) {
+      const message = payload?.message || "登录失败";
+      const codeValue = payload?.code || "UNAUTHORIZED";
+      throw new ApiError(message, codeValue, payload?.traceId);
+    }
+
+    setStorage(STORAGE_KEYS.token, payload.data.token);
+    setStorage(STORAGE_KEYS.me, payload.data.user);
+    return payload.data;
+  })();
+
+  reloginPromise.finally(() => {
+    // prevent holding old promise forever
+    reloginPromise = null;
+  });
+
+  return reloginPromise;
+}
+
 function apiRequest(method, path, data, options) {
   const url = buildApiUrl(path);
   const header = buildJsonHeaders();
   const toastEnabled = options?.toast !== false;
+  const autoRelogin = options?.autoRelogin !== false;
+  const canRetry = options?.__retried !== true;
 
   return new Promise((resolve, reject) => {
     wx.request({
@@ -62,7 +113,21 @@ function apiRequest(method, path, data, options) {
           return;
         }
         if (payload.code !== "OK") {
-          if (payload.code === "UNAUTHORIZED") handleAuthError();
+          if (payload.code === "UNAUTHORIZED") {
+            handleAuthError();
+            const isLoginApi = String(path || "") === "/miniprogram/auth/wechat-login";
+            if (autoRelogin && !isLoginApi && canRetry) {
+              startRelogin()
+                .then(() => apiRequest(method, path, data, { ...(options || {}), __retried: true }))
+                .then(resolve)
+                .catch((err) => {
+                  const message = err?.message || payload.message || "登录已失效，请重新登录";
+                  if (toastEnabled) showErrorToast(message);
+                  reject(err instanceof ApiError ? err : new ApiError(message, "UNAUTHORIZED", payload.traceId));
+                });
+              return;
+            }
+          }
           const message = payload.message || "请求失败";
           if (toastEnabled) showErrorToast(message);
           reject(new ApiError(message, payload.code, payload.traceId));

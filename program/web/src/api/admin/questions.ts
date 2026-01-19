@@ -33,6 +33,7 @@ export type QuestionDetailView = {
   maxAge: number;
   questionType: QuestionType;
   content: string;
+  troubleSceneIds: number[];
   options: OptionView[];
 };
 
@@ -54,6 +55,7 @@ export type QuestionUpsertRequest = {
   maxAge: number;
   questionType: QuestionType;
   content: string;
+  troubleSceneIds?: number[];
   status: number;
   options: OptionUpsert[];
 };

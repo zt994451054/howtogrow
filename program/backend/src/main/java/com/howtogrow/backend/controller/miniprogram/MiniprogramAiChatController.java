@@ -47,6 +47,13 @@ public class MiniprogramAiChatController {
     return ApiResponse.ok(chatService.listSessions(user.userId(), limit), TraceId.current());
   }
 
+  @GetMapping("/quick-questions")
+  public ApiResponse<List<String>> quickQuestions(
+      @Parameter(description = "返回快捷问题数上限（默认 6，最大 20）") @RequestParam(defaultValue = "6") int limit) {
+    var user = AuthContext.requireMiniprogram();
+    return ApiResponse.ok(chatService.listQuickQuestions(user.userId(), limit), TraceId.current());
+  }
+
   @GetMapping("/sessions/{sessionId}/messages")
   public ApiResponse<List<AiChatMessageView>> messages(
       @Parameter(description = "会话ID") @PathVariable long sessionId,

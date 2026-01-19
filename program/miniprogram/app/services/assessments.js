@@ -4,8 +4,8 @@ function beginDailyAssessment(childId) {
   return apiRequest("POST", "/miniprogram/assessments/daily/begin", { childId });
 }
 
-function replaceDailyQuestion(sessionId, payload) {
-  return apiRequest("POST", `/miniprogram/assessments/daily/sessions/${encodeURIComponent(sessionId)}/replace`, payload);
+function replaceDailyQuestion(sessionId, payload, options) {
+  return apiRequest("POST", `/miniprogram/assessments/daily/sessions/${encodeURIComponent(sessionId)}/replace`, payload, options);
 }
 
 function submitDailyAssessment(sessionId, payload) {

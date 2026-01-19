@@ -9,6 +9,7 @@ public record QuestionDetailView(
     @Schema(description = "适用最大年龄（整数，单位：岁，含边界）") int maxAge,
     @Schema(description = "题型：SINGLE/MULTI") String questionType,
     @Schema(description = "题干内容") String content,
+    @Schema(description = "关联烦恼场景ID列表（可为空）") List<Long> troubleSceneIds,
     @Schema(description = "选项列表") List<OptionView> options) {
   public record OptionView(
       @Schema(description = "选项ID") long optionId,

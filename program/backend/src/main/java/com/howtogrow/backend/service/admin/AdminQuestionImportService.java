@@ -5,6 +5,7 @@ import com.howtogrow.backend.api.exception.AppException;
 import com.howtogrow.backend.controller.admin.dto.QuestionImportResponse;
 import com.howtogrow.backend.domain.capability.CapabilityDimension;
 import com.howtogrow.backend.infrastructure.admin.QuestionAdminRepository;
+import com.howtogrow.backend.infrastructure.trouble.TroubleSceneRepository;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +25,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class AdminQuestionImportService {
   private final QuestionAdminRepository questionRepo;
+  private final TroubleSceneRepository sceneRepo;
 
-  public AdminQuestionImportService(QuestionAdminRepository questionRepo) {
+  public AdminQuestionImportService(QuestionAdminRepository questionRepo, TroubleSceneRepository sceneRepo) {
     this.questionRepo = questionRepo;
+    this.sceneRepo = sceneRepo;
   }
 
+  @Transactional
   public QuestionImportResponse importExcel(MultipartFile file) {
     if (file == null || file.isEmpty()) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "请上传文件");
@@ -49,28 +53,11 @@ public class AdminQuestionImportService {
       var parseResult = parseRows(sheet, headerIndex);
       var parsedRows = parseResult.rows;
 
-      var failures = new ArrayList<QuestionImportResponse.Failure>();
       int total = parsedRows.size();
-      int success = 0;
-
       var groups = groupByQuestion(parsedRows);
-      for (var group : groups.values()) {
-        try {
-          importOneQuestionGroup(group, parseResult.generateSortNo);
-          success += group.size();
-        } catch (AppException e) {
-          for (var r : group) {
-            failures.add(new QuestionImportResponse.Failure(r.rowNum, e.getMessage()));
-          }
-        } catch (Exception e) {
-          for (var r : group) {
-            failures.add(new QuestionImportResponse.Failure(r.rowNum, "导入失败"));
-          }
-        }
-      }
-
-      int failed = total - success;
-      return new QuestionImportResponse(total, success, failed, failures);
+      var sceneIdByName = resolveTroubleSceneIds(parsedRows);
+      importAll(groups, parseResult.generateSortNo, sceneIdByName);
+      return new QuestionImportResponse(total, total, 0, List.of());
     } catch (AppException e) {
       throw e;
     } catch (Exception e) {
@@ -121,6 +108,7 @@ public class AdminQuestionImportService {
               requiredInt(row, headerIndex, "max_age"),
               questionContent,
               optionalText(row, headerIndex, "question_type", "MULTI"),
+              optionalText(row, headerIndex, "trouble_scene_names", ""),
               requiredText(row, headerIndex, "option_content"),
               requiredInt(row, headerIndex, "suggest_flag"),
               optionalText(row, headerIndex, "improvement_tip", null),
@@ -138,6 +126,7 @@ public class AdminQuestionImportService {
     String lastQuestionType = null;
     Integer lastMinAge = null;
     Integer lastMaxAge = null;
+    String lastTroubleSceneNames = null;
 
     for (int r = sheet.getFirstRowNum() + 1; r <= sheet.getLastRowNum(); r++) {
       var row = sheet.getRow(r);
@@ -194,6 +183,18 @@ public class AdminQuestionImportService {
       var improvementTip =
           optionalText(row, headerIndex, headerIndexOf(headerIndex, "改进文案"), null).orElse(null);
 
+      Integer troubleIdx =
+          optionalHeaderIndexOf(headerIndex, "烦恼场景名称（逗号分隔）", "烦恼场景名称", "烦恼场景");
+      if (troubleIdx != null) {
+        var troubleNames = optionalText(row, headerIndex, troubleIdx, null).orElse(null);
+        if (troubleNames != null) {
+          lastTroubleSceneNames = troubleNames;
+        }
+      }
+      if (lastTroubleSceneNames == null) {
+        lastTroubleSceneNames = "";
+      }
+
       var dim = parseDimensionScores(row, headerIndex);
       if (dim.dimensionCode.isBlank() || dim.dimensionScore.isBlank()) {
         throw new AppException(ErrorCode.INVALID_REQUEST, "至少填写 1 个能力维度分值");
@@ -206,6 +207,7 @@ public class AdminQuestionImportService {
               lastMaxAge,
               lastQuestion,
               lastQuestionType,
+              lastTroubleSceneNames,
               optionContent,
               suggestFlag,
               improvementTip,
@@ -304,14 +306,21 @@ public class AdminQuestionImportService {
   private static Map<QuestionKey, List<ImportRow>> groupByQuestion(List<ImportRow> rows) {
     Map<QuestionKey, List<ImportRow>> grouped = new HashMap<>();
     for (var row : rows) {
-      var key = new QuestionKey(row.minAge, row.maxAge, row.questionContent, normalizeQuestionType(row.questionType));
+      var key =
+          new QuestionKey(
+              row.minAge,
+              row.maxAge,
+              row.questionContent,
+              normalizeQuestionType(row.questionType),
+              row.troubleSceneNames);
       grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(row);
     }
     return grouped;
   }
 
   @Transactional
-  void importOneQuestionGroup(List<ImportRow> group, boolean generateSortNo) {
+  void importOneQuestionGroup(
+      List<ImportRow> group, boolean generateSortNo, Map<String, Long> troubleSceneIdByName) {
     if (group.isEmpty()) {
       return;
     }
@@ -325,6 +334,7 @@ public class AdminQuestionImportService {
       throw new AppException(ErrorCode.INVALID_REQUEST, "题目已存在");
     }
     var questionId = questionRepo.insertQuestion(first.questionContent, first.minAge, first.maxAge, questionType, 1);
+    questionRepo.replaceQuestionTroubleScenes(questionId, resolveSceneIds(first.troubleSceneNames, troubleSceneIdByName));
 
     int defaultSortNo = 1;
     for (var row : group) {
@@ -441,6 +451,16 @@ public class AdminQuestionImportService {
     throw new AppException(ErrorCode.INVALID_REQUEST, "缺少列：" + aliases[0]);
   }
 
+  private static Integer optionalHeaderIndexOf(Map<String, Integer> headerIndex, String... aliases) {
+    for (var alias : aliases) {
+      var idx = headerIndex.get(keyOf(alias));
+      if (idx != null) {
+        return idx;
+      }
+    }
+    return null;
+  }
+
   private static boolean isBlankRow(Row row, Map<String, Integer> headerIndex) {
     for (var idx : headerIndex.values()) {
       var text = cellText(row.getCell(idx));
@@ -510,6 +530,7 @@ public class AdminQuestionImportService {
       int maxAge,
       String questionContent,
       String questionType,
+      String troubleSceneNames,
       String optionContent,
       int suggestFlag,
       String improvementTip,
@@ -517,5 +538,58 @@ public class AdminQuestionImportService {
       String dimensionCode,
       String dimensionScore) {}
 
-  record QuestionKey(int minAge, int maxAge, String questionContent, String questionType) {}
+  record QuestionKey(int minAge, int maxAge, String questionContent, String questionType, String troubleSceneNames) {}
+
+  @Transactional
+  void importAll(
+      Map<QuestionKey, List<ImportRow>> groups,
+      boolean generateSortNo,
+      Map<String, Long> troubleSceneIdByName) {
+    for (var group : groups.values()) {
+      importOneQuestionGroup(group, generateSortNo, troubleSceneIdByName);
+    }
+  }
+
+  private Map<String, Long> resolveTroubleSceneIds(List<ImportRow> rows) {
+    var names = new HashSet<String>();
+    for (var r : rows) {
+      var raw = safeText(r.troubleSceneNames);
+      if (raw == null) continue;
+      for (var part : splitCsv(raw)) {
+        if (!part.isBlank()) names.add(part);
+      }
+    }
+    if (names.isEmpty()) {
+      return Map.of();
+    }
+    var idByName = sceneRepo.mapActiveIdsByNames(List.copyOf(names));
+    if (idByName.size() != names.size()) {
+      var missing = new ArrayList<String>();
+      for (var n : names) {
+        if (!idByName.containsKey(n)) missing.add(n);
+      }
+      missing.sort(String::compareTo);
+      throw new AppException(ErrorCode.INVALID_REQUEST, "烦恼场景不存在或已删除：" + String.join("，", missing));
+    }
+    return idByName;
+  }
+
+  private static List<Long> resolveSceneIds(String rawNames, Map<String, Long> idByName) {
+    var names = splitCsv(rawNames);
+    if (names.isEmpty()) {
+      return List.of();
+    }
+    var seen = new HashSet<Long>();
+    var out = new ArrayList<Long>();
+    for (var name : names) {
+      var id = idByName.get(name);
+      if (id == null) {
+        throw new AppException(ErrorCode.INVALID_REQUEST, "烦恼场景不存在或已删除：" + name);
+      }
+      if (seen.add(id)) {
+        out.add(id);
+      }
+    }
+    return out;
+  }
 }

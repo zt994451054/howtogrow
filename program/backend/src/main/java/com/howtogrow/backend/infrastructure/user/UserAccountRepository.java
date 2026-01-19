@@ -23,7 +23,7 @@ public class UserAccountRepository {
 
   public Optional<UserAccount> findById(long id) {
     var sql = """
-        SELECT id, wechat_openid, nickname, avatar_url, subscription_end_at, free_trial_used
+        SELECT id, wechat_openid, nickname, avatar_url, birth_date, subscription_end_at, free_trial_used
         FROM user_account
         WHERE id = :id AND deleted_at IS NULL
         """;
@@ -33,7 +33,7 @@ public class UserAccountRepository {
 
   public Optional<UserAccount> findByWechatOpenid(String openid) {
     var sql = """
-        SELECT id, wechat_openid, nickname, avatar_url, subscription_end_at, free_trial_used
+        SELECT id, wechat_openid, nickname, avatar_url, birth_date, subscription_end_at, free_trial_used
         FROM user_account
         WHERE wechat_openid = :openid AND deleted_at IS NULL
         """;
@@ -41,15 +41,24 @@ public class UserAccountRepository {
     return rows.stream().findFirst();
   }
 
-  public UserAccount create(String openid, String unionid) {
+  public UserAccount create(String openid, String unionid, String nickname, String avatarUrl) {
     KeyHolder kh = new GeneratedKeyHolder();
     var sql = """
-        INSERT INTO user_account(wechat_openid, wechat_unionid, created_at, updated_at)
-        VALUES (:openid, :unionid, NOW(3), NOW(3))
+        INSERT INTO user_account(
+          wechat_openid,
+          wechat_unionid,
+          nickname,
+          avatar_url,
+          created_at,
+          updated_at
+        )
+        VALUES (:openid, :unionid, :nickname, :avatarUrl, NOW(3), NOW(3))
         """;
     jdbc.update(sql, new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
         .addValue("openid", openid)
-        .addValue("unionid", unionid), kh);
+        .addValue("unionid", unionid)
+        .addValue("nickname", nickname)
+        .addValue("avatarUrl", avatarUrl), kh);
 
     var id = kh.getKey();
     if (id == null) {
@@ -67,14 +76,23 @@ public class UserAccountRepository {
     jdbc.update(sql, Map.of("userId", userId));
   }
 
-  public void updateProfile(long userId, String nickname, String avatarUrl) {
+  public void updateProfile(
+      long userId, String nickname, String avatarUrl, java.time.LocalDate birthDate) {
     var sql = """
         UPDATE user_account
-        SET nickname = :nickname, avatar_url = :avatarUrl, updated_at = NOW(3)
+        SET nickname = :nickname,
+            avatar_url = :avatarUrl,
+            birth_date = COALESCE(:birthDate, birth_date),
+            updated_at = NOW(3)
         WHERE id = :userId AND deleted_at IS NULL
         """;
-    jdbc.update(
-        sql, Map.of("userId", userId, "nickname", nickname, "avatarUrl", avatarUrl));
+    var params =
+        new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+            .addValue("userId", userId)
+            .addValue("nickname", nickname)
+            .addValue("avatarUrl", avatarUrl)
+            .addValue("birthDate", birthDate);
+    jdbc.update(sql, params);
   }
 
   private static UserAccount toUserAccount(ResultSet rs) throws SQLException {
@@ -88,6 +106,7 @@ public class UserAccountRepository {
         rs.getString("wechat_openid"),
         rs.getString("nickname"),
         rs.getString("avatar_url"),
+        rs.getObject("birth_date", java.time.LocalDate.class),
         subscriptionEndAt,
         rs.getBoolean("free_trial_used"));
   }

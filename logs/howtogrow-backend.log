@@ -1,33 +1,44 @@
-2026-01-11 22:05:48.680 INFO  [] [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2026-01-11 22:05:48.785 INFO  [] [main] c.h.b.HowToGrowBackendApplication - Starting HowToGrowBackendApplication using Java 21.0.2 with PID 80682 (/Users/zhoutong/Documents/project/howtogrow/program/backend/target/classes started by zhoutong in /Users/zhoutong/Documents/project/howtogrow)
-2026-01-11 22:05:48.786 INFO  [] [main] c.h.b.HowToGrowBackendApplication - The following 1 profile is active: "dev"
-2026-01-11 22:05:50.439 INFO  [] [main] o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2026-01-11 22:05:50.445 INFO  [] [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2026-01-11 22:05:50.489 INFO  [] [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
-2026-01-11 22:05:51.045 INFO  [] [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2026-01-11 22:05:51.056 INFO  [] [main] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
-2026-01-11 22:05:51.058 INFO  [] [main] o.a.catalina.core.StandardService - Starting service [Tomcat]
-2026-01-11 22:05:51.058 INFO  [] [main] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.33]
-2026-01-11 22:05:51.103 INFO  [] [main] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2026-01-11 22:05:51.103 INFO  [] [main] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2276 ms
-2026-01-11 22:05:52.115 WARN  [] [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 18594ab9-7be1-4e01-9198-60689e93c1e7
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2026-01-11 22:05:52.126 INFO  [] [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-01-11 22:05:52.401 INFO  [] [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
-2026-01-11 22:05:53.011 INFO  [] [main] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
-2026-01-11 22:05:53.021 INFO  [] [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
-2026-01-11 22:05:53.035 INFO  [] [main] c.h.b.HowToGrowBackendApplication - Started HowToGrowBackendApplication in 5.128 seconds (process running for 7.307)
-2026-01-11 22:06:07.492 INFO  [] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-01-11 22:06:07.493 INFO  [] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2026-01-11 22:06:07.496 INFO  [] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
-2026-01-11 22:06:07.626 INFO  [trace-a6bc9340-b14b-4aba-9398-40b52ee39d6d] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2026-01-11 22:06:07.847 INFO  [trace-a6bc9340-b14b-4aba-9398-40b52ee39d6d] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@433a3f59
-2026-01-11 22:06:07.851 INFO  [trace-a6bc9340-b14b-4aba-9398-40b52ee39d6d] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2026-01-11 22:28:44.130 INFO  [] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2026-01-11 22:28:46.149 INFO  [] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
-2026-01-11 22:28:46.189 INFO  [] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2026-01-11 22:28:46.196 INFO  [] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-01-19 01:11:26.252 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=33m25s707ms).
+2026-01-19 02:18:35.402 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h7m9s152ms).
+2026-01-19 02:38:45.922 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=20m10s519ms).
+2026-01-19 02:40:30.549 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m44s628ms).
+2026-01-19 02:59:46.644 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=19m16s92ms).
+2026-01-19 03:01:55.915 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m9s274ms).
+2026-01-19 03:17:33.825 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m37s908ms).
+2026-01-19 03:19:43.271 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m9s447ms).
+2026-01-19 03:37:21.885 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m38s614ms).
+2026-01-19 03:55:05.086 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m43s201ms).
+2026-01-19 04:11:18.229 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m13s143ms).
+2026-01-19 04:28:17.824 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m59s590ms).
+2026-01-19 04:30:02.468 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m44s649ms).
+2026-01-19 04:47:48.437 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m45s969ms).
+2026-01-19 04:48:43.319 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=54s881ms).
+2026-01-19 05:05:11.703 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m28s386ms).
+2026-01-19 05:06:56.384 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m44s680ms).
+2026-01-19 05:24:10.583 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m14s200ms).
+2026-01-19 05:41:29.698 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m19s115ms).
+2026-01-19 05:42:24.571 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=54s867ms).
+2026-01-19 05:59:10.001 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m45s436ms).
+2026-01-19 06:16:16.256 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m6s254ms).
+2026-01-19 06:17:59.813 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m43s558ms).
+2026-01-19 06:34:20.396 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m20s583ms).
+2026-01-19 06:51:23.035 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m2s634ms).
+2026-01-19 06:53:07.722 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m44s692ms).
+2026-01-19 07:09:03.454 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m55s730ms).
+2026-01-19 07:11:12.950 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m9s498ms).
+2026-01-19 07:29:40.125 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=18m27s174ms).
+2026-01-19 07:30:59.778 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m19s654ms).
+2026-01-19 07:53:53.211 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=22m53s433ms).
+2026-01-19 08:01:15.095 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=7m21s884ms).
+2026-01-19 08:17:11.079 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m55s982ms).
+2026-01-19 08:18:05.990 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=54s912ms).
+2026-01-19 08:34:56.630 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m20s630ms).
+2026-01-19 08:35:51.542 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=54s912ms).
+2026-01-19 08:42:02.542 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m10s864ms).
+2026-01-19 09:02:15.885 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=20m13s479ms).
+2026-01-19 09:08:32.706 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m16s819ms).
+2026-01-19 09:09:32.121 WARN  [] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=59s417ms).
+2026-01-19 10:18:48.760 INFO  [] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-19 10:18:50.777 INFO  [] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-19 10:18:50.812 INFO  [] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-01-19 10:18:50.815 INFO  [] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

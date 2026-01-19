@@ -4,10 +4,13 @@ import { ElMessage, type FormInstance } from "element-plus";
 import type { DimensionView } from "@/api/admin/dimensions";
 import type { QuestionDetailView, QuestionType, QuestionUpsertRequest } from "@/api/admin/questions";
 
+type TroubleSceneOption = { id: number; name: string };
+
 type Props = {
   modelValue: boolean;
   title: string;
   dimensions: DimensionView[];
+  troubleScenes: TroubleSceneOption[];
   initial?: QuestionDetailView | null;
 };
 
@@ -28,6 +31,7 @@ const form = reactive<QuestionUpsertRequest>({
   maxAge: 3,
   questionType: "MULTI",
   content: "",
+  troubleSceneIds: [],
   status: 1,
   options: []
 });
@@ -42,6 +46,7 @@ function resetFromInitial() {
     form.maxAge = 3;
     form.questionType = "MULTI";
     form.content = "";
+    form.troubleSceneIds = [];
     form.status = 1;
     form.options = [
       {
@@ -65,6 +70,7 @@ function resetFromInitial() {
   form.maxAge = q.maxAge;
   form.questionType = q.questionType;
   form.content = q.content;
+  form.troubleSceneIds = Array.isArray(q.troubleSceneIds) ? q.troubleSceneIds.slice() : [];
   form.status = 1;
   form.options = q.options.map((o) => ({
     content: o.content,
@@ -145,6 +151,7 @@ function submit() {
       maxAge: form.maxAge,
       questionType: form.questionType as QuestionType,
       content: form.content.trim(),
+      troubleSceneIds: Array.isArray(form.troubleSceneIds) ? form.troubleSceneIds.slice() : [],
       status: form.status,
       options: form.options.map((o) => ({
         content: o.content.trim(),
@@ -178,6 +185,11 @@ function submit() {
           <el-radio :label="1">启用</el-radio>
           <el-radio :label="0">禁用</el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="烦恼场景">
+        <el-select v-model="form.troubleSceneIds" multiple filterable collapse-tags style="width: 100%" placeholder="可不选">
+          <el-option v-for="s in troubleScenes" :key="s.id" :label="s.name" :value="s.id" />
+        </el-select>
       </el-form-item>
       <el-form-item label="问题">
         <el-input v-model="form.content" type="textarea" :rows="3" placeholder="请输入问题内容" />

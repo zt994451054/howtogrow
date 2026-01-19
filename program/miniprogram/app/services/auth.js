@@ -57,12 +57,17 @@ function isProfileComplete(me) {
 async function updateProfile(payload) {
   const nickname = payload && payload.nickname ? String(payload.nickname).trim() : "";
   const avatarUrl = payload && payload.avatarUrl ? String(payload.avatarUrl).trim() : "";
+  const birthDate = payload && payload.birthDate ? String(payload.birthDate).trim() : "";
   if (!nickname || !avatarUrl) {
     throw new Error("nickname/avatarUrl required");
   }
-  await apiRequest("POST", "/miniprogram/me/profile", { nickname, avatarUrl });
+  await apiRequest("POST", "/miniprogram/me/profile", {
+    nickname,
+    avatarUrl,
+    birthDate: birthDate || null,
+  });
   // Refresh cache after update
-  await fetchMe();
+  return await fetchMe();
 }
 
 module.exports = { ensureLoggedIn, login, fetchMe, getCachedMe, getToken, updateProfile, isProfileComplete };

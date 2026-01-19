@@ -2,17 +2,41 @@ const { fetchAiSummary } = require("../../services/assessments");
 const { clearDailySession, getDailySession, setDailySession } = require("../../services/daily-session");
 const { getSystemMetrics } = require("../../utils/system");
 
+function getPageRoute(page) {
+  if (!page) return "";
+  return String(page.route || page.__route__ || "").trim();
+}
+
+function findBackDeltaToRoute(targetRoute) {
+  const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
+  for (let i = pages.length - 2; i >= 0; i -= 1) {
+    if (getPageRoute(pages[i]) === targetRoute) return pages.length - 1 - i;
+  }
+  return 0;
+}
+
+function findBackDeltaToEntryPage() {
+  const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
+  for (let i = pages.length - 2; i >= 0; i -= 1) {
+    if (getPageRoute(pages[i]) === "pages/test/intro") {
+      if (i <= 0) return 0;
+      return pages.length - i;
+    }
+  }
+  return 0;
+}
+
 function normalizeSuggestFlag(value) {
   const n = Number(value);
   return n === 0 ? 0 : 1;
 }
 
 Page({
-  data: { statusBarHeight: 20, mode: "complete", doneText: "完成测试", reviewItems: [], canGenerateAiSummary: false, aiLoading: false, aiSummary: "" },
+  data: { statusBarHeight: 20, mode: "complete", doneText: "完成自测", reviewItems: [], canGenerateAiSummary: false, aiLoading: false, aiSummary: "" },
   onLoad(query) {
     const { statusBarHeight } = getSystemMetrics();
     const mode = query.mode || "complete";
-    this.setData({ statusBarHeight, mode, doneText: mode === "history" ? "返回记录" : "完成测试" });
+    this.setData({ statusBarHeight, mode, doneText: mode === "history" ? "返回记录" : "完成自测" });
   },
   onBack() {
     this.onDone();
@@ -21,7 +45,7 @@ Page({
     const session = getDailySession();
     if (!session) {
       wx.showToast({ title: "无结果数据", icon: "none" });
-      wx.switchTab({ url: "/pages/test/index" });
+      wx.switchTab({ url: "/pages/home/index" });
       return;
     }
     const existingAiSummary = typeof session.aiSummary === "string" ? session.aiSummary : "";
@@ -66,7 +90,18 @@ Page({
       return;
     }
     clearDailySession();
-    wx.switchTab({ url: "/pages/test/index" });
+
+    const deltaToDailyDetail = findBackDeltaToRoute("pages/home/detail");
+    if (deltaToDailyDetail > 0) {
+      wx.navigateBack({ delta: deltaToDailyDetail });
+      return;
+    }
+    const deltaToEntry = findBackDeltaToEntryPage();
+    if (deltaToEntry > 0) {
+      wx.navigateBack({ delta: deltaToEntry });
+      return;
+    }
+    wx.switchTab({ url: "/pages/home/index" });
   },
   onGenerateAiSummary() {
     const session = getDailySession();

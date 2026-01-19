@@ -51,14 +51,13 @@ public class WxJavaWechatPayClient implements WechatPayClient {
               .setAmount(new WxPayUnifiedOrderV3Request.Amount().setTotal(amountCent).setCurrency("CNY"))
               .setPayer(new WxPayUnifiedOrderV3Request.Payer().setOpenid(payerOpenid));
 
-      WxPayUnifiedOrderV3Result res = service.createOrderV3(TradeTypeEnum.JSAPI, req);
-      if (res == null || res.getPrepayId() == null || res.getPrepayId().isBlank()) {
+      // WxJava 的 createOrderV3 是泛型方法，JSAPI 场景会直接返回 JsapiResult（而非 WxPayUnifiedOrderV3Result），
+      // 之前强行接成 WxPayUnifiedOrderV3Result 会触发运行时 ClassCastException。
+      WxPayUnifiedOrderV3Result.JsapiResult payInfo = service.createOrderV3(TradeTypeEnum.JSAPI, req);
+      if (payInfo == null || payInfo.getPaySign() == null || payInfo.getPaySign().isBlank()) {
         throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付下单失败");
       }
 
-      var payInfo =
-          (WxPayUnifiedOrderV3Result.JsapiResult)
-              res.getPayInfo(TradeTypeEnum.JSAPI, config.getAppId(), null, config.getPrivateKey());
       return new PayParams(
           payInfo.getTimeStamp(),
           payInfo.getNonceStr(),
@@ -111,6 +110,20 @@ public class WxJavaWechatPayClient implements WechatPayClient {
     config.setApiV3Key(payProps.apiV3Key());
     config.setPrivateKeyPath(payProps.privateKeyPath());
     config.setNotifyUrl(payProps.notifyUrl());
+
+    var verifyMode =
+        payProps.verifyMode() == null ? WechatPayVerifyMode.PLATFORM_PUBLIC_KEY : payProps.verifyMode();
+    if (verifyMode == WechatPayVerifyMode.PLATFORM_PUBLIC_KEY) {
+      if (payProps.publicKeyId() == null || payProps.publicKeyId().isBlank()) {
+        throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：publicKeyId");
+      }
+      if (payProps.publicKeyPath() == null || payProps.publicKeyPath().isBlank()) {
+        throw new AppException(ErrorCode.INTERNAL_ERROR, "微信支付配置缺失：publicKeyPath");
+      }
+      config.setFullPublicKeyModel(true);
+      config.setPublicKeyId(payProps.publicKeyId());
+      config.setPublicKeyPath(payProps.publicKeyPath());
+    }
 
     var service = new WxPayServiceImpl();
     service.setConfig(config);

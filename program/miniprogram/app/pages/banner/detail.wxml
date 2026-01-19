@@ -1,0 +1,8 @@
+<view class="page safe-bottom">
+  <ui-header title="{{title}}" left="back" bind:left="onBack" />
+
+  <view class="body">
+    <web-view wx:if="{{src}}" class="webview" src="{{src}}" />
+    <view wx:else class="empty">页面地址缺失</view>
+  </view>
+</view>

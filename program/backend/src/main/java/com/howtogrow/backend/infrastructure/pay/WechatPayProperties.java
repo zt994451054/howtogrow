@@ -8,4 +8,7 @@ public record WechatPayProperties(
     String mchSerialNo,
     String apiV3Key,
     String privateKeyPath,
-    String notifyUrl) {}
+    String notifyUrl,
+    WechatPayVerifyMode verifyMode,
+    String publicKeyId,
+    String publicKeyPath) {}

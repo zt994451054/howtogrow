@@ -24,7 +24,7 @@ public class ChildRepository {
   public List<Child> listByUserId(long userId) {
     var sql =
         """
-        SELECT id, user_id, nickname, gender, birth_date
+        SELECT id, user_id, nickname, gender, birth_date, parent_identity
         FROM child
         WHERE user_id = :userId AND status = 1 AND deleted_at IS NULL
         ORDER BY id DESC
@@ -35,7 +35,7 @@ public class ChildRepository {
   public Optional<Child> findById(long id) {
     var sql =
         """
-        SELECT id, user_id, nickname, gender, birth_date
+        SELECT id, user_id, nickname, gender, birth_date, parent_identity
         FROM child
         WHERE id = :id AND status = 1 AND deleted_at IS NULL
         """;
@@ -43,12 +43,12 @@ public class ChildRepository {
     return rows.stream().findFirst();
   }
 
-  public long create(long userId, String nickname, int gender, LocalDate birthDate) {
+  public long create(long userId, String nickname, int gender, LocalDate birthDate, String parentIdentity) {
     KeyHolder kh = new GeneratedKeyHolder();
     var sql =
         """
-        INSERT INTO child(user_id, nickname, gender, birth_date, status, created_at, updated_at)
-        VALUES (:userId, :nickname, :gender, :birthDate, 1, NOW(3), NOW(3))
+        INSERT INTO child(user_id, nickname, gender, birth_date, parent_identity, status, created_at, updated_at)
+        VALUES (:userId, :nickname, :gender, :birthDate, :parentIdentity, 1, NOW(3), NOW(3))
         """;
     jdbc.update(
         sql,
@@ -56,7 +56,8 @@ public class ChildRepository {
             .addValue("userId", userId)
             .addValue("nickname", nickname)
             .addValue("gender", gender)
-            .addValue("birthDate", birthDate),
+            .addValue("birthDate", birthDate)
+            .addValue("parentIdentity", parentIdentity),
         kh);
     var id = kh.getKey();
     if (id == null) {
@@ -65,11 +66,12 @@ public class ChildRepository {
     return id.longValue();
   }
 
-  public void update(long childId, long userId, String nickname, int gender, LocalDate birthDate) {
+  public void update(
+      long childId, long userId, String nickname, int gender, LocalDate birthDate, String parentIdentity) {
     var sql =
         """
         UPDATE child
-        SET nickname = :nickname, gender = :gender, birth_date = :birthDate, updated_at = NOW(3)
+        SET nickname = :nickname, gender = :gender, birth_date = :birthDate, parent_identity = :parentIdentity, updated_at = NOW(3)
         WHERE id = :childId AND user_id = :userId AND status = 1 AND deleted_at IS NULL
         """;
     jdbc.update(
@@ -79,7 +81,8 @@ public class ChildRepository {
             "userId", userId,
             "nickname", nickname,
             "gender", gender,
-            "birthDate", birthDate));
+            "birthDate", birthDate,
+            "parentIdentity", parentIdentity));
   }
 
   public void softDelete(long childId, long userId) {
@@ -98,7 +101,7 @@ public class ChildRepository {
         rs.getLong("user_id"),
         rs.getString("nickname"),
         rs.getInt("gender"),
-        rs.getObject("birth_date", LocalDate.class));
+        rs.getObject("birth_date", LocalDate.class),
+        rs.getString("parent_identity"));
   }
 }
-

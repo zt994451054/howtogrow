@@ -141,4 +141,37 @@ public class QuestionAdminRepository {
         """;
     jdbc.update(sql, Map.of("optionId", optionId, "dimensionCode", dimensionCode, "score", score));
   }
+
+  public void replaceQuestionTroubleScenes(long questionId, List<Long> sceneIds) {
+    jdbc.update("DELETE FROM question_trouble_scene WHERE question_id = :qid", Map.of("qid", questionId));
+    if (sceneIds == null || sceneIds.isEmpty()) {
+      return;
+    }
+    for (var sid : sceneIds) {
+      if (sid == null || sid <= 0) {
+        continue;
+      }
+      jdbc.update(
+          """
+          INSERT INTO question_trouble_scene(question_id, scene_id, created_at)
+          VALUES (:qid, :sid, NOW(3))
+          """,
+          Map.of("qid", questionId, "sid", sid));
+    }
+  }
+
+  public List<Long> listTroubleSceneIdsByQuestion(long questionId) {
+    var sql =
+        """
+        SELECT scene_id
+        FROM question_trouble_scene
+        WHERE question_id = :qid
+        ORDER BY id ASC
+        """;
+    return jdbc.queryForList(sql, Map.of("qid", questionId), Long.class);
+  }
+
+  public void deleteQuestionTroubleScenesBySceneId(long sceneId) {
+    jdbc.update("DELETE FROM question_trouble_scene WHERE scene_id = :sid", Map.of("sid", sceneId));
+  }
 }

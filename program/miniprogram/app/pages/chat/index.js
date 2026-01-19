@@ -1,5 +1,5 @@
 const { getSystemMetrics } = require("../../utils/system");
-const { createChatSession, listChatSessions, listChatMessages, sendChatMessage, streamChat } = require("../../services/chat");
+const { createChatSession, listChatSessions, listChatQuickQuestions, listChatMessages, sendChatMessage, streamChat } = require("../../services/chat");
 const { getCachedMe, isProfileComplete } = require("../../services/auth");
 const towxml = require("../../towxml/index");
 
@@ -43,6 +43,8 @@ Page({
     sessions: [],
     sessionId: 0,
     messages: [{ id: "m1", role: "ai", text: DEFAULT_AI_GREETING, nodes: DEFAULT_AI_GREETING_NODES }],
+    quickQuestions: [],
+    quickLoading: false,
     input: "",
     inputTrim: "",
     typing: false,
@@ -70,6 +72,24 @@ Page({
     this.refreshSessions().then(() => {
       if (this.data.sessionId) this.loadSessionMessages();
     });
+
+    this.refreshQuickQuestions();
+  },
+  refreshQuickQuestions() {
+    if (this.data.quickLoading) return Promise.resolve();
+    this.setData({ quickLoading: true });
+    return listChatQuickQuestions(6)
+      .then((items) => {
+        const list = Array.isArray(items) ? items : [];
+        const normalized = list.map((x) => String(x || "").trim()).filter(Boolean);
+        this.setData({ quickQuestions: normalized.slice(0, 6) });
+      })
+      .catch(() => {
+        this.setData({ quickQuestions: [] });
+      })
+      .finally(() => {
+        this.setData({ quickLoading: false });
+      });
   },
   syncBottomLayout() {
     const tab = this.getTabBar && this.getTabBar();
@@ -186,6 +206,7 @@ Page({
       historyHasMore: false,
       historyBeforeMessageId: null,
     });
+    this.refreshQuickQuestions();
     return this.refreshSessions().then(() => this.scrollToBottom());
   },
   selectSession(e) {
@@ -204,6 +225,11 @@ Page({
   onInput(e) {
     const v = e.detail.value || "";
     this.setData({ input: v, inputTrim: String(v).trim() });
+  },
+  onQuickQuestionTap(e) {
+    const prompt = String((e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.prompt) || "").trim();
+    if (!prompt) return;
+    this.sendText(prompt);
   },
   scrollToBottom() {
     this.setData({ scrollIntoId: `bottom-${Date.now()}` });
@@ -237,8 +263,8 @@ Page({
     this.setData({ messages: next });
     this.scrollToBottom();
   },
-  onSend() {
-    const text = String(this.data.input).trim();
+  sendText(rawText) {
+    const text = String(rawText || "").trim();
     if (!text || this.data.typing) return;
 
     const me = getCachedMe();
@@ -293,6 +319,9 @@ Page({
       .catch(() => {
         wx.showToast({ title: "无法创建会话", icon: "none", duration: 3000, mask: true });
       });
+  },
+  onSend() {
+    this.sendText(this.data.input);
   },
   onAuthSuccess() {
     const shouldSend = Boolean(this.data.pendingSend);

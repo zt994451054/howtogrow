@@ -1,13 +1,14 @@
-FROM maven:3.9-eclipse-temurin-21 AS builder
-WORKDIR /app
-COPY . .
-RUN if [ ! -f pom.xml ]; then echo "pom.xml not found; backend source not initialized" >&2; exit 1; fi
-RUN mvn -q -DskipTests package
-
 FROM eclipse-temurin:21-jre
+
 WORKDIR /app
-COPY --from=builder /app/target/*.jar /app/app.jar
+
+# Build the jar with local Maven first, then build the image.
+# Example: mvn -DskipTests package && docker build --build-arg JAR_FILE=target/xxx.jar -t howtogrow-backend .
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} /app/app.jar
+
 RUN mkdir -p /app/logs
+
 EXPOSE 8080
 ENV JAVA_OPTS=""
 ENV LOG_DIR="/app/logs"

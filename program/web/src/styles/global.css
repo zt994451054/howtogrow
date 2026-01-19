@@ -9,3 +9,10 @@ body {
   background: #f5f7fa;
 }
 
+/* Element Plus pagination uses event.target.className in click handler.
+   When user clicks on inner SVG, target.className may be SVGAnimatedString.
+   Disable pointer events on icons so the <li> receives the click target. */
+.el-pagination .el-pager li .el-icon,
+.el-pagination .el-pager li .el-icon * {
+  pointer-events: none;
+}

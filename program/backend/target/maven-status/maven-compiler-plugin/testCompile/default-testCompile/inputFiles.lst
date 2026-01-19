@@ -3,3 +3,6 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/test/java/com/howtogrow/backend/domain/time/AgeInMonthsCalculatorTest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/test/java/com/howtogrow/backend/service/common/FixedWindowRateLimiterTest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/test/java/com/howtogrow/backend/service/miniprogram/AiChatTitleNormalizerTest.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/test/java/com/howtogrow/backend/service/miniprogram/MiniprogramLoginServiceConcurrencyTest.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/test/java/com/howtogrow/backend/service/miniprogram/MiniprogramMeServiceTest.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/test/java/com/howtogrow/backend/service/miniprogram/MiniprogramNicknameGeneratorTest.java
