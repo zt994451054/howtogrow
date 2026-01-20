@@ -1,7 +1,7 @@
 const { fetchChildren } = require("../../services/children");
 const { getMonthlyAwareness } = require("../../services/awareness");
 const { ensureLoggedIn } = require("../../services/auth");
-const { fetchAiSummary, getDailyRecordDetail } = require("../../services/assessments");
+const { getDailyRecordDetail } = require("../../services/assessments");
 const { getDailyParentingStatus, upsertDailyParentingStatus } = require("../../services/parenting-status");
 const { listTroubleScenes } = require("../../services/trouble-scenes");
 const { getDailyTroubleRecord, upsertDailyTroubleRecord } = require("../../services/daily-troubles");
@@ -246,9 +246,9 @@ function buildItems(record, date) {
     {
       id: "expert",
       icon: "expert",
-      title: "专家悄悄话 · 今日总结",
+      title: "继续深度咨询",
       done: expertDone,
-      desc: expertDone ? clampDesc(aiSummary, 60) : assessmentDone ? "您的专属家庭教育指导师可以帮你快速总结今天的得失" : "完成自测后可生成总结",
+      desc: expertDone ? clampDesc(aiSummary, 60) : "点击进入马上沟通，继续深度咨询",
       isLast: true,
     },
   ];
@@ -790,32 +790,7 @@ Page({
   },
 
   openExpert() {
-    const assessmentId = Number(this.data.record?.assessmentId || 0);
-    if (assessmentId <= 0) {
-      wx.showToast({ title: "完成自测后可生成总结", icon: "none" });
-      return;
-    }
-
-    const existing = safeText(this.data.record?.aiSummary).trim();
-    if (existing) {
-      this.openAssessmentHistory(assessmentId);
-      return;
-    }
-
-    wx.showLoading({ title: "生成中…" });
-    ensureLoggedIn()
-      .then(() => fetchAiSummary(assessmentId))
-      .then((content) => {
-        const aiSummary = safeText(content).trim();
-        const record = { ...(this.data.record || {}), aiSummary };
-        this.setData({ record, items: buildItems(record, this.data.date) });
-        this.openAssessmentHistory(assessmentId);
-      })
-      .catch((err) => {
-        const message = err && typeof err.message === "string" && err.message.trim() ? err.message.trim() : "生成失败";
-        wx.showToast({ title: message, icon: "none" });
-      })
-      .finally(() => wx.hideLoading());
+    wx.switchTab({ url: "/pages/chat/index" });
   },
 
   openAssessmentHistory(assessmentId) {

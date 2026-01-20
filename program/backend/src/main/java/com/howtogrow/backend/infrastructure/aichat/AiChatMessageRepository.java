@@ -88,6 +88,19 @@ public class AiChatMessageRepository {
     return rows.stream().findFirst();
   }
 
+  public boolean existsAssistantMessageByUser(long userId) {
+    var sql =
+        """
+        SELECT 1
+        FROM ai_chat_message
+        WHERE user_id = :userId
+          AND role = 'assistant'
+        LIMIT 1
+        """;
+    var rows = jdbc.queryForList(sql, Map.of("userId", userId));
+    return rows != null && !rows.isEmpty();
+  }
+
   private static AiChatMessageRow toRow(ResultSet rs) throws SQLException {
     Instant createdAt = null;
     var ts = rs.getTimestamp("created_at");

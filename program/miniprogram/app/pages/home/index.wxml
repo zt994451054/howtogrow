@@ -3,7 +3,7 @@
 
   <view class="header row between" style="padding-top: {{headerPadTopPx}}px;">
     <view class="row a">
-      <view class="avatar">
+      <view class="avatar" bindtap="onOpenProfile" hover-class="tap" hover-stay-time="80">
         <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
         <view wx:else class="avatar__text">{{avatarText}}</view>
       </view>
@@ -100,7 +100,7 @@
         >
           <view class="thumb-wrap">
             <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
-              <view class="thumb__inner">
+                <view class="thumb__inner">
                 <view class="date-tag {{item.isDone ? 'date-tag-done' : 'date-tag-undone'}}">
                   <view class="date-tag__d">{{item.dayText}}</view>
                   <view class="date-tag__w">{{item.weekday}}</view>
@@ -122,7 +122,7 @@
           </view>
 
           <view class="foot">
-            <view class="foot__t text-ellipsis {{item.isDone ? '' : 'muted'}}">{{item.title}}</view>
+            <view class="foot__t text-ellipsis {{item.hasAssessment ? '' : 'muted'}}">{{item.title}}</view>
             <view class="foot__s text-ellipsis">{{item.content}}</view>
           </view>
         </view>

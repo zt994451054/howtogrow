@@ -17,12 +17,16 @@ public class SubscriptionService {
     this.clock = clock;
   }
 
-  public void requireSubscribed(long userId) {
+  public boolean isSubscribed(long userId) {
     var user =
         userRepo.findById(userId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "用户不存在"));
     var endAt = user.subscriptionEndAt();
-    if (endAt == null || endAt.isBefore(Instant.now(clock))) {
-      throw new AppException(ErrorCode.SUBSCRIPTION_REQUIRED, "订阅已过期，请先开通会员");
+    return endAt != null && !endAt.isBefore(Instant.now(clock));
+  }
+
+  public void requireSubscribed(long userId) {
+    if (!isSubscribed(userId)) {
+      throw new AppException(ErrorCode.SUBSCRIPTION_REQUIRED, "未订阅或已过期，请先开通会员");
     }
   }
 }

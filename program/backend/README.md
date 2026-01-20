@@ -66,7 +66,7 @@ docker run --rm -p 8080:8080 -v /data/howtogrow/logs:/app/logs howtogrow-backend
 - 成长报告：`GET /api/v1/miniprogram/reports/growth?childId=...&from=YYYY-MM-DD&to=YYYY-MM-DD`
 - 鸡汤语：`GET /api/v1/miniprogram/quotes/random`
 - AI 自测总结：`POST /api/v1/miniprogram/assessments/daily/{id}/ai-summary`（需要订阅）
-- AI 实时对话：`/api/v1/miniprogram/ai/chat/sessions|sessions/{id}/messages|sessions/{id}/stream`（需要订阅）
+- AI 实时对话：`/api/v1/miniprogram/ai/chat/sessions|sessions/{id}/messages|sessions/{id}/stream`（未订阅用户可体验 1 次；从第 2 次发送开始需要订阅）
 - 订阅套餐/下单：`GET /api/v1/miniprogram/subscriptions/plans`、`POST /api/v1/miniprogram/subscriptions/orders`
 - 微信支付回调：`POST /api/v1/pay/wechat/notify`
 

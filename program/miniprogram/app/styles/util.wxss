@@ -29,3 +29,6 @@
   width: 100%;
 }
 
+.tap {
+  opacity: 0.85;
+}

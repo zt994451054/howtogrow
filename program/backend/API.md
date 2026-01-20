@@ -188,6 +188,8 @@
 #### `POST /api/v1/miniprogram/ai/chat/sessions/{sessionId}/messages` / `GET /api/v1/miniprogram/ai/chat/sessions/{sessionId}/stream`
 - Path：
   - `sessionId`：会话ID
+- 订阅与体验：
+  - 未订阅/已过期用户：允许发送 1 条消息并获得 1 次 AI 回复；从第 2 条开始返回 `SUBSCRIPTION_REQUIRED`
 - `GET .../stream`：
   - 返回 `text/event-stream`
   - 事件：
@@ -201,6 +203,10 @@
   - `from`：开始日期（`yyyy-MM-dd`）
   - `to`：结束日期（`yyyy-MM-dd`）
 - 响应 data：`GrowthReportResponse`
+- 说明：
+  - 在 `[from,to]` 内，按 **5 个有数据的业务日** 为一组（不要求连续），每组输出 1 个点。
+  - 每个维度得分为组内日得分的平均值；若某天缺少某维度，按 0 计入平均。
+  - 每个点的 `bizDate` 为该组内最大的业务日；不足 5 天也直接计算；超过则按每 5 天统计。
 
 #### `GET /api/v1/miniprogram/reports/persistence`
 - Query：
@@ -245,14 +251,45 @@
 - Excel 模板：`program/backend/db/question-import-template.xlsx`（一个 sheet，表头为中文；一行一个选项）
 - 响应 data：`QuestionImportResponse`
 
-#### `GET /api/v1/admin/users` / `GET /api/v1/admin/orders` / `GET /api/v1/admin/assessments`
+#### `GET /api/v1/admin/users`
 - Query：
   - `page`：页码（从 1 开始）
   - `pageSize`：每页条数（1-200）
+  - `userId`：用户ID（可选）
+  - `keyword`：昵称/openid 关键词（可选）
+  - `freeTrialUsed`：是否已使用免费体验：true/false（可选）
+  - `subscriptionStatus`：订阅状态：ACTIVE/EXPIRED/NONE（可选）
+- 响应 data：`PageResponse<UserView>`
+
+#### `POST /api/v1/admin/users/{userId}/subscription/extend`
+- Path：
+  - `userId`：用户ID
+- Body(JSON)：`SubscriptionExtendRequest`
+- 响应 data：`SubscriptionExtendResponse`
+
+#### `GET /api/v1/admin/orders` / `GET /api/v1/admin/assessments`
+- Query：
+  - `page`：页码（从 1 开始）
+  - `pageSize`：每页条数（1-200）
+  - `/assessments` 额外筛选（可选）：
+    - `bizDateFrom`：提交日期起（yyyy-MM-dd，北京时间口径）
+    - `bizDateTo`：提交日期止（yyyy-MM-dd，北京时间口径）
+    - `userId`：用户ID
+    - `childId`：孩子ID
+    - `keyword`：用户/孩子昵称关键词
 - 响应 data：
-  - `/users`：`PageResponse<UserView>`
   - `/orders`：`PageResponse<OrderView>`
   - `/assessments`：`PageResponse<AssessmentView>`
+
+#### `GET /api/v1/admin/assessments/export-excel`
+- 说明：按筛选条件导出自测记录 Excel（若数据量过大需缩小筛选范围）
+- Query（均可选）：
+  - `bizDateFrom`：提交日期起（yyyy-MM-dd，北京时间口径）
+  - `bizDateTo`：提交日期止（yyyy-MM-dd，北京时间口径）
+  - `userId`：用户ID
+  - `childId`：孩子ID
+  - `keyword`：用户/孩子昵称关键词
+- 响应：Excel 文件（`.xlsx`，`Content-Disposition: attachment`）
 
 #### `GET /api/v1/admin/children`
 - Query：
@@ -263,6 +300,8 @@
   - `childId`：孩子ID（可选）
   - `childNickname`：孩子昵称关键词（可选）
   - `gender`：性别：0未知 1男 2女（可选）
+  - `ageMin`：年龄下限（岁，含边界，可选）
+  - `ageMax`：年龄上限（岁，含边界，可选）
   - `status`：状态：1启用 0删除（可选）
 - 响应 data：`PageResponse<AdminChildView>`
 
@@ -793,6 +832,17 @@
 | `freeTrialUsed` | boolean | 是否已使用免费体验 |
 | `createdAt` | string | 创建时间（ISO-8601） |
 
+#### `SubscriptionExtendRequest`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `days` | number | 延长天数（在当前订阅基础上增加） |
+
+#### `SubscriptionExtendResponse`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `userId` | number | 用户ID |
+| `subscriptionEndAt` | string/null | 订阅到期时间（可为空，ISO-8601） |
+
 #### `OrderView`
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
@@ -845,6 +895,7 @@
 | `childNickname` | string | 孩子昵称 |
 | `gender` | number | 性别：0未知 1男 2女 |
 | `birthDate` | string | 出生日期（YYYY-MM-DD） |
+| `ageYear` | number | 年龄（整数，单位：岁） |
 | `status` | number | 状态：1启用 0删除 |
 | `createdAt` | string | 创建时间（ISO-8601） |
 

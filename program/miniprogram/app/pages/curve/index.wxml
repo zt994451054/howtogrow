@@ -4,7 +4,7 @@
   <!-- 顶部参考「每日觉察」页面：头像问候 + 菜单 -->
   <view class="header row between" style="padding-top: {{headerPadTopPx}}px;">
     <view class="row a">
-      <view class="avatar">
+      <view class="avatar" bindtap="onOpenProfile" hover-class="tap" hover-stay-time="80">
         <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
         <view wx:else class="avatar__text">{{avatarText}}</view>
       </view>
@@ -145,6 +145,59 @@
       </view>
 
       <view class="footer-hint">你的每次觉察，都是孩子成长路上最珍贵的礼物</view>
+    </view>
+  </view>
+
+  <!-- 自定义日期范围（最多180天） -->
+  <view class="sheet {{customRangeOpen ? 'show' : ''}}">
+    <view class="sheet__mask" bindtap="closeCustomRangePicker" />
+    <view class="sheet__panel">
+      <view class="sheet__head row between">
+        <view class="sheet__title">自定义日期范围</view>
+        <view class="sheet__close" bindtap="closeCustomRangePicker">×</view>
+      </view>
+      <view class="sheet__sub">最多180天，超出将自动调整</view>
+
+      <view class="range-form">
+        <view class="range-field">
+          <view class="range-field__label">开始日期</view>
+          <picker
+            mode="date"
+            value="{{customFromDraft}}"
+            start="{{customMinDate}}"
+            end="{{customToDraft}}"
+            bindchange="onCustomFromChange"
+          >
+            <view class="range-field__value row between">
+              <view>{{customFromDraft}}</view>
+              <view class="range-field__arrow">›</view>
+            </view>
+          </picker>
+        </view>
+
+        <view class="range-field">
+          <view class="range-field__label">结束日期</view>
+          <picker
+            mode="date"
+            value="{{customToDraft}}"
+            start="{{customFromDraft}}"
+            end="{{today}}"
+            bindchange="onCustomToChange"
+          >
+            <view class="range-field__value row between">
+              <view>{{customToDraft}}</view>
+              <view class="range-field__arrow">›</view>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="range-hint">共 {{customRangeDays}} 天</view>
+
+      <view class="range-actions row">
+        <button class="range-btn ghost" bindtap="closeCustomRangePicker">取消</button>
+        <button class="range-btn primary" bindtap="onCustomRangeConfirm">确认</button>
+      </view>
     </view>
   </view>
 </view>

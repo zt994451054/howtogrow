@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from "element-plus";
 import { computed, onMounted, reactive, ref } from "vue";
 import { listChildren, type AdminChildView } from "@/api/admin/children";
 import { getApiBaseUrl } from "@/config/runtimeConfig";
@@ -16,6 +17,8 @@ type Filters = {
   childId: string;
   childNickname: string;
   gender: "" | "0" | "1" | "2";
+  ageMin: number | null;
+  ageMax: number | null;
   status: "" | "0" | "1";
 };
 
@@ -29,6 +32,8 @@ const filters = reactive<Filters>({
   childId: "",
   childNickname: "",
   gender: "",
+  ageMin: null,
+  ageMax: null,
   status: "1"
 });
 
@@ -56,10 +61,20 @@ const requestParams = computed(() => ({
   childId: toOptionalNumber(filters.childId),
   childNickname: filters.childNickname.trim() || undefined,
   gender: filters.gender === "" ? undefined : Number(filters.gender),
+  ageMin: filters.ageMin ?? undefined,
+  ageMax: filters.ageMax ?? undefined,
   status: filters.status === "" ? undefined : Number(filters.status)
 }));
 
+function validateAgeRange(): boolean {
+  if (filters.ageMin == null || filters.ageMax == null) return true;
+  if (filters.ageMin <= filters.ageMax) return true;
+  ElMessage.error("年龄范围不合法：下限不能大于上限");
+  return false;
+}
+
 async function reload() {
+  if (!validateAgeRange()) return;
   loading.value = true;
   try {
     const res = await listChildren(requestParams.value);
@@ -71,6 +86,7 @@ async function reload() {
 }
 
 function onSearch() {
+  if (!validateAgeRange()) return;
   page.value.page = 1;
   void reload();
 }
@@ -81,6 +97,8 @@ function onReset() {
   filters.childId = "";
   filters.childNickname = "";
   filters.gender = "";
+  filters.ageMin = null;
+  filters.ageMax = null;
   filters.status = "1";
   page.value.page = 1;
   void reload();
@@ -142,6 +160,29 @@ onMounted(() => {
             <el-option label="女" value="2" />
           </el-select>
         </el-form-item>
+        <el-form-item label="年龄范围">
+          <div class="age-range">
+            <el-input-number
+              v-model="filters.ageMin"
+              :min="0"
+              :max="18"
+              :step="1"
+              step-strictly
+              controls-position="right"
+              style="width: 120px"
+            />
+            <span class="age-range__sep">-</span>
+            <el-input-number
+              v-model="filters.ageMax"
+              :min="0"
+              :max="18"
+              :step="1"
+              step-strictly
+              controls-position="right"
+              style="width: 120px"
+            />
+          </div>
+        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="filters.status" placeholder="全部" clearable style="width: 140px">
             <el-option label="启用" value="1" />
@@ -175,6 +216,7 @@ onMounted(() => {
         <template #default="{ row }">{{ genderLabel(row.gender) }}</template>
       </el-table-column>
       <el-table-column prop="birthDate" label="出生日期" width="130" align="center" />
+      <el-table-column prop="ageYear" label="年龄(岁)" width="90" align="center" />
       <el-table-column label="状态" width="90" align="center">
         <template #default="{ row }">
           <el-tag size="small" :type="row.status === 1 ? 'success' : 'info'">{{ statusLabel(row.status) }}</el-tag>
@@ -224,6 +266,15 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
+.age-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.age-range__sep {
+  color: #9aa4b2;
+}
+
 .user {
   display: flex;
   align-items: center;
@@ -245,4 +296,3 @@ onMounted(() => {
   line-height: 16px;
 }
 </style>
-

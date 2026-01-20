@@ -34,6 +34,7 @@ com/howtogrow/backend/controller/pay/WechatPayNotifyController.class
 com/howtogrow/backend/service/miniprogram/MiniprogramDailyParentingDiaryService.class
 com/howtogrow/backend/controller/miniprogram/dto/DailyAssessmentRecordView.class
 com/howtogrow/backend/controller/miniprogram/dto/MonthlyAwarenessResponse.class
+com/howtogrow/backend/controller/admin/dto/SubscriptionExtendRequest.class
 com/howtogrow/backend/controller/miniprogram/dto/DimensionScoreView.class
 com/howtogrow/backend/controller/miniprogram/MiniprogramUploadController.class
 com/howtogrow/backend/service/admin/AdminQuestionImportService$ParseResult.class
@@ -174,6 +175,7 @@ com/howtogrow/backend/controller/miniprogram/dto/AiChatMessageView.class
 com/howtogrow/backend/infrastructure/trouble/DailyTroubleRecordRepository.class
 com/howtogrow/backend/controller/miniprogram/dto/SubscriptionOrderCreateResponse.class
 com/howtogrow/backend/infrastructure/subscription/UserSubscriptionRepository.class
+com/howtogrow/backend/controller/admin/dto/SubscriptionExtendResponse.class
 com/howtogrow/backend/controller/miniprogram/dto/ChildUpdateRequest.class
 com/howtogrow/backend/infrastructure/pay/WechatPayNotifyEventRepository.class
 com/howtogrow/backend/infrastructure/admin/ChildQueryRepository$ChildRow.class

@@ -660,3 +660,132 @@
   color: var(--text-secondary);
   line-height: 38rpx;
 }
+
+.sheet {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.22s;
+}
+
+.sheet.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.sheet__mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+}
+
+.sheet__panel {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  transform: translateY(100%);
+  transition: transform 0.22s;
+  padding: 28rpx 28rpx calc(34rpx + env(safe-area-inset-bottom));
+}
+
+.sheet.show .sheet__panel {
+  transform: translateY(0);
+}
+
+.sheet__head {
+  align-items: center;
+}
+
+.sheet__title {
+  font-size: 32rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.sheet__close {
+  font-size: 44rpx;
+  line-height: 1;
+  color: var(--text-muted);
+  padding: 6rpx 10rpx;
+}
+
+.sheet__sub {
+  margin-top: 10rpx;
+  color: var(--text-muted);
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.range-form {
+  margin-top: 18rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.range-field__label {
+  font-size: 20rpx;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.range-field__value {
+  background: rgba(243, 244, 246, 0.9);
+  border-radius: 18rpx;
+  padding: 22rpx 20rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  align-items: center;
+}
+
+.range-field__arrow {
+  color: rgba(156, 163, 175, 1);
+  font-size: 30rpx;
+  transform: rotate(90deg);
+}
+
+.range-hint {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.range-actions {
+  margin-top: 22rpx;
+  gap: 18rpx;
+}
+
+.range-btn {
+  flex: 1 1 0;
+  border-radius: var(--radius-pill);
+  padding: 22rpx 0;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.range-btn::after {
+  border: none;
+}
+
+.range-btn.ghost {
+  background: rgba(243, 244, 246, 1);
+  color: var(--text-secondary);
+}
+
+.range-btn.primary {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: var(--shadow-brand);
+}

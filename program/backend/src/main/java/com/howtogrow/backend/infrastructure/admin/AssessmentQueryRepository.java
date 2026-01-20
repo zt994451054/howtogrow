@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import com.howtogrow.backend.infrastructure.db.SqlPagination;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,13 +17,32 @@ public class AssessmentQueryRepository {
     this.jdbc = jdbc;
   }
 
-  public long countAssessments() {
-    var sql = "SELECT COUNT(*) FROM daily_assessment";
-    Long count = jdbc.queryForObject(sql, Map.of(), Long.class);
+  public long countAssessments(
+      Long userId, Long childId, String keyword, LocalDate bizDateFrom, LocalDate bizDateTo) {
+    var params = new MapSqlParameterSource();
+    var where = buildWhereSql(params, userId, childId, keyword, bizDateFrom, bizDateTo);
+    var sql =
+        """
+        SELECT COUNT(*)
+        FROM daily_assessment a
+        JOIN user_account u ON u.id = a.user_id
+        JOIN child c ON c.id = a.child_id
+        """
+            + where;
+    Long count = jdbc.queryForObject(sql, params, Long.class);
     return count == null ? 0L : count;
   }
 
-  public List<AssessmentRow> listAssessments(int offset, int limit) {
+  public List<AssessmentRow> listAssessments(
+      int offset,
+      int limit,
+      Long userId,
+      Long childId,
+      String keyword,
+      LocalDate bizDateFrom,
+      LocalDate bizDateTo) {
+    var params = new MapSqlParameterSource();
+    var where = buildWhereSql(params, userId, childId, keyword, bizDateFrom, bizDateTo);
     var sql =
         """
         SELECT
@@ -37,12 +57,13 @@ public class AssessmentQueryRepository {
         FROM daily_assessment a
         JOIN user_account u ON u.id = a.user_id
         JOIN child c ON c.id = a.child_id
-        ORDER BY a.id DESC
         """
+            + where
+            + "\nORDER BY a.id DESC\n"
             + SqlPagination.limitOffset(offset, limit);
     return jdbc.query(
         sql,
-        Map.of(),
+        params,
         (rs, rowNum) -> {
           Instant submittedAt = null;
           var subts = rs.getTimestamp("submitted_at");
@@ -59,6 +80,43 @@ public class AssessmentQueryRepository {
               rs.getObject("biz_date", LocalDate.class),
               submittedAt);
         });
+  }
+
+  private static String buildWhereSql(
+      MapSqlParameterSource params,
+      Long userId,
+      Long childId,
+      String keyword,
+      LocalDate bizDateFrom,
+      LocalDate bizDateTo) {
+    var sql = new StringBuilder(" WHERE 1=1 ");
+
+    if (userId != null) {
+      sql.append(" AND a.user_id = :userId");
+      params.addValue("userId", userId);
+    }
+
+    if (childId != null) {
+      sql.append(" AND a.child_id = :childId");
+      params.addValue("childId", childId);
+    }
+
+    if (keyword != null && !keyword.trim().isBlank()) {
+      sql.append(" AND (u.nickname LIKE :keyword OR c.nickname LIKE :keyword)");
+      params.addValue("keyword", "%" + keyword.trim() + "%");
+    }
+
+    if (bizDateFrom != null) {
+      sql.append(" AND DATE(a.submitted_at) >= :bizDateFrom");
+      params.addValue("bizDateFrom", bizDateFrom);
+    }
+
+    if (bizDateTo != null) {
+      sql.append(" AND DATE(a.submitted_at) <= :bizDateTo");
+      params.addValue("bizDateTo", bizDateTo);
+    }
+
+    return sql.toString();
   }
 
   public List<AssessmentDimensionScoreRow> listDimensionScoresByAssessmentIds(List<Long> assessmentIds) {

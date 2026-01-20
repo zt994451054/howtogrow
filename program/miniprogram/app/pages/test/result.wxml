@@ -28,12 +28,12 @@
         </view>
 
         <view class="your">
-          <view class="your__label">你的选择</view>
+          <view class="your__label">你的做法</view>
           <view class="your__text">{{item.selectedText}}</view>
         </view>
 
         <view class="opts">
-          <view class="opts__label">你的答案与建议</view>
+          <view class="opts__label">觉察建议</view>
           <view wx:for="{{item.selectedOptions}}" wx:for-item="opt" wx:key="optionId" class="opt is-selected {{opt.suggestFlag == 1 ? 'is-ok' : 'is-warn'}}">
             <view class="opt__head row">
               <view class="opt__icon">{{opt.suggestFlag == 1 ? '✓' : '!'}}</view>
@@ -46,7 +46,7 @@
     </view>
 
     <view class="summary" wx:if="{{aiSummary}}">
-      <view class="summary__title">AI 总结</view>
+      <view class="summary__title">针对今天的这份报告,你的专属AI帮你总结了一份觉察报告:</view>
       <view class="summary__text">{{aiSummary}}</view>
     </view>
 

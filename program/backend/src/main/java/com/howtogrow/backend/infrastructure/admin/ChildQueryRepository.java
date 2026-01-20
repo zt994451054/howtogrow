@@ -99,6 +99,14 @@ public class ChildQueryRepository {
         where.add("c.nickname LIKE :childNickname");
         params.put("childNickname", "%" + query.childNickname().trim() + "%");
       }
+      if (query.birthDateFrom() != null) {
+        where.add("c.birth_date >= :birthDateFrom");
+        params.put("birthDateFrom", query.birthDateFrom());
+      }
+      if (query.birthDateTo() != null) {
+        where.add("c.birth_date <= :birthDateTo");
+        params.put("birthDateTo", query.birthDateTo());
+      }
     }
 
     var sb = new StringBuilder(base);
@@ -116,6 +124,8 @@ public class ChildQueryRepository {
       Long childId,
       String childNickname,
       Integer gender,
+      LocalDate birthDateFrom,
+      LocalDate birthDateTo,
       Integer status) {}
 
   public record ChildRow(
@@ -129,4 +139,3 @@ public class ChildQueryRepository {
       int status,
       Instant createdAt) {}
 }
-

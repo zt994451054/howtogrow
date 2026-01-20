@@ -378,7 +378,8 @@
   z-index: 10;
   border-radius: 14rpx;
   padding: 10rpx 12rpx;
-  min-width: 78rpx;
+  min-width: 112rpx;
+  width: 112rpx;
   text-align: center;
   border: 2rpx solid rgba(255, 255, 255, 0.16);
 }
@@ -398,6 +399,8 @@
   font-size: 44rpx;
   font-weight: 900;
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .date-tag__w {
@@ -513,7 +516,7 @@
 }
 
 .foot__t.muted {
-  color: var(--text-muted);
+  /* color: var(--text-muted); */
 }
 
 .foot__s {

@@ -85,6 +85,26 @@ export function createHttpClient(): AxiosInstance {
       const traceId = extractTraceId(error);
       const suffix = traceId ? `（traceId: ${traceId}）` : "";
 
+      // When downloading files (responseType=blob), error bodies are often returned as JSON but wrapped in Blob.
+      // Parse them so users can see the real backend message.
+      if (error instanceof AxiosError && error.response?.data instanceof Blob) {
+        const ct = error.response.headers?.["content-type"];
+        if (typeof ct === "string" && ct.toLowerCase().includes("application/json")) {
+          try {
+            const text = await error.response.data.text();
+            const payload = JSON.parse(text);
+            if (isApiResponse(payload)) {
+              const message =
+                typeof payload.message === "string" && payload.message.trim() ? payload.message.trim() : "请求失败";
+              ElMessage.error(`${message}${suffix}`);
+              return Promise.reject(error);
+            }
+          } catch {
+            // ignore and fall back to generic handling
+          }
+        }
+      }
+
       if (error instanceof AxiosError && isApiResponse(error.response?.data)) {
         const message =
           typeof error.response?.data?.message === "string" && error.response?.data?.message.trim()

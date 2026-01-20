@@ -13,6 +13,6 @@ public record AdminChildView(
     @Schema(description = "孩子昵称") String childNickname,
     @Schema(description = "性别：0未知 1男 2女") int gender,
     @Schema(description = "出生日期（YYYY-MM-DD）") LocalDate birthDate,
+    @Schema(description = "年龄（整数，单位：岁）") int ageYear,
     @Schema(description = "状态：1启用 0删除") int status,
     @Schema(description = "创建时间") Instant createdAt) {}
-

@@ -32,10 +32,13 @@ public class AdminChildController {
       @Parameter(description = "孩子ID（可选）") @RequestParam(required = false) Long childId,
       @Parameter(description = "孩子昵称关键词（可选）") @RequestParam(required = false) String childNickname,
       @Parameter(description = "性别：0未知 1男 2女（可选）") @RequestParam(required = false) Integer gender,
+      @Parameter(description = "年龄下限（岁，含边界，可选）") @RequestParam(required = false) @Min(0) @Max(18)
+          Integer ageMin,
+      @Parameter(description = "年龄上限（岁，含边界，可选）") @RequestParam(required = false) @Min(0) @Max(18)
+          Integer ageMax,
       @Parameter(description = "状态：1启用 0删除（可选）") @RequestParam(required = false) Integer status) {
     return ApiResponse.ok(
-        childService.list(page, pageSize, userId, userNickname, childId, childNickname, gender, status),
+        childService.list(page, pageSize, userId, userNickname, childId, childNickname, gender, ageMin, ageMax, status),
         TraceId.current());
   }
 }
-

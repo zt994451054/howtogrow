@@ -21,8 +21,8 @@ function listDailyRecords(limit, offset) {
   return apiRequest("GET", "/miniprogram/assessments/daily/records", { limit: limit || 20, offset: offset || 0 });
 }
 
-function getDailyRecordDetail(assessmentId) {
-  return apiRequest("GET", `/miniprogram/assessments/daily/records/${assessmentId}`);
+function getDailyRecordDetail(assessmentId, options) {
+  return apiRequest("GET", `/miniprogram/assessments/daily/records/${assessmentId}`, undefined, options);
 }
 
 module.exports = { beginDailyAssessment, replaceDailyQuestion, submitDailyAssessment, fetchAiSummary, listDailyRecords, getDailyRecordDetail };

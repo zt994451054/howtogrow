@@ -1,5 +1,6 @@
 const { fetchChildren } = require("../../services/children");
 const { getMonthlyAwareness } = require("../../services/awareness");
+const { getDailyRecordDetail } = require("../../services/assessments");
 const { listBanners } = require("../../services/banners");
 const { ensureLoggedIn, getCachedMe } = require("../../services/auth");
 const { STORAGE_KEYS } = require("../../services/config");
@@ -8,6 +9,9 @@ const { formatDateYmd, calcAge } = require("../../utils/date");
 const { getSystemMetrics } = require("../../utils/system");
 
 const MIN_MONTH = "2025-06";
+
+const DEFAULT_FOOT_TITLE = "你忘记觉察了哦";
+const DEFAULT_FOOT_CONTENT = "你没有收获到任何建议。";
 
 const STATUS_IMAGE_BY_CODE = {
   乐观: "https://howtotalk.oss-cn-beijing.aliyuncs.com/parenting/%E4%B9%90%E8%A7%82.jpg",
@@ -104,6 +108,22 @@ function dayOfWeekText(date) {
   return weekdays[date.getDay()] || "";
 }
 
+function addDays(date, deltaDays) {
+  const d = date instanceof Date ? new Date(date.getTime()) : new Date();
+  d.setDate(d.getDate() + Number(deltaDays || 0));
+  return d;
+}
+
+function toRelativeDayText(recordDate, dayNumber, todayYmd, yesterdayYmd) {
+  if (recordDate && todayYmd && recordDate === todayYmd) return "今天";
+  if (recordDate && yesterdayYmd && recordDate === yesterdayYmd) return "昨天";
+  return String(dayNumber || 0).padStart(2, "0");
+}
+
+function isRelativeDay(recordDate, todayYmd, yesterdayYmd) {
+  return Boolean(recordDate && ((todayYmd && recordDate === todayYmd) || (yesterdayYmd && recordDate === yesterdayYmd)));
+}
+
 function clampMonthValue(value, minMonth, maxMonth) {
   const v = normalizeMonthValue(value);
   const min = normalizeMonthValue(minMonth);
@@ -146,12 +166,100 @@ const STATUS_CODE_BY_MOOD_ID = {
   sad: "难过",
 };
 
+function toNonEmptyText(value) {
+  const s = value != null ? String(value).trim() : "";
+  return s ? s : "";
+}
+
+function pickFirstBySortNo(options) {
+  const list = Array.isArray(options) ? options : [];
+  if (!list.length) return null;
+  const sorted = list
+    .map((o) => ({
+      sortNo: Number(o?.sortNo),
+      option: o,
+    }))
+    .sort((a, b) => {
+      const sa = Number.isFinite(a.sortNo) ? a.sortNo : Number.MAX_SAFE_INTEGER;
+      const sb = Number.isFinite(b.sortNo) ? b.sortNo : Number.MAX_SAFE_INTEGER;
+      return sa - sb;
+    });
+  return sorted[0]?.option || null;
+}
+
+function buildAssessmentPreviewFromDetail(detail) {
+  const items = Array.isArray(detail?.items) ? detail.items : [];
+  if (!items.length) return null;
+  const firstItem =
+    items
+      .slice()
+      .sort((a, b) => Number(a?.displayOrder || 0) - Number(b?.displayOrder || 0))[0] || null;
+  if (!firstItem) return null;
+
+  const title = toNonEmptyText(firstItem.content);
+  if (!title) return null;
+
+  const firstOption = pickFirstBySortNo(firstItem.options);
+  const tip = toNonEmptyText(firstOption?.improvementTip) || toNonEmptyText(detail?.aiSummary) || DEFAULT_FOOT_CONTENT;
+
+  return { title, content: tip };
+}
+
+function uniqPositiveNumbers(values) {
+  const list = Array.isArray(values) ? values : [];
+  const seen = new Set();
+  const out = [];
+  for (const v of list) {
+    const n = Number(v || 0);
+    if (!Number.isFinite(n) || n <= 0) continue;
+    if (seen.has(n)) continue;
+    seen.add(n);
+    out.push(n);
+  }
+  return out;
+}
+
+function promisePool(inputs, worker, concurrency) {
+  const list = Array.isArray(inputs) ? inputs : [];
+  const limit = Math.max(1, Number(concurrency || 1));
+  const results = new Array(list.length);
+  let cursor = 0;
+  let active = 0;
+
+  return new Promise((resolve) => {
+    function next() {
+      if (cursor >= list.length && active === 0) {
+        resolve(results);
+        return;
+      }
+      while (active < limit && cursor < list.length) {
+        const idx = cursor++;
+        active += 1;
+        Promise.resolve()
+          .then(() => worker(list[idx], idx))
+          .then((res) => {
+            results[idx] = res;
+          })
+          .catch(() => {
+            results[idx] = null;
+          })
+          .finally(() => {
+            active -= 1;
+            next();
+          });
+      }
+    }
+    next();
+  });
+}
+
 function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
   const month = monthly && monthly.month ? String(monthly.month) : "";
   const days = Array.isArray(monthly?.days) ? monthly.days : [];
   if (!month) return [];
 
   const todayYmd = formatDateYmd(today);
+  const yesterdayYmd = formatDateYmd(addDays(today, -1));
   const thisMonth = toMonthValue(today);
   const isCurrentMonth = month === thisMonth;
 
@@ -179,6 +287,7 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
 
       const assessmentId = d.assessment && d.assessment.assessmentId ? Number(d.assessment.assessmentId) : 0;
       const aiSummary = d.assessment && d.assessment.aiSummary ? String(d.assessment.aiSummary) : "";
+      const hasAssessment = Boolean(assessmentId);
 
       const diaryContent = d.diary && d.diary.content ? String(d.diary.content) : "";
       const diaryImageUrl = d.diary && d.diary.imageUrl ? String(d.diary.imageUrl) : "";
@@ -190,30 +299,26 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         Boolean(assessmentId) ||
         hasDiary;
 
-      const title = isDone
-        ? troubleNames[0] ||
-          (diaryContent
-            ? diaryContent.slice(0, 12)
-            : diaryImageUrl
-              ? "已记录日记配图"
-              : assessmentId
-                ? "已完成自测"
-                : "已完成今日觉察")
-        : "你忘记觉察了哦";
-      const content = isDone
-        ? (aiSummary || (troubleNames.length ? `烦恼：${troubleNames.slice(0, 3).join("、")}` : statusCode || ""))
-        : "你没留下任何感悟";
+      // Home card footer (2 lines) is driven only by daily assessment data.
+      // When the day has an assessment record, we further replace these placeholders with:
+      // - Q1 title
+      // - Q1 first option improvementTip
+      const title = hasAssessment ? "已完成自测" : DEFAULT_FOOT_TITLE;
+      const content = hasAssessment ? (aiSummary || DEFAULT_FOOT_CONTENT) : DEFAULT_FOOT_CONTENT;
 
       const imageUrl = diaryImageUrl.trim();
 
       return {
         id: `obs-${recordDate}`,
         date: recordDate,
-        dayText: String(day).padStart(2, "0"),
+        dayText: toRelativeDayText(recordDate, day, todayYmd, yesterdayYmd),
         day,
         weekday: dayOfWeekText(dt),
         isToday: recordDate === todayYmd,
+        isRelativeDayText: isRelativeDay(recordDate, todayYmd, yesterdayYmd),
         isDone,
+        assessmentId,
+        hasAssessment,
         imageUrl: isDone ? imageUrl : "",
         title,
         content,
@@ -236,6 +341,8 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
   const maxDay = isCurrentMonth ? today.getDate() : new Date(year, month + 1, 0).getDate();
 
+  const todayYmd = formatDateYmd(today);
+  const yesterdayYmd = formatDateYmd(addDays(today, -1));
   const list = [];
   for (let day = maxDay; day >= 1; day -= 1) {
     const d = new Date(year, month, day);
@@ -243,14 +350,17 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
     list.push({
       id: `obs-${date}`,
       date,
-      dayText: String(day).padStart(2, "0"),
+      dayText: toRelativeDayText(date, day, todayYmd, yesterdayYmd),
       day,
       weekday: dayOfWeekText(d),
-      isToday: date === formatDateYmd(today),
+      isToday: date === todayYmd,
+      isRelativeDayText: isRelativeDay(date, todayYmd, yesterdayYmd),
       isDone: false,
+      assessmentId: 0,
+      hasAssessment: false,
       imageUrl: "",
-      title: "你忘记觉察了哦",
-      content: "你没留下任何感悟",
+      title: DEFAULT_FOOT_TITLE,
+      content: DEFAULT_FOOT_CONTENT,
       hasStatus: false,
       moodEmoji: "",
       moodCls: "",
@@ -281,6 +391,10 @@ Page({
     maxMonthEnd: "",
     dayList: [],
     monthLoading: false,
+  },
+  onUnload() {
+    // Prevent late async results from updating another instance of this page.
+    this._assessmentPreviewReqId = (this._assessmentPreviewReqId || 0) + 1;
   },
   onShow() {
     const tab = this.getTabBar && this.getTabBar();
@@ -320,6 +434,54 @@ Page({
     const cached = getCachedMe();
     if (cached) this.applyMe(cached);
     this.initPage();
+  },
+
+  loadAssessmentPreviews(dayList) {
+    const currentList = Array.isArray(dayList) ? dayList : [];
+    const assessmentIds = uniqPositiveNumbers(currentList.map((d) => d && d.assessmentId));
+    if (!assessmentIds.length) return;
+
+    if (!this._assessmentPreviewCache) this._assessmentPreviewCache = new Map();
+    const reqId = (this._assessmentPreviewReqId || 0) + 1;
+    this._assessmentPreviewReqId = reqId;
+
+    const toFetch = assessmentIds.filter((id) => !this._assessmentPreviewCache.has(id));
+    if (!toFetch.length) {
+      this.applyAssessmentPreviewsFromCache();
+      return;
+    }
+
+    promisePool(
+      toFetch,
+      (assessmentId) =>
+        getDailyRecordDetail(assessmentId, { toast: false })
+          .then((detail) => {
+            const preview = buildAssessmentPreviewFromDetail(detail);
+            return preview ? { assessmentId, preview } : null;
+          })
+          .catch(() => null),
+      4
+    ).then((results) => {
+      if (this._assessmentPreviewReqId !== reqId) return;
+      for (const item of results) {
+        if (!item) continue;
+        this._assessmentPreviewCache.set(item.assessmentId, item.preview);
+      }
+      this.applyAssessmentPreviewsFromCache();
+    });
+  },
+
+  applyAssessmentPreviewsFromCache() {
+    if (!this._assessmentPreviewCache || this._assessmentPreviewCache.size === 0) return;
+    const list = Array.isArray(this.data.dayList) ? this.data.dayList : [];
+    const next = list.map((d) => {
+      const assessmentId = Number(d?.assessmentId || 0);
+      if (!assessmentId) return d;
+      const preview = this._assessmentPreviewCache.get(assessmentId);
+      if (!preview) return d;
+      return { ...d, title: preview.title, content: preview.content };
+    });
+    this.setData({ dayList: next });
   },
 
   applyMe(me) {
@@ -409,6 +571,11 @@ Page({
   toggleChildMenu() {
     this.setData({ menuOpen: !this.data.menuOpen });
   },
+  onOpenProfile() {
+    ensureLoggedIn()
+      .then(() => wx.navigateTo({ url: "/pages/me/profile" }))
+      .catch(() => {});
+  },
 
   closeChildMenu() {
     this.setData({ menuOpen: false });
@@ -458,6 +625,7 @@ Page({
         const days = buildDayListFromMonthlyApi(monthly, childId, today);
         if (days.length) {
           this.setData({ dayList: days });
+          this.loadAssessmentPreviews(days);
           return;
         }
         const parts = monthValue.split("-").map((x) => Number(x));

@@ -9,6 +9,7 @@ export type AdminChildView = {
   childNickname: string;
   gender: number;
   birthDate: string;
+  ageYear: number;
   status: number;
   createdAt: string;
 };
@@ -21,9 +22,10 @@ export async function listChildren(params: {
   childId?: number;
   childNickname?: string;
   gender?: number;
+  ageMin?: number;
+  ageMax?: number;
   status?: number;
 }): Promise<PageResponse<AdminChildView>> {
   const res = await http.get<ApiResponse<PageResponse<AdminChildView>>>("/api/v1/admin/children", { params });
   return res.data.data;
 }
-

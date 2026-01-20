@@ -177,7 +177,7 @@
         <view class="diary-prompt">
           <view class="diary-prompt__head row">
             <view class="diary-prompt__spark">✦</view>
-            <view class="diary-prompt__label">灵感胶囊</view>
+            <view class="diary-prompt__label">你记录的每一次感悟，都是你成长的脚印</view>
           </view>
           <view class="diary-prompt__box">
             <view class="diary-prompt__text">{{diaryPromptText}}</view>

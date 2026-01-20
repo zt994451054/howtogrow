@@ -12,6 +12,7 @@ let chartInstance = null;
 let pendingOption = null;
 let lastDaysRaw = [];
 let awarenessReqSeq = 0;
+const MAX_RANGE_DAYS = 180;
 
 function toSafeId(value) {
   const n = Number(value || 0);
@@ -195,6 +196,36 @@ function getDaysDiffInclusive(fromYmd, toYmd) {
   return Math.floor(diff / (24 * 3600 * 1000)) + 1;
 }
 
+function addDaysYmd(ymd, deltaDays) {
+  const d = new Date(`${String(ymd || "").trim()}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return "";
+  d.setDate(d.getDate() + Number(deltaDays || 0));
+  return formatDateYmd(d);
+}
+
+function clampDateRange(fromYmd, toYmd, todayYmd) {
+  let from = String(fromYmd || "").trim();
+  let to = String(toYmd || "").trim();
+  const today = String(todayYmd || "").trim();
+  if (!from || !to || !today) return { from: from || "", to: to || "", clamped: false };
+
+  let clamped = false;
+  if (to > today) {
+    to = today;
+    clamped = true;
+  }
+  if (from > to) {
+    from = to;
+    clamped = true;
+  }
+  const days = getDaysDiffInclusive(from, to);
+  if (days > MAX_RANGE_DAYS) {
+    from = addDaysYmd(to, -(MAX_RANGE_DAYS - 1));
+    clamped = true;
+  }
+  return { from, to, clamped };
+}
+
 function normalizeDays(days) {
   const list = Array.isArray(days) ? [...days] : [];
   list.sort((a, b) => String(a?.bizDate || "").localeCompare(String(b?.bizDate || "")));
@@ -331,6 +362,11 @@ Page({
     rangeLabel: "近90天",
     rangeDays: 90,
     persistenceDays: 1,
+    customRangeOpen: false,
+    customMinDate: "2020-01-01",
+    customFromDraft: "",
+    customToDraft: "",
+    customRangeDays: 0,
 
     dimensions: DIMENSIONS.map((d) => ({ ...d, _on: true })),
     visibleDimensionCodes: DIMENSIONS.map((d) => d.code),
@@ -406,6 +442,11 @@ Page({
     }
     pendingOption = null;
     lastDaysRaw = [];
+  },
+  onOpenProfile() {
+    ensureLoggedIn()
+      .then(() => wx.navigateTo({ url: "/pages/me/profile" }))
+      .catch(() => {});
   },
 
   applyMe(me) {
@@ -503,6 +544,7 @@ Page({
       { label: "近7天", days: 7 },
       { label: "近30天", days: 30 },
       { label: "近90天", days: 90 },
+      { label: "自定义…", days: 0, custom: true },
     ];
 
     wx.showActionSheet({
@@ -512,6 +554,10 @@ Page({
         const idx = Number(res.tapIndex);
         if (!Number.isFinite(idx) || idx < 0 || idx >= options.length) return;
         const picked = options[idx];
+        if (picked.custom) {
+          this.openCustomRangePicker();
+          return;
+        }
         const today = new Date();
         const dateTo = formatDateYmd(today);
         const dateFrom = formatDateYmd(new Date(today.getTime() - picked.days * 24 * 3600 * 1000));
@@ -532,6 +578,76 @@ Page({
       fail: () => {},
       complete: () => {},
     });
+  },
+
+  openCustomRangePicker() {
+    const today = String(this.data.today || "") || formatDateYmd(new Date());
+    const currentFrom = String(this.data.dateFrom || "") || today;
+    const currentTo = String(this.data.dateTo || "") || today;
+    const { from, to } = clampDateRange(currentFrom, currentTo, today);
+    this.setData({
+      customRangeOpen: true,
+      customFromDraft: from,
+      customToDraft: to,
+      customRangeDays: getDaysDiffInclusive(from, to),
+    });
+  },
+
+  closeCustomRangePicker() {
+    this.setData({ customRangeOpen: false });
+  },
+
+  onCustomFromChange(e) {
+    const nextFrom = String(e?.detail?.value || "").trim();
+    const today = String(this.data.today || "") || formatDateYmd(new Date());
+    const to = String(this.data.customToDraft || "").trim() || today;
+    const { from, to: nextTo, clamped } = clampDateRange(nextFrom, to, today);
+    this.setData({
+      customFromDraft: from,
+      customToDraft: nextTo,
+      customRangeDays: getDaysDiffInclusive(from, nextTo),
+    });
+    if (clamped) wx.showToast({ title: `最多${MAX_RANGE_DAYS}天，已自动调整`, icon: "none" });
+  },
+
+  onCustomToChange(e) {
+    const nextTo = String(e?.detail?.value || "").trim();
+    const today = String(this.data.today || "") || formatDateYmd(new Date());
+    const from = String(this.data.customFromDraft || "").trim() || nextTo || today;
+    const { from: nextFrom, to, clamped } = clampDateRange(from, nextTo, today);
+    this.setData({
+      customFromDraft: nextFrom,
+      customToDraft: to,
+      customRangeDays: getDaysDiffInclusive(nextFrom, to),
+    });
+    if (clamped) wx.showToast({ title: `最多${MAX_RANGE_DAYS}天，已自动调整`, icon: "none" });
+  },
+
+  onCustomRangeConfirm() {
+    const today = String(this.data.today || "") || formatDateYmd(new Date());
+    const fromDraft = String(this.data.customFromDraft || "").trim() || today;
+    const toDraft = String(this.data.customToDraft || "").trim() || today;
+    const { from, to, clamped } = clampDateRange(fromDraft, toDraft, today);
+    if (clamped) wx.showToast({ title: `最多${MAX_RANGE_DAYS}天，已自动调整`, icon: "none" });
+
+    this.setData({
+      dateFrom: from,
+      dateTo: to,
+      dateFromText: toMmDd(from),
+      dateToText: toMmDd(to),
+      rangeLabel: `${toMmDd(from)}-${toMmDd(to)}`,
+      rangeDays: getDaysDiffInclusive(from, to),
+      customRangeOpen: false,
+      customFromDraft: from,
+      customToDraft: to,
+      customRangeDays: getDaysDiffInclusive(from, to),
+    });
+
+    const childId = Number(this.data.selectedChildId || 0);
+    if (childId) {
+      this.loadCurve(childId);
+      this.loadStatusDistribution(childId);
+    }
   },
 
   onToggleDimension(e) {

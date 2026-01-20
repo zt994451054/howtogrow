@@ -19,8 +19,8 @@ function listChatMessages(sessionId, limit = 20, beforeMessageId) {
   return apiRequest("GET", `/miniprogram/ai/chat/sessions/${encodeURIComponent(String(sessionId))}/messages?${query.join("&")}`);
 }
 
-function sendChatMessage(sessionId, content) {
-  return apiRequest("POST", `/miniprogram/ai/chat/sessions/${encodeURIComponent(String(sessionId))}/messages`, { content }).then((r) => r.messageId);
+function sendChatMessage(sessionId, content, options) {
+  return apiRequest("POST", `/miniprogram/ai/chat/sessions/${encodeURIComponent(String(sessionId))}/messages`, { content }, options).then((r) => r.messageId);
 }
 
 function decodeChunk(arrayBuffer) {

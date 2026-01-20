@@ -27,7 +27,8 @@ public class CorsConfig {
     config.setAllowCredentials(corsProperties.allowCredentials());
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
-    config.setExposedHeaders(List.of(TraceId.HEADER));
+    // Expose Content-Disposition so admin web can read exported file names across origins.
+    config.setExposedHeaders(List.of(TraceId.HEADER, "Content-Disposition"));
     config.setMaxAge(3600L);
 
     var source = new UrlBasedCorsConfigurationSource();
@@ -35,4 +36,3 @@ public class CorsConfig {
     return source;
   }
 }
-

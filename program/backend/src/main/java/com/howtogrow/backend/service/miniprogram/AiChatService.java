@@ -71,7 +71,6 @@ public class AiChatService {
   }
 
   public List<String> listQuickQuestions(long userId, int limit) {
-    subscriptionService.requireSubscribed(userId);
     var safeLimit = Math.max(1, Math.min(20, limit));
     return quickQuestionRepo.listActivePrompts(safeLimit).stream()
         .map(AiChatService::safeText)
@@ -81,7 +80,6 @@ public class AiChatService {
 
   @Transactional
   public AiChatCreateSessionResponse createSession(long userId, Long childId) {
-    subscriptionService.requireSubscribed(userId);
     if (childId != null && childId <= 0) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "childId 必须为正数");
     }
@@ -90,7 +88,6 @@ public class AiChatService {
   }
 
   public List<AiChatSessionView> listSessions(long userId, int limit) {
-    subscriptionService.requireSubscribed(userId);
     var safeLimit = Math.max(1, Math.min(100, limit));
     return sessionRepo.listByUser(userId, safeLimit).stream()
         .map(s -> new AiChatSessionView(s.id(), s.childId(), s.title(), s.status(), s.lastActiveAt()))
@@ -98,7 +95,6 @@ public class AiChatService {
   }
 
   public List<AiChatMessageView> listMessages(long userId, long sessionId, int limit, Long beforeMessageId) {
-    subscriptionService.requireSubscribed(userId);
     var safeLimit = Math.max(1, Math.min(100, limit));
     Long safeBefore = null;
     if (beforeMessageId != null && beforeMessageId > 0) {
@@ -116,7 +112,9 @@ public class AiChatService {
 
   @Transactional
   public AiChatMessageCreateResponse createUserMessage(long userId, long sessionId, String content) {
-    subscriptionService.requireSubscribed(userId);
+    if (!subscriptionService.isSubscribed(userId) && messageRepo.existsAssistantMessageByUser(userId)) {
+      throw new AppException(ErrorCode.SUBSCRIPTION_REQUIRED, "未订阅或已过期，请先开通会员");
+    }
     rateLimiter.require(
         "ai-chat:user:" + userId,
         Duration.ofMinutes(1),
@@ -138,7 +136,6 @@ public class AiChatService {
   }
 
   public SseEmitter streamAssistantReply(long userId, long sessionId) {
-    subscriptionService.requireSubscribed(userId);
     var session =
         sessionRepo.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "会话不存在"));
     if (session.userId() != userId) {
@@ -146,6 +143,11 @@ public class AiChatService {
     }
 
     var emitter = new SseEmitter(60_000L);
+    var latest = messageRepo.listPageDesc(sessionId, 1, null).stream().findFirst().orElse(null);
+    if (latest == null || !"user".equalsIgnoreCase(latest.role())) {
+      emitter.complete();
+      return emitter;
+    }
     var context = messageRepo.listRecent(sessionId, CONTEXT_LIMIT);
     if (context.isEmpty()) {
       emitter.complete();

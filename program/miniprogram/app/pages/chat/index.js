@@ -263,6 +263,19 @@ Page({
     this.setData({ messages: next });
     this.scrollToBottom();
   },
+  promptSubscribe(message) {
+    wx.showModal({
+      title: "需要订阅",
+      content: message || "未订阅或已过期，请先开通会员",
+      confirmText: "去订阅",
+      cancelText: "取消",
+      success: (res) => {
+        if (res && res.confirm) {
+          wx.navigateTo({ url: "/pages/me/subscription" });
+        }
+      },
+    });
+  },
   sendText(rawText) {
     const text = String(rawText || "").trim();
     if (!text || this.data.typing) return;
@@ -281,13 +294,16 @@ Page({
           return;
         }
 
+        const prevMessages = this.data.messages;
+        const prevInput = this.data.input;
+        const prevInputTrim = this.data.inputTrim;
         const userMsg = { id: `u-${Date.now()}`, role: "user", text };
         const aiMsgId = `a-${Date.now() + 1}`;
         const aiMsg = { id: aiMsgId, role: "ai", text: "", nodes: EMPTY_AI_NODES };
         this.setData({ messages: [...this.data.messages, userMsg, aiMsg], input: "", inputTrim: "", typing: true });
         this.scrollToBottom();
 
-        sendChatMessage(this.data.sessionId, text)
+        sendChatMessage(this.data.sessionId, text, { toast: false })
           .then(() => {
             let finalText = "";
             const task = streamChat(this.data.sessionId, {
@@ -311,9 +327,15 @@ Page({
             });
             if (!task.supportsChunk) wx.showToast({ title: "当前为非流式模式", icon: "none", duration: 3000 });
           })
-          .catch(() => {
-            this.setData({ typing: false });
-            wx.showToast({ title: "发送失败", icon: "none", duration: 3000, mask: true });
+          .catch((e) => {
+            const code = e && e.code ? String(e.code) : "";
+            const message = e && e.message ? String(e.message) : "发送失败";
+            this.setData({ typing: false, messages: prevMessages, input: prevInput, inputTrim: prevInputTrim });
+            if (code === "SUBSCRIPTION_REQUIRED") {
+              this.promptSubscribe(message);
+              return;
+            }
+            wx.showToast({ title: message || "发送失败", icon: "none", duration: 3000, mask: true });
           });
       })
       .catch(() => {
