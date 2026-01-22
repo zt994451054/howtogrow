@@ -68,6 +68,19 @@ public class AdminQuestionWriteService {
     questionRepo.replaceQuestionTroubleScenes(questionId, List.of());
   }
 
+  @Transactional
+  public void batchDelete(List<Long> questionIds) {
+    var ids = normalizeIds(questionIds);
+    if (ids.isEmpty()) {
+      return;
+    }
+    var optionIds = questionRepo.listOptionIdsByQuestions(ids);
+    questionRepo.deleteOptionDimensionScores(optionIds);
+    questionRepo.softDeleteOptionsByQuestionIds(ids);
+    questionRepo.softDeleteQuestions(ids);
+    questionRepo.deleteQuestionTroubleScenesByQuestionIds(ids);
+  }
+
   private void validate(QuestionUpsertRequest request) {
     if (request.minAge() == null || request.maxAge() == null) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "minAge/maxAge 不能为空");
@@ -147,6 +160,21 @@ public class AdminQuestionWriteService {
     for (var id : ids) {
       if (id != null && id > 0 && seen.add(id)) {
         out.add(id);
+      }
+    }
+    return out;
+  }
+
+  private static List<Long> normalizeIds(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    var seen = new HashSet<Long>();
+    var out = new ArrayList<Long>();
+    for (var id : ids) {
+      var v = id == null ? null : id.longValue();
+      if (v != null && v > 0 && seen.add(v)) {
+        out.add(v);
       }
     }
     return out;

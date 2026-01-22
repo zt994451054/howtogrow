@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
 import StatusTag from "@/components/StatusTag.vue";
-import { createAiQuickQuestion, deleteAiQuickQuestion, listAiQuickQuestions, updateAiQuickQuestion, type AiQuickQuestionUpsertRequest, type AiQuickQuestionView } from "@/api/admin/ai-quick-questions";
+import { batchDeleteAiQuickQuestions, createAiQuickQuestion, deleteAiQuickQuestion, listAiQuickQuestions, updateAiQuickQuestion, type AiQuickQuestionUpsertRequest, type AiQuickQuestionView } from "@/api/admin/ai-quick-questions";
 import { formatDateTime } from "@/utils/format";
 
 type PageState = {
@@ -20,6 +20,8 @@ const loading = ref(false);
 const items = ref<AiQuickQuestionView[]>([]);
 const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
 const filter = reactive<FilterState>({ status: null, keyword: "" });
+const selected = ref<AiQuickQuestionView[]>([]);
+const batchDeleting = ref(false);
 
 const dialogVisible = ref(false);
 const editing = ref<AiQuickQuestionView | null>(null);
@@ -50,7 +52,9 @@ async function reload() {
     if (page.value.page > 1 && page.value.total > 0 && items.value.length === 0) {
       page.value.page -= 1;
       await reload();
+      return;
     }
+    selected.value = [];
   } finally {
     loading.value = false;
   }
@@ -125,6 +129,25 @@ async function remove(row: AiQuickQuestionView) {
   await reload();
 }
 
+function onSelectionChange(rows: AiQuickQuestionView[]) {
+  selected.value = Array.isArray(rows) ? rows : [];
+}
+
+async function removeSelected() {
+  if (!selected.value.length) return;
+  const ids = Array.from(new Set(selected.value.map((x) => x.id)));
+  await ElMessageBox.confirm(`确认删除选中的 ${ids.length} 条快捷问题？`, "提示", { type: "warning" });
+
+  batchDeleting.value = true;
+  try {
+    await batchDeleteAiQuickQuestions(ids);
+    ElMessage.success("已批量删除");
+    await reload();
+  } finally {
+    batchDeleting.value = false;
+  }
+}
+
 onMounted(() => {
   void reload();
 });
@@ -136,6 +159,9 @@ onMounted(() => {
       <h3>快捷问题</h3>
       <div class="actions">
         <el-button @click="reload">刷新</el-button>
+        <el-button type="danger" :disabled="!selected.length" :loading="batchDeleting" @click="removeSelected">
+          批量删除<span v-if="selected.length">({{ selected.length }})</span>
+        </el-button>
         <el-button type="primary" @click="openCreate">新增</el-button>
       </div>
     </div>
@@ -158,7 +184,8 @@ onMounted(() => {
       </el-form>
     </div>
 
-    <el-table :data="items" v-loading="loading" style="width: 100%">
+    <el-table :data="items" v-loading="loading" style="width: 100%" @selection-change="onSelectionChange">
+      <el-table-column type="selection" width="46" align="center" />
       <el-table-column prop="id" label="ID" width="90" />
       <el-table-column label="顺序" width="90" align="center">
         <template #default="{ row }">{{ row.sortNo }}</template>
@@ -243,4 +270,3 @@ onMounted(() => {
   justify-content: flex-end;
 }
 </style>
-

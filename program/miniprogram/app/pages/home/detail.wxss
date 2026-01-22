@@ -857,8 +857,8 @@
 }
 
 .trouble-chip__logo {
-  width: 80rpx;
-  height: 80rpx;
+  width: 150rpx;
+  height: 150rpx;
   border-radius: 9999rpx;
 }
 

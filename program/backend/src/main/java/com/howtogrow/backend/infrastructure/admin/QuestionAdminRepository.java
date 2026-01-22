@@ -63,6 +63,15 @@ public class QuestionAdminRepository {
         Map.of("id", questionId));
   }
 
+  public void softDeleteQuestions(List<Long> questionIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return;
+    }
+    jdbc.update(
+        "UPDATE question SET status = 0, deleted_at = NOW(3), updated_at = NOW(3) WHERE id IN (:ids) AND deleted_at IS NULL",
+        Map.of("ids", questionIds));
+  }
+
   public List<Long> listOptionIdsByQuestion(long questionId) {
     var sql =
         """
@@ -71,6 +80,19 @@ public class QuestionAdminRepository {
         WHERE question_id = :questionId AND deleted_at IS NULL
         """;
     return jdbc.queryForList(sql, Map.of("questionId", questionId), Long.class);
+  }
+
+  public List<Long> listOptionIdsByQuestions(List<Long> questionIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return List.of();
+    }
+    var sql =
+        """
+        SELECT id
+        FROM question_option
+        WHERE question_id IN (:questionIds) AND deleted_at IS NULL
+        """;
+    return jdbc.queryForList(sql, Map.of("questionIds", questionIds), Long.class);
   }
 
   public void deleteOptionDimensionScores(List<Long> optionIds) {
@@ -84,6 +106,15 @@ public class QuestionAdminRepository {
     jdbc.update(
         "UPDATE question_option SET deleted_at = NOW(3), updated_at = NOW(3) WHERE question_id = :questionId AND deleted_at IS NULL",
         Map.of("questionId", questionId));
+  }
+
+  public void softDeleteOptionsByQuestionIds(List<Long> questionIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return;
+    }
+    jdbc.update(
+        "UPDATE question_option SET deleted_at = NOW(3), updated_at = NOW(3) WHERE question_id IN (:questionIds) AND deleted_at IS NULL",
+        Map.of("questionIds", questionIds));
   }
 
   public void updateQuestion(long questionId, String content, int minAge, int maxAge, String questionType, int status) {
@@ -173,5 +204,19 @@ public class QuestionAdminRepository {
 
   public void deleteQuestionTroubleScenesBySceneId(long sceneId) {
     jdbc.update("DELETE FROM question_trouble_scene WHERE scene_id = :sid", Map.of("sid", sceneId));
+  }
+
+  public void deleteQuestionTroubleScenesBySceneIds(List<Long> sceneIds) {
+    if (sceneIds == null || sceneIds.isEmpty()) {
+      return;
+    }
+    jdbc.update("DELETE FROM question_trouble_scene WHERE scene_id IN (:sids)", Map.of("sids", sceneIds));
+  }
+
+  public void deleteQuestionTroubleScenesByQuestionIds(List<Long> questionIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return;
+    }
+    jdbc.update("DELETE FROM question_trouble_scene WHERE question_id IN (:qids)", Map.of("qids", questionIds));
   }
 }

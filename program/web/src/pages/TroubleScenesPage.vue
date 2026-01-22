@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
-import { createTroubleScene, deleteTroubleScene, importTroubleScenesExcel, listTroubleScenes, updateTroubleScene, type TroubleSceneUpsertRequest, type TroubleSceneView } from "@/api/admin/trouble-scenes";
+import { batchDeleteTroubleScenes, createTroubleScene, deleteTroubleScene, importTroubleScenesExcel, listTroubleScenes, updateTroubleScene, type TroubleSceneUpsertRequest, type TroubleSceneView } from "@/api/admin/trouble-scenes";
 import { uploadPublic } from "@/api/admin/uploads";
 
 type PageState = {
@@ -13,6 +13,8 @@ type PageState = {
 const loading = ref(false);
 const items = ref<TroubleSceneView[]>([]);
 const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
+const selected = ref<TroubleSceneView[]>([]);
+const batchDeleting = ref(false);
 
 type TroubleSceneFilter = {
   keyword: string;
@@ -74,7 +76,9 @@ async function reload() {
     if (page.value.page > 1 && page.value.total > 0 && items.value.length === 0) {
       page.value.page -= 1;
       await reload();
+      return;
     }
+    selected.value = [];
   } finally {
     loading.value = false;
   }
@@ -153,6 +157,27 @@ async function remove(row: TroubleSceneView) {
   await reload();
 }
 
+function onSelectionChange(rows: TroubleSceneView[]) {
+  selected.value = Array.isArray(rows) ? rows : [];
+}
+
+async function removeSelected() {
+  if (!selected.value.length) return;
+  const ids = Array.from(new Set(selected.value.map((x) => x.id)));
+  await ElMessageBox.confirm(`确认删除选中的 ${ids.length} 个烦恼场景？（将影响题目关联）`, "提示", {
+    type: "warning"
+  });
+
+  batchDeleting.value = true;
+  try {
+    await batchDeleteTroubleScenes(ids);
+    ElMessage.success("已批量删除");
+    await reload();
+  } finally {
+    batchDeleting.value = false;
+  }
+}
+
 async function onUploadLogo(options: { file: File; onSuccess: (res: unknown) => void; onError: (err: unknown) => void }) {
   try {
     const url = await uploadPublic(options.file);
@@ -207,6 +232,9 @@ onMounted(() => {
       <h3>烦恼场景</h3>
       <div class="actions">
         <el-button @click="reload">刷新</el-button>
+        <el-button type="danger" :disabled="!selected.length" :loading="batchDeleting" @click="removeSelected">
+          批量删除<span v-if="selected.length">({{ selected.length }})</span>
+        </el-button>
         <el-button @click="openImport">导入</el-button>
         <el-button type="primary" @click="openCreate">新增</el-button>
       </div>
@@ -227,7 +255,8 @@ onMounted(() => {
       </el-form>
     </div>
 
-    <el-table :data="items" v-loading="loading" style="width: 100%">
+    <el-table :data="items" v-loading="loading" style="width: 100%" @selection-change="onSelectionChange">
+      <el-table-column type="selection" width="46" align="center" />
       <el-table-column prop="id" label="ID" width="90" />
       <el-table-column prop="name" label="名称" />
       <el-table-column label="年龄(岁)" width="140">

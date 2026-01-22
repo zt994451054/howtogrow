@@ -129,5 +129,18 @@ public class QuoteAdminRepository {
     jdbc.update(sql, Map.of("id", id));
   }
 
+  public void softDeleteBatch(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return;
+    }
+    var sql =
+        """
+        UPDATE quote
+        SET status = 0, deleted_at = NOW(3), updated_at = NOW(3)
+        WHERE id IN (:ids) AND deleted_at IS NULL
+        """;
+    jdbc.update(sql, Map.of("ids", ids));
+  }
+
   public record QuoteRow(long id, String content, String scene, int minAge, int maxAge, int status) {}
 }

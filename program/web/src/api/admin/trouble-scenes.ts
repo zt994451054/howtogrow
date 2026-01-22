@@ -42,6 +42,10 @@ export async function deleteTroubleScene(id: number): Promise<void> {
   await http.delete<ApiResponse<unknown>>(`/api/v1/admin/trouble-scenes/${id}`);
 }
 
+export async function batchDeleteTroubleScenes(ids: number[]): Promise<void> {
+  await http.post<ApiResponse<unknown>>("/api/v1/admin/trouble-scenes/batch-delete", { ids });
+}
+
 export async function importTroubleScenesExcel(file: File): Promise<{ imported: number }> {
   const form = new FormData();
   form.append("file", file);

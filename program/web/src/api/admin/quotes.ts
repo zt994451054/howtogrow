@@ -40,3 +40,7 @@ export async function updateQuote(id: number, request: QuoteUpsertRequest): Prom
 export async function deleteQuote(id: number): Promise<void> {
   await http.delete<ApiResponse<unknown>>(`/api/v1/admin/quotes/${id}`);
 }
+
+export async function batchDeleteQuotes(ids: number[]): Promise<void> {
+  await http.post<ApiResponse<unknown>>("/api/v1/admin/quotes/batch-delete", { ids });
+}

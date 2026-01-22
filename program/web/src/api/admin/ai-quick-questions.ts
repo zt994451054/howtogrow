@@ -39,3 +39,6 @@ export async function deleteAiQuickQuestion(id: number): Promise<void> {
   await http.delete<ApiResponse<unknown>>(`/api/v1/admin/ai-quick-questions/${id}`);
 }
 
+export async function batchDeleteAiQuickQuestions(ids: number[]): Promise<void> {
+  await http.post<ApiResponse<unknown>>("/api/v1/admin/ai-quick-questions/batch-delete", { ids });
+}

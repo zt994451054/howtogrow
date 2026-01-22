@@ -5,6 +5,7 @@ import StatusTag from "@/components/StatusTag.vue";
 import { listDimensions, type DimensionView } from "@/api/admin/dimensions";
 import { listAllTroubleScenes, type TroubleSceneView } from "@/api/admin/trouble-scenes";
 import {
+  batchDeleteQuestions,
   createQuestion,
   deleteQuestion,
   getQuestion,
@@ -26,6 +27,8 @@ type PageState = {
 const loading = ref(false);
 const items = ref<QuestionSummaryView[]>([]);
 const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
+const selected = ref<QuestionSummaryView[]>([]);
+const batchDeleting = ref(false);
 
 const dimensions = ref<DimensionView[]>([]);
 const troubleScenes = ref<TroubleSceneView[]>([]);
@@ -43,6 +46,12 @@ async function reload() {
     const res = await listQuestions({ page: page.value.page, pageSize: page.value.pageSize });
     items.value = res.items;
     page.value.total = res.total;
+    if (page.value.page > 1 && page.value.total > 0 && items.value.length === 0) {
+      page.value.page -= 1;
+      await reload();
+      return;
+    }
+    selected.value = [];
   } finally {
     loading.value = false;
   }
@@ -104,6 +113,25 @@ async function remove(row: QuestionSummaryView) {
   await reload();
 }
 
+function onSelectionChange(rows: QuestionSummaryView[]) {
+  selected.value = Array.isArray(rows) ? rows : [];
+}
+
+async function removeSelected() {
+  if (!selected.value.length) return;
+  const ids = Array.from(new Set(selected.value.map((x) => x.questionId)));
+  await ElMessageBox.confirm(`确认删除选中的 ${ids.length} 道题目？`, "提示", { type: "warning" });
+
+  batchDeleting.value = true;
+  try {
+    await batchDeleteQuestions(ids);
+    ElMessage.success("已批量删除");
+    await reload();
+  } finally {
+    batchDeleting.value = false;
+  }
+}
+
 function onSizeChange(size: number) {
   page.value.pageSize = size;
   page.value.page = 1;
@@ -127,13 +155,17 @@ onMounted(async () => {
       <h3>题库</h3>
       <div class="actions">
         <el-button @click="reload">刷新</el-button>
+        <el-button type="danger" :disabled="!selected.length" :loading="batchDeleting" @click="removeSelected">
+          批量删除<span v-if="selected.length">({{ selected.length }})</span>
+        </el-button>
         <el-button @click="downloadTemplate">下载导入模板</el-button>
         <el-button @click="openImport">导入题库</el-button>
         <el-button type="primary" @click="openCreate">新增</el-button>
       </div>
     </div>
 
-    <el-table :data="items" v-loading="loading" style="width: 100%">
+    <el-table :data="items" v-loading="loading" style="width: 100%" @selection-change="onSelectionChange">
+      <el-table-column type="selection" width="46" align="center" />
       <el-table-column prop="questionId" label="ID" width="90" />
       <el-table-column label="年龄范围(岁)" width="140">
         <template #default="{ row }">{{ row.minAge }}-{{ row.maxAge }}</template>

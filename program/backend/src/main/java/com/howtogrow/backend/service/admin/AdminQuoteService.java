@@ -8,6 +8,9 @@ import com.howtogrow.backend.api.ErrorCode;
 import com.howtogrow.backend.api.exception.AppException;
 import com.howtogrow.backend.domain.quote.QuoteScene;
 import com.howtogrow.backend.infrastructure.admin.QuoteAdminRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +56,15 @@ public class AdminQuoteService {
     repo.softDelete(id);
   }
 
+  @Transactional
+  public void batchDelete(List<Long> ids) {
+    var normalized = normalizeIds(ids);
+    if (normalized.isEmpty()) {
+      return;
+    }
+    repo.softDeleteBatch(normalized);
+  }
+
   private static void validate(String scene, Integer minAge, Integer maxAge) {
     if (QuoteScene.fromValue(scene).isEmpty()) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "场景不合法");
@@ -69,5 +81,19 @@ public class AdminQuoteService {
     if (text == null) return null;
     var t = text.trim();
     return t.isBlank() ? null : t;
+  }
+
+  private static List<Long> normalizeIds(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    var seen = new HashSet<Long>();
+    var out = new ArrayList<Long>();
+    for (var id : ids) {
+      if (id != null && id > 0 && seen.add(id)) {
+        out.add(id);
+      }
+    }
+    return out;
   }
 }

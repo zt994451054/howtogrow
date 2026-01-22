@@ -50,14 +50,35 @@
     bindscrolltoupper="onMessagesScrollToUpper"
   >
     <view class="msg-list">
-      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
-        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
-          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
-            <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
-          </view>
+	      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
+	        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
+	          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
+	            <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
+	          </view>
           <view wx:if="{{item.role == 'user'}}" class="bubble b-me">{{item.text}}</view>
           <view wx:else class="bubble b-ai">
-            <towxml nodes="{{item.nodes}}"></towxml>
+            <view wx:if="{{typing && idx == messages.length - 1 && !item.text}}" class="typing-hint">
+              <text>正在帮你输出解决方案</text>
+              <view class="typing-hint__dots">
+                <view class="typing-hint__dot d1" />
+                <view class="typing-hint__dot d2" />
+                <view class="typing-hint__dot d3" />
+              </view>
+            </view>
+            <view wx:else class="ai-content">
+              <view wx:if="{{typing && idx == messages.length - 1}}" class="ai-plain">{{item.text}}</view>
+              <towxml wx:else nodes="{{item.nodes}}"></towxml>
+              <view
+                wx:if="{{item.text && item.id != 'm1' && (!typing || idx != messages.length - 1)}}"
+                class="copy-btn"
+                hover-class="copy-btn--hover"
+                aria-label="copy"
+                bindtap="onCopyAi"
+                data-id="{{item.id}}"
+              >
+                <ui-icon name="copy" size="{{18}}" />
+              </view>
+            </view>
           </view>
         </view>
 
@@ -93,6 +114,7 @@
   </scroll-view>
 
   <view class="input" style="bottom: {{tabbarHeight}}px;">
+    <view class="ai-tip">内容由AI生成,仅供参考</view>
     <view class="box row">
       <input class="ipt" placeholder="输入你的问题..." value="{{input}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend" />
       <view class="send {{inputTrim ? 'on' : 'off'}}" bindtap="onSend">➤</view>

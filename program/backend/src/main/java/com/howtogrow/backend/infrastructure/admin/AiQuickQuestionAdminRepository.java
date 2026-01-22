@@ -1,6 +1,7 @@
 package com.howtogrow.backend.infrastructure.admin;
 
 import com.howtogrow.backend.infrastructure.db.SqlPagination;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -109,6 +110,19 @@ public class AiQuickQuestionAdminRepository {
     jdbc.update(sql, Map.of("id", id));
   }
 
+  public void softDeleteBatch(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return;
+    }
+    var sql =
+        """
+        UPDATE ai_agent_quick_question
+        SET status = 0, deleted_at = NOW(3), updated_at = NOW(3)
+        WHERE id IN (:ids) AND deleted_at IS NULL
+        """;
+    jdbc.update(sql, Map.of("ids", ids));
+  }
+
   private static void appendWhere(StringBuilder sql, MapSqlParameterSource params, String keyword, Integer status) {
     if (status != null) {
       sql.append("\n  AND status = :status");
@@ -122,4 +136,3 @@ public class AiQuickQuestionAdminRepository {
 
   public record Row(long id, String prompt, int status, int sortNo, java.time.Instant createdAt, java.time.Instant updatedAt) {}
 }
-

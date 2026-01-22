@@ -64,6 +64,17 @@ function parseSse(buffer, handlers) {
   return { rest };
 }
 
+function parseSseFinal(buffer, handlers) {
+  // Some clients may deliver the final SSE frame without trailing "\n\n".
+  // Treat the remaining buffer as complete when the HTTP request finishes.
+  const first = parseSse(buffer, handlers);
+  if (first.rest && first.rest.trim()) {
+    const flushed = parseSse(first.rest + "\n\n", handlers);
+    return { rest: flushed.rest };
+  }
+  return first;
+}
+
 function parsePossibleJson(input) {
   try {
     return JSON.parse(String(input));
@@ -87,6 +98,8 @@ function streamChat(sessionId, handlers) {
 
   let sseBuffer = "";
   let didFail = false;
+  let didSeeDone = false;
+  let didSeeAnyDelta = false;
   let requestTask;
 
   const failOnce = (message, code, requestTask) => {
@@ -103,8 +116,14 @@ function streamChat(sessionId, handlers) {
   };
 
   const sseHandlers = {
-    onDelta: handlers.onDelta,
-    onDone: handlers.onDone,
+    onDelta: (d) => {
+      didSeeAnyDelta = didSeeAnyDelta || Boolean(String(d || ""));
+      if (typeof handlers.onDelta === "function") handlers.onDelta(d);
+    },
+    onDone: () => {
+      didSeeDone = true;
+      if (typeof handlers.onDone === "function") handlers.onDone();
+    },
     onError: (data) => {
       const normalized = normalizeStreamErrorData(data);
       failOnce(normalized.message, normalized.code, requestTask);
@@ -136,8 +155,14 @@ function streamChat(sessionId, handlers) {
       } else if (res && typeof res.data === "string") {
         sseBuffer += res.data;
       }
-      const parsed = parseSse(sseBuffer, sseHandlers);
+      const parsed = parseSseFinal(sseBuffer, sseHandlers);
       sseBuffer = parsed.rest;
+
+      // If the request finishes but the final "done" frame is missing, best-effort finalize
+      // so the UI won't stay stuck in typing state.
+      if (!didFail && !didSeeDone && didSeeAnyDelta && typeof handlers.onDone === "function") {
+        handlers.onDone();
+      }
     },
     fail: () => failOnce("网络错误", "NETWORK_ERROR", requestTask),
   });

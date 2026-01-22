@@ -23,6 +23,7 @@ Component({
         close: "×",
         menu: "≡",
         edit: "✎",
+        copy: "📋",
         bookmark: "🔖",
         chevronRight: "›",
         chevronDown: "⌄",

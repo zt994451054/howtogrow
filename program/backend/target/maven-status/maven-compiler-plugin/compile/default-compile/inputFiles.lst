@@ -51,6 +51,7 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AssessmentView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BannerUpsertRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BannerView.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BatchDeleteRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/DimensionCreateRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/DimensionUpdateRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/DimensionView.java

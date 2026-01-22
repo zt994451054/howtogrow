@@ -2,7 +2,7 @@ package com.howtogrow.backend.controller.admin;
 
 import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
-import com.howtogrow.backend.auth.AuthContext;
+import com.howtogrow.backend.controller.admin.dto.BatchDeleteRequest;
 import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.controller.admin.dto.QuestionDetailView;
 import com.howtogrow.backend.controller.admin.dto.QuestionSummaryView;
@@ -65,6 +65,12 @@ public class AdminQuestionController {
   @DeleteMapping("/{questionId}")
   public ApiResponse<Void> delete(@Parameter(description = "题目ID") @PathVariable long questionId) {
     questionWriteService.delete(questionId);
+    return ApiResponse.ok(null, TraceId.current());
+  }
+
+  @PostMapping("/batch-delete")
+  public ApiResponse<Void> batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
+    questionWriteService.batchDelete(request.ids());
     return ApiResponse.ok(null, TraceId.current());
   }
 }

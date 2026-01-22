@@ -4,6 +4,7 @@ import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
 import com.howtogrow.backend.controller.admin.dto.AiQuickQuestionUpsertRequest;
 import com.howtogrow.backend.controller.admin.dto.AiQuickQuestionView;
+import com.howtogrow.backend.controller.admin.dto.BatchDeleteRequest;
 import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.service.admin.AdminAiQuickQuestionService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,5 +57,10 @@ public class AdminAiQuickQuestionController {
     service.delete(id);
     return ApiResponse.ok(null, TraceId.current());
   }
-}
 
+  @PostMapping("/batch-delete")
+  public ApiResponse<Void> batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
+    service.batchDelete(request.ids());
+    return ApiResponse.ok(null, TraceId.current());
+  }
+}

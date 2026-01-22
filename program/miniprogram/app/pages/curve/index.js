@@ -203,24 +203,56 @@ function addDaysYmd(ymd, deltaDays) {
   return formatDateYmd(d);
 }
 
-function clampDateRange(fromYmd, toYmd, todayYmd) {
+function clampDateRange(fromYmd, toYmd, todayYmd, minYmd, anchor) {
   let from = String(fromYmd || "").trim();
   let to = String(toYmd || "").trim();
   const today = String(todayYmd || "").trim();
+  const min = String(minYmd || "").trim();
+  const keep = anchor === "from" ? "from" : "to";
   if (!from || !to || !today) return { from: from || "", to: to || "", clamped: false };
 
   let clamped = false;
+  if (min) {
+    if (from < min) {
+      from = min;
+      clamped = true;
+    }
+    if (to < min) {
+      to = min;
+      clamped = true;
+    }
+  }
   if (to > today) {
     to = today;
     clamped = true;
   }
+  if (from > today) {
+    from = today;
+    clamped = true;
+  }
   if (from > to) {
-    from = to;
+    if (keep === "from") to = from;
+    else from = to;
     clamped = true;
   }
   const days = getDaysDiffInclusive(from, to);
   if (days > MAX_RANGE_DAYS) {
-    from = addDaysYmd(to, -(MAX_RANGE_DAYS - 1));
+    if (keep === "from") {
+      let nextTo = addDaysYmd(from, MAX_RANGE_DAYS - 1);
+      if (nextTo > today) nextTo = today;
+      if (min && nextTo < min) nextTo = min;
+      to = nextTo;
+      if (from > to) {
+        from = to;
+      }
+    } else {
+      let nextFrom = addDaysYmd(to, -(MAX_RANGE_DAYS - 1));
+      if (min && nextFrom < min) nextFrom = min;
+      from = nextFrom;
+      if (from > to) {
+        to = from;
+      }
+    }
     clamped = true;
   }
   return { from, to, clamped };
@@ -584,7 +616,8 @@ Page({
     const today = String(this.data.today || "") || formatDateYmd(new Date());
     const currentFrom = String(this.data.dateFrom || "") || today;
     const currentTo = String(this.data.dateTo || "") || today;
-    const { from, to } = clampDateRange(currentFrom, currentTo, today);
+    const min = String(this.data.customMinDate || "") || "2020-01-01";
+    const { from, to } = clampDateRange(currentFrom, currentTo, today, min, "to");
     this.setData({
       customRangeOpen: true,
       customFromDraft: from,
@@ -601,7 +634,8 @@ Page({
     const nextFrom = String(e?.detail?.value || "").trim();
     const today = String(this.data.today || "") || formatDateYmd(new Date());
     const to = String(this.data.customToDraft || "").trim() || today;
-    const { from, to: nextTo, clamped } = clampDateRange(nextFrom, to, today);
+    const min = String(this.data.customMinDate || "") || "2020-01-01";
+    const { from, to: nextTo, clamped } = clampDateRange(nextFrom, to, today, min, "from");
     this.setData({
       customFromDraft: from,
       customToDraft: nextTo,
@@ -614,7 +648,8 @@ Page({
     const nextTo = String(e?.detail?.value || "").trim();
     const today = String(this.data.today || "") || formatDateYmd(new Date());
     const from = String(this.data.customFromDraft || "").trim() || nextTo || today;
-    const { from: nextFrom, to, clamped } = clampDateRange(from, nextTo, today);
+    const min = String(this.data.customMinDate || "") || "2020-01-01";
+    const { from: nextFrom, to, clamped } = clampDateRange(from, nextTo, today, min, "to");
     this.setData({
       customFromDraft: nextFrom,
       customToDraft: to,
@@ -627,7 +662,8 @@ Page({
     const today = String(this.data.today || "") || formatDateYmd(new Date());
     const fromDraft = String(this.data.customFromDraft || "").trim() || today;
     const toDraft = String(this.data.customToDraft || "").trim() || today;
-    const { from, to, clamped } = clampDateRange(fromDraft, toDraft, today);
+    const min = String(this.data.customMinDate || "") || "2020-01-01";
+    const { from, to, clamped } = clampDateRange(fromDraft, toDraft, today, min, "to");
     if (clamped) wx.showToast({ title: `最多${MAX_RANGE_DAYS}天，已自动调整`, icon: "none" });
 
     this.setData({

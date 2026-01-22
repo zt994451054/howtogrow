@@ -95,6 +95,10 @@ export async function deleteQuestion(questionId: number): Promise<void> {
   await http.delete<ApiResponse<unknown>>(`/api/v1/admin/questions/${questionId}`);
 }
 
+export async function batchDeleteQuestions(ids: number[]): Promise<void> {
+  await http.post<ApiResponse<unknown>>("/api/v1/admin/questions/batch-delete", { ids });
+}
+
 export async function importQuestionsExcel(file: File): Promise<QuestionImportResponse> {
   const form = new FormData();
   form.append("file", file);

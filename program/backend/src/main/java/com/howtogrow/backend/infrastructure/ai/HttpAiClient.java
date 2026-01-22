@@ -30,7 +30,7 @@ public class HttpAiClient implements AiClient {
             List.of(
                 new ChatMessage(
                     "system",
-                    "你是正向育儿陪伴助手。请基于给定信息生成<=200字的共情、正向引导总结，不做诊断、不贴标签。"),
+                    "你是正向育儿陪伴助手。请基于给定信息生成共情、正向引导总结，不做诊断、不贴标签。"),
                 new ChatMessage("user", prompt)),
             120);
 

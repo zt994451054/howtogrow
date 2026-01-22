@@ -244,6 +244,9 @@
 - Path：
   - `questionId`：题目ID
 
+#### `POST /api/v1/admin/questions/batch-delete`
+- Body(JSON)：`BatchDeleteRequest`
+
 #### `POST /api/v1/admin/questions/import-excel`
 - Content-Type：`multipart/form-data`
 - Body：
@@ -304,6 +307,15 @@
   - `ageMax`：年龄上限（岁，含边界，可选）
   - `status`：状态：1启用 0删除（可选）
 - 响应 data：`PageResponse<AdminChildView>`
+
+#### `POST /api/v1/admin/trouble-scenes/batch-delete`
+- Body(JSON)：`BatchDeleteRequest`
+
+#### `POST /api/v1/admin/quotes/batch-delete`
+- Body(JSON)：`BatchDeleteRequest`
+
+#### `POST /api/v1/admin/ai-quick-questions/batch-delete`
+- Body(JSON)：`BatchDeleteRequest`
 
 ### 支付回调
 
@@ -842,6 +854,11 @@
 | --- | --- | --- |
 | `userId` | number | 用户ID |
 | `subscriptionEndAt` | string/null | 订阅到期时间（可为空，ISO-8601） |
+
+#### `BatchDeleteRequest`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `ids` | array | ID 列表（最大 2000） |
 
 #### `OrderView`
 | 字段 | 类型 | 说明 |

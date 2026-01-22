@@ -2,6 +2,7 @@ package com.howtogrow.backend.controller.admin;
 
 import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
+import com.howtogrow.backend.controller.admin.dto.BatchDeleteRequest;
 import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.controller.admin.dto.QuoteCreateRequest;
 import com.howtogrow.backend.controller.admin.dto.QuoteUpdateRequest;
@@ -58,6 +59,12 @@ public class AdminQuoteController {
   @DeleteMapping("/{id}")
   public ApiResponse<Void> delete(@Parameter(description = "鸡汤语ID") @PathVariable long id) {
     quoteService.delete(id);
+    return ApiResponse.ok(null, TraceId.current());
+  }
+
+  @PostMapping("/batch-delete")
+  public ApiResponse<Void> batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
+    quoteService.batchDelete(request.ids());
     return ApiResponse.ok(null, TraceId.current());
   }
 }

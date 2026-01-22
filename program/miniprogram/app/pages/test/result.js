@@ -114,7 +114,22 @@ Page({
         this.setData({ aiSummary: content, canGenerateAiSummary: false });
       })
       .catch((err) => {
+        const code = err && err.code ? String(err.code) : "";
         const message = err && typeof err.message === "string" && err.message.trim() ? err.message.trim() : "生成失败";
+        if (code === "SUBSCRIPTION_REQUIRED") {
+          wx.showModal({
+            title: "需要订阅",
+            content: message || "未订阅或已过期，请先开通会员",
+            confirmText: "去订阅",
+            cancelText: "取消",
+            success: (res) => {
+              if (res && res.confirm) {
+                wx.navigateTo({ url: "/pages/me/subscription" });
+              }
+            },
+          });
+          return;
+        }
         wx.showToast({ title: message, icon: "none" });
       })
       .finally(() => this.setData({ aiLoading: false }));

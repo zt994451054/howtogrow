@@ -62,6 +62,14 @@ Page({
     const { statusBarHeight } = getSystemMetrics();
     this.setData({ statusBarHeight });
   },
+  onHide() {
+    this.stopAiTyping();
+    this.stopAiFallbackPoll();
+  },
+  onUnload() {
+    this.stopAiTyping();
+    this.stopAiFallbackPoll();
+  },
   onShow() {
     const tab = this.getTabBar && this.getTabBar();
     tab && tab.setData && tab.setData({ selected: 2 });
@@ -187,6 +195,8 @@ Page({
       });
   },
   startNewChat() {
+    this.stopAiTyping();
+    this.stopAiFallbackPoll();
     this.setData({
       sessionId: 0,
       messages: [
@@ -210,6 +220,8 @@ Page({
     return this.refreshSessions().then(() => this.scrollToBottom());
   },
   selectSession(e) {
+    this.stopAiTyping();
+    this.stopAiFallbackPoll();
     const id = Number(e.currentTarget.dataset.id);
     this.setData({
       sessionId: id,
@@ -235,33 +247,148 @@ Page({
     this.setData({ scrollIntoId: `bottom-${Date.now()}` });
     this.setData({ scrollIntoId: "bottom" });
   },
-  scheduleAiRender(aiMsgId, text) {
-    this._aiRenderTarget = { aiMsgId, text: String(text ?? "") };
-    if (this._aiRenderTimer) return;
-    this._aiRenderTimer = setTimeout(() => {
-      this._aiRenderTimer = null;
-      const target = this._aiRenderTarget;
-      this._aiRenderTarget = null;
-      if (!target) return;
-
-      const nodes = toAiNodes(target.text);
-      const next = this.data.messages.map((m) => (m.id === target.aiMsgId ? { ...m, text: target.text, nodes } : m));
-      this.setData({ messages: next });
-      this.scrollToBottom();
-    }, 50);
-  },
-  flushAiRender() {
-    if (this._aiRenderTimer) {
-      clearTimeout(this._aiRenderTimer);
-      this._aiRenderTimer = null;
+  stopAiTyping() {
+    if (this._aiTypingTimer) {
+      clearInterval(this._aiTypingTimer);
+      this._aiTypingTimer = null;
     }
-    const target = this._aiRenderTarget;
-    this._aiRenderTarget = null;
-    if (!target) return;
-    const nodes = toAiNodes(target.text);
-    const next = this.data.messages.map((m) => (m.id === target.aiMsgId ? { ...m, text: target.text, nodes } : m));
-    this.setData({ messages: next });
-    this.scrollToBottom();
+    this._aiTypingState = null;
+  },
+  stopAiFallbackPoll() {
+    if (this._aiFallbackTimer) {
+      clearInterval(this._aiFallbackTimer);
+      this._aiFallbackTimer = null;
+    }
+    this._aiFallbackState = null;
+  },
+  startAiFallbackPoll(sessionId, userMessageId, aiMsgId) {
+    // Fallback for devices where SSE chunks/done are not delivered reliably.
+    this.stopAiFallbackPoll();
+    this._aiFallbackState = {
+      sessionId: Number(sessionId),
+      userMessageId: Number(userMessageId),
+      aiMsgId: String(aiMsgId || ""),
+      startedAt: Date.now(),
+    };
+
+    const MAX_WAIT_MS = 60 * 1000;
+    const INTERVAL_MS = 2000;
+
+    this._aiFallbackTimer = setInterval(() => {
+      const s = this._aiFallbackState;
+      if (!s) return;
+      if (!this.data.typing) return;
+      if (Date.now() - s.startedAt > MAX_WAIT_MS) {
+        this.stopAiFallbackPoll();
+        return;
+      }
+
+      listChatMessages(s.sessionId, 20, null)
+        .then((descMessages) => {
+          const list = Array.isArray(descMessages) ? descMessages : [];
+          const assistant = list.find(
+            (m) => m && m.role === "assistant" && Number(m.messageId) > s.userMessageId && String(m.content || "").trim()
+          );
+          if (!assistant) return;
+
+          const content = String(assistant.content || "");
+          const idx = Array.isArray(this.data.messages) ? this.data.messages.findIndex((m) => m && m.id === s.aiMsgId) : -1;
+          if (idx >= 0) {
+            this.setData({ [`messages[${idx}].text`]: content, [`messages[${idx}].nodes`]: toAiNodes(content), typing: false });
+          } else {
+            // As a fallback, refresh the whole session.
+            this.setData({ typing: false });
+            this.loadSessionMessages(false);
+          }
+          this.stopAiTyping();
+          this.stopAiFallbackPoll();
+          this.refreshSessions();
+          this.scrollToBottom();
+        })
+        .catch(() => {
+          // ignore
+        });
+    }, INTERVAL_MS);
+  },
+  beginAiTyping(aiMsgId) {
+    const msgIndex = Array.isArray(this.data.messages) ? this.data.messages.findIndex((m) => m && m.id === aiMsgId) : -1;
+    this.stopAiTyping();
+    this._aiTypingState = {
+      aiMsgId,
+      msgIndex,
+      text: "",
+      pending: "",
+      queue: [],
+      streamDone: false,
+      lastScrollAt: 0,
+    };
+
+    const CHARS_PER_TICK = 6;
+    const TICK_MS = 40;
+    const SCROLL_THROTTLE_MS = 200;
+
+    this._aiTypingTimer = setInterval(() => {
+      const s = this._aiTypingState;
+      if (!s) return;
+      if (s.msgIndex < 0) return;
+
+      if (!s.pending && s.queue.length) {
+        s.pending = String(s.queue.shift() || "");
+      }
+
+      if (s.pending) {
+        const take = s.pending.slice(0, CHARS_PER_TICK);
+        s.pending = s.pending.slice(CHARS_PER_TICK);
+        s.text += take;
+        this.setData({ [`messages[${s.msgIndex}].text`]: s.text });
+        const now = Date.now();
+        if (now - (s.lastScrollAt || 0) >= SCROLL_THROTTLE_MS) {
+          s.lastScrollAt = now;
+          this.scrollToBottom();
+        }
+        return;
+      }
+
+      if (s.streamDone && !s.queue.length) {
+        const nodes = toAiNodes(s.text);
+        this.setData({ [`messages[${s.msgIndex}].nodes`]: nodes, typing: false });
+        this.stopAiTyping();
+        this.refreshSessions();
+      }
+    }, TICK_MS);
+  },
+  enqueueAiDelta(delta) {
+    const s = this._aiTypingState;
+    if (!s) return;
+    const d = String(delta || "");
+    if (!d) return;
+    this.stopAiFallbackPoll();
+    s.queue.push(d);
+  },
+  endAiTyping() {
+    const s = this._aiTypingState;
+    if (!s) return;
+    this.stopAiFallbackPoll();
+    s.streamDone = true;
+    if (!s.pending && !s.queue.length) {
+      const nodes = toAiNodes(s.text);
+      if (s.msgIndex >= 0) this.setData({ [`messages[${s.msgIndex}].nodes`]: nodes });
+      this.setData({ typing: false });
+      this.stopAiTyping();
+      this.refreshSessions();
+    }
+  },
+  failAiTyping(message) {
+    const s = this._aiTypingState;
+    if (!s) return;
+    this.stopAiFallbackPoll();
+    if (!s.text) {
+      s.text = String(message || "（网络异常。稍后再试）");
+      if (s.msgIndex >= 0) this.setData({ [`messages[${s.msgIndex}].text`]: s.text });
+    }
+    s.pending = "";
+    s.queue = [];
+    this.endAiTyping();
   },
   promptSubscribe(message) {
     wx.showModal({
@@ -302,27 +429,20 @@ Page({
         const aiMsg = { id: aiMsgId, role: "ai", text: "", nodes: EMPTY_AI_NODES };
         this.setData({ messages: [...this.data.messages, userMsg, aiMsg], input: "", inputTrim: "", typing: true });
         this.scrollToBottom();
+        this.beginAiTyping(aiMsgId);
 
         sendChatMessage(this.data.sessionId, text, { toast: false })
-          .then(() => {
-            let finalText = "";
+          .then((userMessageId) => {
+            this.startAiFallbackPoll(this.data.sessionId, userMessageId, aiMsgId);
             const task = streamChat(this.data.sessionId, {
               onDelta: (delta) => {
-                finalText += delta;
-                this.scheduleAiRender(aiMsgId, finalText);
+                this.enqueueAiDelta(delta);
               },
               onDone: () => {
-                this.flushAiRender();
-                this.setData({ typing: false });
-                this.refreshSessions();
+                this.endAiTyping();
               },
               onError: () => {
-                if (!finalText) {
-                  finalText = "（当前环境不支持流式，或网络异常。稍后再试）";
-                  this.scheduleAiRender(aiMsgId, finalText);
-                }
-                this.flushAiRender();
-                this.setData({ typing: false });
+                this.failAiTyping("（当前环境不支持流式，或网络异常。稍后再试）");
               },
             });
             if (!task.supportsChunk) wx.showToast({ title: "当前为非流式模式", icon: "none", duration: 3000 });
@@ -330,6 +450,8 @@ Page({
           .catch((e) => {
             const code = e && e.code ? String(e.code) : "";
             const message = e && e.message ? String(e.message) : "发送失败";
+            this.stopAiTyping();
+            this.stopAiFallbackPoll();
             this.setData({ typing: false, messages: prevMessages, input: prevInput, inputTrim: prevInputTrim });
             if (code === "SUBSCRIPTION_REQUIRED") {
               this.promptSubscribe(message);
@@ -351,5 +473,21 @@ Page({
     if (shouldSend) {
       this.onSend();
     }
+  },
+  onCopyAi(e) {
+    const id = e && e.currentTarget && e.currentTarget.dataset ? String(e.currentTarget.dataset.id || "") : "";
+    if (!id) return;
+    const msg = Array.isArray(this.data.messages) ? this.data.messages.find((m) => m && m.id === id) : null;
+    const text = msg && msg.text ? String(msg.text) : "";
+    if (!text.trim()) return;
+    wx.setClipboardData({
+      data: text,
+      success: () => {
+        wx.showToast({ title: "已复制", icon: "success", duration: 1500 });
+      },
+      fail: () => {
+        wx.showToast({ title: "复制失败", icon: "none", duration: 2000 });
+      },
+    });
   },
 });

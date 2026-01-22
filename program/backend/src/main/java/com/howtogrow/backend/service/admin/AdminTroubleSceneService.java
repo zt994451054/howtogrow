@@ -7,6 +7,9 @@ import com.howtogrow.backend.controller.admin.dto.TroubleSceneUpsertRequest;
 import com.howtogrow.backend.controller.admin.dto.TroubleSceneView;
 import com.howtogrow.backend.infrastructure.admin.QuestionAdminRepository;
 import com.howtogrow.backend.infrastructure.trouble.TroubleSceneRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +84,16 @@ public class AdminTroubleSceneService {
     sceneRepo.softDelete(id);
   }
 
+  @Transactional
+  public void batchDelete(List<Long> ids) {
+    var normalized = normalizeIds(ids);
+    if (normalized.isEmpty()) {
+      return;
+    }
+    questionRepo.deleteQuestionTroubleScenesBySceneIds(normalized);
+    sceneRepo.softDeleteBatch(normalized);
+  }
+
   private static String safeText(String text) {
     if (text == null) return null;
     var t = text.trim();
@@ -94,6 +107,20 @@ public class AdminTroubleSceneService {
     if (minAge < 0 || maxAge < 0 || minAge > 18 || maxAge > 18 || minAge > maxAge) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "年龄范围不合法");
     }
+  }
+
+  private static List<Long> normalizeIds(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    var seen = new HashSet<Long>();
+    var out = new ArrayList<Long>();
+    for (var id : ids) {
+      if (id != null && id > 0 && seen.add(id)) {
+        out.add(id);
+      }
+    }
+    return out;
   }
 
 //  private static String safeText(String text) {

@@ -2,6 +2,7 @@ package com.howtogrow.backend.controller.admin;
 
 import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
+import com.howtogrow.backend.controller.admin.dto.BatchDeleteRequest;
 import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.controller.admin.dto.TroubleSceneUpsertRequest;
 import com.howtogrow.backend.controller.admin.dto.TroubleSceneView;
@@ -53,6 +54,12 @@ public class AdminTroubleSceneController {
   @DeleteMapping("/{id}")
   public ApiResponse<Void> delete(@Parameter(description = "场景ID") @PathVariable long id) {
     sceneService.delete(id);
+    return ApiResponse.ok(null, TraceId.current());
+  }
+
+  @PostMapping("/batch-delete")
+  public ApiResponse<Void> batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
+    sceneService.batchDelete(request.ids());
     return ApiResponse.ok(null, TraceId.current());
   }
 }

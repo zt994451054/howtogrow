@@ -176,6 +176,22 @@ public class TroubleSceneRepository {
     jdbc.update(sql, Map.of("id", id));
   }
 
+  public void softDeleteBatch(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return;
+    }
+    var sql =
+        """
+        UPDATE trouble_scene
+        SET status = 0,
+            deleted_at = NOW(3),
+            updated_at = NOW(3),
+            name = CONCAT(name, '#', id)
+        WHERE id IN (:ids) AND deleted_at IS NULL
+        """;
+    jdbc.update(sql, Map.of("ids", ids));
+  }
+
   public Map<String, Long> mapActiveIdsByNames(List<String> names) {
     if (names == null || names.isEmpty()) {
       return Map.of();

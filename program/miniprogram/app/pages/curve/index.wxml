@@ -66,17 +66,19 @@
       </view>
 
       <view class="chart-card">
-        <ec-canvas
-          id="parentCurveChart"
-          style="display: block; width: 100%; height: 520rpx;"
-          canvas-id="parentCurveChart"
-          ec="{{ec}}"
-          bind:init="onEcInit"
-        />
-        <view wx:if="{{chartEmpty}}" class="chart-empty col center">
-          <view class="chart-empty__t1">暂无数据</view>
-          <view class="chart-empty__t2">完成每日自测后，可查看 5 大维度的趋势变化</view>
-          <button class="chart-empty__btn" bindtap="goTest">去测评</button>
+        <view wx:if="{{!customRangeOpen}}">
+          <ec-canvas
+            id="parentCurveChart"
+            style="display: block; width: 100%; height: 520rpx;"
+            canvas-id="parentCurveChart"
+            ec="{{ec}}"
+            bind:init="onEcInit"
+          />
+          <view wx:if="{{chartEmpty}}" class="chart-empty col center">
+            <view class="chart-empty__t1">暂无数据</view>
+            <view class="chart-empty__t2">完成每日自测后，可查看 5 大维度的趋势变化</view>
+            <button class="chart-empty__btn" bindtap="goTest">去测评</button>
+          </view>
         </view>
       </view>
 
@@ -165,7 +167,7 @@
             mode="date"
             value="{{customFromDraft}}"
             start="{{customMinDate}}"
-            end="{{customToDraft}}"
+            end="{{today}}"
             bindchange="onCustomFromChange"
           >
             <view class="range-field__value row between">
@@ -180,7 +182,7 @@
           <picker
             mode="date"
             value="{{customToDraft}}"
-            start="{{customFromDraft}}"
+            start="{{customMinDate}}"
             end="{{today}}"
             bindchange="onCustomToChange"
           >
