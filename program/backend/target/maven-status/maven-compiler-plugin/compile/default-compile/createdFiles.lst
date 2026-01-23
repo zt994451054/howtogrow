@@ -3,6 +3,7 @@ com/howtogrow/backend/infrastructure/ai/AiProperties.class
 com/howtogrow/backend/infrastructure/admin/AdminRoleRepository.class
 com/howtogrow/backend/controller/admin/dto/PlanUpdateRequest.class
 com/howtogrow/backend/controller/miniprogram/dto/DailyParentingStatusUpsertRequest.class
+com/howtogrow/backend/infrastructure/admin/AdminAssessmentDetailQueryRepository$AssessmentDetailRow.class
 com/howtogrow/backend/infrastructure/aichat/AiChatSessionRepository.class
 com/howtogrow/backend/service/miniprogram/MiniprogramLoginService.class
 com/howtogrow/backend/service/admin/AdminChildService.class
@@ -65,6 +66,7 @@ com/howtogrow/backend/infrastructure/aichat/AiChatMessageRepository$AiChatMessag
 com/howtogrow/backend/controller/miniprogram/dto/ChildCreateRequest.class
 com/howtogrow/backend/controller/miniprogram/dto/UploadDiaryImageResponse.class
 com/howtogrow/backend/infrastructure/db/Db.class
+com/howtogrow/backend/controller/admin/dto/AssessmentDetailView$ItemView.class
 com/howtogrow/backend/service/miniprogram/MiniprogramNicknameGenerator.class
 com/howtogrow/backend/service/miniprogram/DailyAssessmentHistoryService$QuestionInfo.class
 com/howtogrow/backend/controller/admin/AdminAssessmentController.class
@@ -91,6 +93,7 @@ com/howtogrow/backend/controller/miniprogram/dto/MiniprogramMeResponse.class
 com/howtogrow/backend/infrastructure/trouble/TroubleSceneRepository.class
 com/howtogrow/backend/infrastructure/admin/UserQueryRepository$UserRow.class
 com/howtogrow/backend/controller/admin/dto/QuestionImportResponse$Failure.class
+com/howtogrow/backend/controller/admin/dto/AssessmentDetailView.class
 com/howtogrow/backend/controller/miniprogram/MiniprogramDailyAssessmentController.class
 com/howtogrow/backend/config/CorsConfig.class
 com/howtogrow/backend/controller/admin/dto/RoleCreateRequest.class
@@ -175,6 +178,7 @@ com/howtogrow/backend/controller/miniprogram/dto/AiChatMessageView.class
 com/howtogrow/backend/infrastructure/trouble/DailyTroubleRecordRepository.class
 com/howtogrow/backend/controller/miniprogram/dto/SubscriptionOrderCreateResponse.class
 com/howtogrow/backend/infrastructure/subscription/UserSubscriptionRepository.class
+com/howtogrow/backend/service/admin/AdminAssessmentService$QuestionInfo.class
 com/howtogrow/backend/controller/admin/dto/SubscriptionExtendResponse.class
 com/howtogrow/backend/controller/miniprogram/dto/ChildUpdateRequest.class
 com/howtogrow/backend/infrastructure/pay/WechatPayNotifyEventRepository.class
@@ -260,6 +264,8 @@ com/howtogrow/backend/infrastructure/aichat/AiChatMessageRepository.class
 com/howtogrow/backend/infrastructure/assessment/DailyAssessment.class
 com/howtogrow/backend/infrastructure/ai/AiChatClient.class
 com/howtogrow/backend/controller/miniprogram/dto/DailyAssessmentSubmitResponse.class
+com/howtogrow/backend/controller/admin/dto/AssessmentDetailView$OptionView.class
+com/howtogrow/backend/infrastructure/admin/AdminAssessmentDetailQueryRepository.class
 com/howtogrow/backend/controller/miniprogram/dto/DailyAssessmentReplaceResponse.class
 com/howtogrow/backend/infrastructure/admin/AdminRolePermissionRepository.class
 com/howtogrow/backend/controller/miniprogram/dto/SubscriptionOrderCreateResponse$PayParams.class

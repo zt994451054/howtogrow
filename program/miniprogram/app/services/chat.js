@@ -23,27 +23,155 @@ function sendChatMessage(sessionId, content, options) {
   return apiRequest("POST", `/miniprogram/ai/chat/sessions/${encodeURIComponent(String(sessionId))}/messages`, { content }, options).then((r) => r.messageId);
 }
 
-function decodeChunk(arrayBuffer) {
-  try {
-    if (typeof TextDecoder !== "undefined") {
-      const decoder = new TextDecoder("utf-8");
-      return decoder.decode(new Uint8Array(arrayBuffer));
+function toUint8Array(data) {
+  if (!data) return null;
+  if (data instanceof ArrayBuffer) return new Uint8Array(data);
+  if (typeof ArrayBuffer !== "undefined" && typeof ArrayBuffer.isView === "function" && ArrayBuffer.isView(data) && data.buffer instanceof ArrayBuffer) {
+    return new Uint8Array(data.buffer, data.byteOffset || 0, data.byteLength || 0);
+  }
+  return null;
+}
+
+function decodeUtf8BytesWithRemainder(bytes, flush) {
+  const input = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []);
+  const len = input.length;
+  let i = 0;
+  let out = "";
+
+  const isCont = (b) => b >= 0x80 && b <= 0xbf;
+
+  while (i < len) {
+    const b0 = input[i];
+    if (b0 <= 0x7f) {
+      out += String.fromCharCode(b0);
+      i += 1;
+      continue;
     }
+
+    // 2-byte
+    if (b0 >= 0xc2 && b0 <= 0xdf) {
+      if (i + 1 >= len) break;
+      const b1 = input[i + 1];
+      if (!isCont(b1)) {
+        out += "\uFFFD";
+        i += 1;
+        continue;
+      }
+      const code = ((b0 & 0x1f) << 6) | (b1 & 0x3f);
+      out += String.fromCharCode(code);
+      i += 2;
+      continue;
+    }
+
+    // 3-byte
+    if (b0 >= 0xe0 && b0 <= 0xef) {
+      if (i + 2 >= len) break;
+      const b1 = input[i + 1];
+      const b2 = input[i + 2];
+      if (!isCont(b1) || !isCont(b2)) {
+        out += "\uFFFD";
+        i += 1;
+        continue;
+      }
+      const code = ((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (b2 & 0x3f);
+      out += String.fromCharCode(code);
+      i += 3;
+      continue;
+    }
+
+    // 4-byte
+    if (b0 >= 0xf0 && b0 <= 0xf4) {
+      if (i + 3 >= len) break;
+      const b1 = input[i + 1];
+      const b2 = input[i + 2];
+      const b3 = input[i + 3];
+      if (!isCont(b1) || !isCont(b2) || !isCont(b3)) {
+        out += "\uFFFD";
+        i += 1;
+        continue;
+      }
+      const codePoint = ((b0 & 0x07) << 18) | ((b1 & 0x3f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f);
+      const t = codePoint - 0x10000;
+      out += String.fromCharCode(0xd800 + (t >> 10), 0xdc00 + (t & 0x3ff));
+      i += 4;
+      continue;
+    }
+
+    out += "\uFFFD";
+    i += 1;
+  }
+
+  if (i >= len) return { text: out, remainingBytes: new Uint8Array(0) };
+  if (flush) {
+    out += "\uFFFD";
+    return { text: out, remainingBytes: new Uint8Array(0) };
+  }
+  return { text: out, remainingBytes: input.slice(i) };
+}
+
+function decodeUtf8Bytes(bytes) {
+  return decodeUtf8BytesWithRemainder(bytes, true).text;
+}
+
+function decodeUtf8Once(data) {
+  if (typeof data === "string") return data;
+  const bytes = toUint8Array(data);
+  if (!bytes || bytes.byteLength <= 0) return "";
+  try {
+    if (typeof TextDecoder !== "undefined") return new TextDecoder("utf-8").decode(bytes);
   } catch {
     // ignore
   }
+  return decodeUtf8Bytes(bytes);
+}
+
+function createUtf8StreamDecoder() {
+  let textDecoder = null;
   try {
-    const bytes = new Uint8Array(arrayBuffer);
-    let s = "";
-    for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
-    return decodeURIComponent(escape(s));
+    if (typeof TextDecoder !== "undefined") textDecoder = new TextDecoder("utf-8");
   } catch {
-    return "";
+    textDecoder = null;
   }
+
+  let carry = new Uint8Array(0);
+
+  return {
+    decode: (data) => {
+      const bytes = data instanceof Uint8Array ? data : toUint8Array(data);
+      if (!bytes || bytes.byteLength <= 0) return "";
+      if (textDecoder) {
+        try {
+          return textDecoder.decode(bytes, { stream: true });
+        } catch {
+          return textDecoder.decode(bytes);
+        }
+      }
+      const merged = new Uint8Array(carry.length + bytes.length);
+      merged.set(carry, 0);
+      merged.set(bytes, carry.length);
+      const decoded = decodeUtf8BytesWithRemainder(merged, false);
+      carry = decoded.remainingBytes;
+      return decoded.text;
+    },
+    flush: () => {
+      if (textDecoder) {
+        try {
+          return textDecoder.decode();
+        } catch {
+          return "";
+        }
+      }
+      if (!carry.length) return "";
+      const text = decodeUtf8Bytes(carry);
+      carry = new Uint8Array(0);
+      return text;
+    },
+  };
 }
 
 function parseSse(buffer, handlers) {
-  const parts = String(buffer).split("\n\n");
+  const normalized = String(buffer).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const parts = normalized.split("\n\n");
   const complete = parts.slice(0, -1);
   const rest = parts[parts.length - 1] || "";
 
@@ -95,6 +223,7 @@ function normalizeStreamErrorData(data) {
 
 function streamChat(sessionId, handlers) {
   const url = buildApiUrl(`/miniprogram/ai/chat/sessions/${encodeURIComponent(String(sessionId))}/stream`);
+  const decoder = createUtf8StreamDecoder();
 
   let sseBuffer = "";
   let didFail = false;
@@ -102,17 +231,28 @@ function streamChat(sessionId, handlers) {
   let didSeeAnyDelta = false;
   let requestTask;
 
+  const appendSseData = (data) => {
+    const bytes = toUint8Array(data);
+    if (bytes && bytes.byteLength > 0) {
+      sseBuffer += decoder.decode(bytes);
+      return;
+    }
+    if (typeof data === "string") {
+      sseBuffer += data;
+    }
+  };
+
   const failOnce = (message, code, requestTask) => {
     if (didFail) return;
     didFail = true;
     if (code === "UNAUTHORIZED") handleAuthError();
-    showErrorToast(message || "请求失败");
+    if (code !== "NETWORK_ERROR") showErrorToast(message || "请求失败");
     try {
       requestTask.abort();
     } catch {
       // ignore
     }
-    if (typeof handlers.onError === "function") handlers.onError(message || "error");
+    if (typeof handlers.onError === "function") handlers.onError(message || "error", code);
   };
 
   const sseHandlers = {
@@ -137,24 +277,29 @@ function streamChat(sessionId, handlers) {
       ...buildAuthorizationHeader(),
       Accept: "text/event-stream",
     },
+    dataType: "other",
     enableChunked: true,
+    enableHttp2: false,
+    enableQuic: false,
     responseType: "arraybuffer",
+    timeout: 120000,
     success: (res) => {
       if (res && typeof res.statusCode === "number" && res.statusCode >= 400) {
         let message = "请求失败";
         const normalized = normalizeStreamErrorData(
-          res.data instanceof ArrayBuffer ? decodeChunk(res.data) : typeof res.data === "string" ? res.data : ""
+          res.data instanceof ArrayBuffer || (typeof ArrayBuffer !== "undefined" && typeof ArrayBuffer.isView === "function" && ArrayBuffer.isView(res.data))
+            ? decodeUtf8Once(res.data)
+            : typeof res.data === "string"
+              ? res.data
+              : ""
         );
         if (normalized.message) message = normalized.message;
         const code = res.statusCode === 401 ? "UNAUTHORIZED" : normalized.code;
         failOnce(message, code, requestTask);
         return;
       }
-      if (res && res.data instanceof ArrayBuffer) {
-        sseBuffer += decodeChunk(res.data);
-      } else if (res && typeof res.data === "string") {
-        sseBuffer += res.data;
-      }
+      if (res) appendSseData(res.data);
+      sseBuffer += decoder.flush();
       const parsed = parseSseFinal(sseBuffer, sseHandlers);
       sseBuffer = parsed.rest;
 
@@ -171,9 +316,7 @@ function streamChat(sessionId, handlers) {
   if (supportsChunk) {
     requestTask.onChunkReceived((chunkRes) => {
       if (!chunkRes || !chunkRes.data) return;
-      if (chunkRes.data instanceof ArrayBuffer) {
-        sseBuffer += decodeChunk(chunkRes.data);
-      }
+      appendSseData(chunkRes.data);
       const parsed = parseSse(sseBuffer, sseHandlers);
       sseBuffer = parsed.rest;
     });

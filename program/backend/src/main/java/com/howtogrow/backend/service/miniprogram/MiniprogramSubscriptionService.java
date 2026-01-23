@@ -45,7 +45,10 @@ public class MiniprogramSubscriptionService {
 
   public List<SubscriptionPlanView> listPlans() {
     return planRepo.listActivePlans().stream()
-        .map(p -> new SubscriptionPlanView(p.planId(), p.name(), p.days(), p.priceCent()))
+        .map(
+            p ->
+                new SubscriptionPlanView(
+                    p.planId(), p.name(), p.days(), p.originalPriceCent(), p.priceCent()))
         .toList();
   }
 

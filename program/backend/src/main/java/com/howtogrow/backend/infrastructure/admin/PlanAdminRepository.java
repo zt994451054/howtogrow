@@ -18,7 +18,7 @@ public class PlanAdminRepository {
   public List<PlanRow> listAll() {
     var sql =
         """
-        SELECT id, name, days, price_cent, status
+        SELECT id, name, days, original_price_cent, price_cent, status
         FROM subscription_plan
         WHERE deleted_at IS NULL
         ORDER BY created_at DESC, id DESC
@@ -31,23 +31,25 @@ public class PlanAdminRepository {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getInt("days"),
+                rs.getInt("original_price_cent"),
                 rs.getInt("price_cent"),
                 rs.getInt("status")));
   }
 
-  public long create(String name, int days, int priceCent, int status) {
+  public long create(String name, int days, int originalPriceCent, int priceCent, int status) {
     int sortNo = nextSortNo();
     KeyHolder kh = new GeneratedKeyHolder();
     var sql =
         """
-        INSERT INTO subscription_plan(name, days, price_cent, status, sort_no, created_at, updated_at)
-        VALUES (:name, :days, :priceCent, :status, :sortNo, NOW(3), NOW(3))
+        INSERT INTO subscription_plan(name, days, original_price_cent, price_cent, status, sort_no, created_at, updated_at)
+        VALUES (:name, :days, :originalPriceCent, :priceCent, :status, :sortNo, NOW(3), NOW(3))
         """;
     jdbc.update(
         sql,
         new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
             .addValue("name", name)
             .addValue("days", days)
+            .addValue("originalPriceCent", originalPriceCent)
             .addValue("priceCent", priceCent)
             .addValue("status", status)
             .addValue("sortNo", sortNo),
@@ -59,11 +61,11 @@ public class PlanAdminRepository {
     return id.longValue();
   }
 
-  public void update(long id, String name, int days, int priceCent, int status) {
+  public void update(long id, String name, int days, int originalPriceCent, int priceCent, int status) {
     var sql =
         """
         UPDATE subscription_plan
-        SET name = :name, days = :days, price_cent = :priceCent, status = :status, updated_at = NOW(3)
+        SET name = :name, days = :days, original_price_cent = :originalPriceCent, price_cent = :priceCent, status = :status, updated_at = NOW(3)
         WHERE id = :id AND deleted_at IS NULL
         """;
     jdbc.update(
@@ -72,6 +74,7 @@ public class PlanAdminRepository {
             "id", id,
             "name", name,
             "days", days,
+            "originalPriceCent", originalPriceCent,
             "priceCent", priceCent,
             "status", status));
   }
@@ -97,5 +100,5 @@ public class PlanAdminRepository {
     return next == null ? 1 : next;
   }
 
-  public record PlanRow(long id, String name, int days, int priceCent, int status) {}
+  public record PlanRow(long id, String name, int days, int originalPriceCent, int priceCent, int status) {}
 }

@@ -5,6 +5,7 @@ export type PlanView = {
   planId: number;
   name: string;
   days: number;
+  originalPriceCent: number;
   priceCent: number;
   status: number;
 };
@@ -12,6 +13,7 @@ export type PlanView = {
 export type PlanUpsertRequest = {
   name: string;
   days: number;
+  originalPriceCent: number;
   priceCent: number;
   status: number;
 };

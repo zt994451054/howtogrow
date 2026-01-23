@@ -23,7 +23,13 @@
           <view class="plan__name">{{item.name}}</view>
           <view class="plan__sub">{{item.days}}天有效期</view>
         </view>
-        <view class="plan__price">¥{{item.priceYuan}}</view>
+        <view class="plan__price">
+          <view class="price__current">¥{{item.priceYuan}}</view>
+          <view class="price__meta">
+            <text class="price__original {{item.showOriginalPrice ? 'through' : ''}}">原价¥{{item.originalPriceYuan}}</text>
+            <text wx:if="{{item.discountBadge}}" class="price__badge">{{item.discountBadge}}</text>
+          </view>
+        </view>
       </view>
 
       <view wx:if="{{plans.length == 0}}" class="empty">暂无套餐</view>

@@ -47,6 +47,7 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AdminUserView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AiQuickQuestionUpsertRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AiQuickQuestionView.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AssessmentDetailView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AssessmentDimensionScoreView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/AssessmentView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BannerUpsertRequest.java
@@ -150,6 +151,7 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/domain/time/AgeInMonthsCalculator.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/domain/time/AgeInYearsCalculator.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/domain/time/BizClock.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/admin/AdminAssessmentDetailQueryRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/admin/AdminPermissionRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/admin/AdminRbacRepository.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/infrastructure/admin/AdminRolePermissionRepository.java

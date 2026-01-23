@@ -9,5 +9,6 @@ import jakarta.validation.constraints.NotNull;
 public record PlanCreateRequest(
     @Schema(description = "套餐名称") @NotBlank String name,
     @Schema(description = "套餐天数") @NotNull @Min(1) Integer days,
-    @Schema(description = "价格（分）") @NotNull @Min(0) Integer priceCent,
+    @Schema(description = "原价（分）") @NotNull @Min(0) Integer originalPriceCent,
+    @Schema(description = "现价（分）") @NotNull @Min(0) Integer priceCent,
     @Schema(description = "状态：0禁用 1启用") @NotNull @Min(0) @Max(1) Integer status) {}

@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { exportAssessmentsExcel, listAssessments, type AssessmentListParams, type AssessmentView } from "@/api/admin/assessments";
+import {
+  exportAssessmentsExcel,
+  exportAssessmentWord,
+  getAssessmentDetail,
+  listAssessments,
+  type AssessmentDetailItemView,
+  type AssessmentDetailView,
+  type AssessmentListParams,
+  type AssessmentView
+} from "@/api/admin/assessments";
 import { listChildren, type AdminChildView } from "@/api/admin/children";
 import { listUsers, type UserView } from "@/api/admin/users";
 import { getApiBaseUrl } from "@/config/runtimeConfig";
@@ -36,6 +45,7 @@ type ChildOption = {
 
 const loading = ref(false);
 const exporting = ref(false);
+const exportingWordId = ref<number | null>(null);
 const items = ref<AssessmentView[]>([]);
 const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
 const filters = reactive<FilterState>({
@@ -44,6 +54,11 @@ const filters = reactive<FilterState>({
   childId: undefined,
   keyword: ""
 });
+
+const detailVisible = ref(false);
+const detailLoading = ref(false);
+const detail = ref<AssessmentDetailView | null>(null);
+let detailSeq = 0;
 
 const userSearching = ref(false);
 const userOptions = ref<UserOption[]>([]);
@@ -128,6 +143,56 @@ async function exportExcel() {
   } finally {
     exporting.value = false;
   }
+}
+
+function buildWordFilename(assessmentId: number, bizDate?: string | null): string {
+  const date = (bizDate || "").trim();
+  if (date) return `自测结果_${date}_${assessmentId}.docx`;
+  return `自测结果_${assessmentId}.docx`;
+}
+
+async function exportWordById(assessmentId: number, fallbackFilename: string) {
+  exportingWordId.value = assessmentId;
+  try {
+    const { blob, filename } = await exportAssessmentWord(assessmentId);
+    downloadBlob(blob, filename || fallbackFilename);
+    ElMessage.success("已开始下载");
+  } finally {
+    if (exportingWordId.value === assessmentId) exportingWordId.value = null;
+  }
+}
+
+function exportWord(row: AssessmentView) {
+  const filename = buildWordFilename(row.assessmentId, row.bizDate);
+  void exportWordById(row.assessmentId, filename);
+}
+
+function exportWordFromDetail() {
+  if (!detail.value) return;
+  const filename = buildWordFilename(detail.value.assessmentId, detail.value.bizDate);
+  void exportWordById(detail.value.assessmentId, filename);
+}
+
+async function openDetail(row: AssessmentView) {
+  detailVisible.value = true;
+  const seq = ++detailSeq;
+  detailLoading.value = true;
+  detail.value = null;
+  try {
+    const res = await getAssessmentDetail(row.assessmentId);
+    if (seq !== detailSeq) return;
+    detail.value = res;
+  } catch (e) {
+    if (seq !== detailSeq) return;
+    ElMessage.error("加载详情失败");
+  } finally {
+    if (seq === detailSeq) detailLoading.value = false;
+  }
+}
+
+function selectedOptions(item: AssessmentDetailItemView) {
+  const selected = new Set(item.selectedOptionIds || []);
+  return (item.options || []).filter((o) => selected.has(o.optionId));
 }
 
 function toUserOption(u: UserView): UserOption {
@@ -232,6 +297,16 @@ function onCurrentChange(p: number) {
 onMounted(() => {
   void reload();
 });
+
+watch(
+  () => detailVisible.value,
+  (v) => {
+    if (v) return;
+    detailSeq++;
+    detail.value = null;
+    detailLoading.value = false;
+  }
+);
 </script>
 
 <template>
@@ -368,6 +443,19 @@ onMounted(() => {
       <el-table-column label="提交时间" width="170">
         <template #default="{ row }">{{ formatDateTime(row.submittedAt) }}</template>
       </el-table-column>
+      <el-table-column label="操作" width="180" fixed="right">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openDetail(row)">查看详情</el-button>
+          <el-button
+            link
+            :loading="exportingWordId === row.assessmentId"
+            :disabled="exportingWordId !== null && exportingWordId !== row.assessmentId"
+            @click="exportWord(row)"
+          >
+            导出Word
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <div class="pager">
@@ -381,6 +469,94 @@ onMounted(() => {
         @current-change="onCurrentChange"
       />
     </div>
+
+    <el-drawer v-model="detailVisible" title="自测详情" size="720px" destroy-on-close>
+      <div class="detail" v-loading="detailLoading">
+        <template v-if="detail">
+          <div class="detail-header">
+            <div class="detail-user">
+              <el-avatar :size="40" :src="resolveAvatarUrl(detail.userAvatarUrl)">
+                {{ (detail.userNickname || `#${detail.userId}`).slice(0, 1) }}
+              </el-avatar>
+              <div class="detail-user__meta">
+                <div class="detail-user__name">{{ detail.userNickname || `用户 #${detail.userId}` }}</div>
+                <div class="detail-user__sub">
+                  用户ID：{{ detail.userId }} · 孩子：{{ detail.childNickname || `孩子 #${detail.childId}` }}（ID: {{ detail.childId }}）
+                </div>
+              </div>
+            </div>
+            <div class="detail-actions">
+              <el-button
+                type="primary"
+                :loading="exportingWordId === detail.assessmentId"
+                :disabled="exportingWordId !== null && exportingWordId !== detail.assessmentId"
+                @click="exportWordFromDetail"
+              >
+                导出Word
+              </el-button>
+            </div>
+          </div>
+
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="自测ID">{{ detail.assessmentId }}</el-descriptions-item>
+            <el-descriptions-item label="日期">{{ detail.bizDate }}</el-descriptions-item>
+            <el-descriptions-item label="提交时间">{{ formatDateTime(detail.submittedAt) }}</el-descriptions-item>
+            <el-descriptions-item label="题目数">{{ detail.items?.length || 0 }}</el-descriptions-item>
+          </el-descriptions>
+
+          <div class="section">
+            <div class="section-title">维度得分</div>
+            <div class="dims">
+              <el-tag
+                v-for="d in detail.dimensionScores"
+                :key="d.dimensionCode"
+                size="small"
+                effect="light"
+                :type="d.score > 0 ? 'success' : 'info'"
+                class="dims__tag"
+                :title="`${d.dimensionName}（${d.dimensionCode}）`"
+              >
+                {{ DIM_SHORT[d.dimensionCode] || d.dimensionName }} {{ d.score }}
+              </el-tag>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">AI 总结</div>
+            <el-alert v-if="detail.aiSummary" :title="detail.aiSummary" type="success" :closable="false" show-icon />
+            <el-text v-else type="info">暂无 AI 总结</el-text>
+          </div>
+
+          <div class="section">
+            <div class="section-title">题目与作答</div>
+            <div v-for="it in detail.items" :key="`${it.questionId}_${it.displayOrder}`" class="qa-item">
+              <div class="qa-title">
+                <div class="qa-no">Q{{ it.displayOrder }}</div>
+                <el-tag size="small" effect="light" type="info">{{ it.questionType === "MULTI" ? "多选" : "单选" }}</el-tag>
+              </div>
+              <div class="qa-content">{{ it.questionContent }}</div>
+              <div class="qa-answers">
+                <div v-for="opt in selectedOptions(it)" :key="opt.optionId" class="qa-answer">
+                  <el-tag size="small" :type="opt.suggestFlag === 1 ? 'success' : 'danger'">
+                    {{ opt.suggestFlag === 1 ? "建议" : "不建议" }}
+                  </el-tag>
+                  <div class="qa-answer__body">
+                    <div class="qa-answer__content">{{ opt.content }}</div>
+                    <div v-if="opt.suggestFlag === 0 && opt.improvementTip" class="qa-answer__tip">
+                      改进建议：{{ opt.improvementTip }}
+                    </div>
+                  </div>
+                </div>
+                <el-text v-if="selectedOptions(it).length === 0" type="info">未记录作答</el-text>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <el-empty description="请选择一条自测记录查看详情" />
+        </template>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -471,5 +647,107 @@ onMounted(() => {
 }
 .dims__tag {
   margin: 0;
+}
+
+.detail {
+  padding: 8px 4px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.detail-user {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.detail-user__meta {
+  min-width: 0;
+}
+
+.detail-user__name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-user__sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #909399;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.section {
+  margin-top: 14px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.qa-item {
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.qa-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.qa-no {
+  font-weight: 600;
+}
+
+.qa-content {
+  line-height: 1.5;
+  margin-bottom: 10px;
+  color: #303133;
+}
+
+.qa-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qa-answer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.qa-answer__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.qa-answer__content {
+  line-height: 1.5;
+}
+
+.qa-answer__tip {
+  margin-top: 2px;
+  color: #e6a23c;
+  font-size: 12px;
+  line-height: 1.4;
 }
 </style>

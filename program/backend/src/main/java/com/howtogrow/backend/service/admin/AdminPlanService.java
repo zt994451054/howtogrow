@@ -20,24 +20,41 @@ public class AdminPlanService {
 
   public List<PlanView> list() {
     return repo.listAll().stream()
-        .map(p -> new PlanView(p.id(), p.name(), p.days(), p.priceCent(), p.status()))
+        .map(p -> new PlanView(p.id(), p.name(), p.days(), p.originalPriceCent(), p.priceCent(), p.status()))
         .toList();
   }
 
   @Transactional
   public void create(PlanCreateRequest request) {
-    if (request.days() <= 0 || request.priceCent() < 0) {
+    if (request.days() <= 0
+        || request.originalPriceCent() < 0
+        || request.priceCent() < 0
+        || request.originalPriceCent() < request.priceCent()) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "套餐参数不合法");
     }
-    repo.create(request.name().trim(), request.days(), request.priceCent(), request.status());
+    repo.create(
+        request.name().trim(),
+        request.days(),
+        request.originalPriceCent(),
+        request.priceCent(),
+        request.status());
   }
 
   @Transactional
   public void update(long id, PlanUpdateRequest request) {
-    if (request.days() <= 0 || request.priceCent() < 0) {
+    if (request.days() <= 0
+        || request.originalPriceCent() < 0
+        || request.priceCent() < 0
+        || request.originalPriceCent() < request.priceCent()) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "套餐参数不合法");
     }
-    repo.update(id, request.name().trim(), request.days(), request.priceCent(), request.status());
+    repo.update(
+        id,
+        request.name().trim(),
+        request.days(),
+        request.originalPriceCent(),
+        request.priceCent(),
+        request.status());
   }
 
   @Transactional

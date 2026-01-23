@@ -1,10 +1,10 @@
 const API_BASE_URL = "https://api.huangruoyi.cn";
-// const API_BASE_URL = "http://localhost:8080";
+// const API_BASE_URL = "http://192.168.1.165:8080";
 const API_PREFIX = "/api/v1";
 // H5 域名端口（用于小程序 WebView 打开 Banner 详情页：{H5_BASE_URL}/h5/banners/{bannerId}）
 // 本地开发默认使用 Vite 端口：5173
 const H5_BASE_URL = "https://web.huangruoyi.cn";
-// const H5_BASE_URL = "http://localhost:5173";
+// const H5_BASE_URL = "http://192.168.1.165:5173";
 
 const STORAGE_KEYS = {
   token: "auth:token",

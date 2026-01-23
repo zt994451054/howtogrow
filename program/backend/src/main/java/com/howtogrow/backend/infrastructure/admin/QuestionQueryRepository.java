@@ -3,7 +3,9 @@ package com.howtogrow.backend.infrastructure.admin;
 import java.util.List;
 import java.util.Map;
 import com.howtogrow.backend.infrastructure.db.SqlPagination;
+import java.util.Locale;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,25 +16,19 @@ public class QuestionQueryRepository {
     this.jdbc = jdbc;
   }
 
-  public long countQuestions(Integer ageYear) {
-    var where = new StringBuilder("WHERE deleted_at IS NULL");
-    var params = new java.util.HashMap<String, Object>();
-    if (ageYear != null) {
-      where.append(" AND min_age <= :ageYear AND max_age >= :ageYear");
-      params.put("ageYear", ageYear);
-    }
-    var sql = "SELECT COUNT(*) FROM question " + where;
-    Long count = jdbc.queryForObject(sql, params, Long.class);
+  public long countQuestions(Integer ageYear, Integer status, String questionType, Long troubleSceneId, String keyword) {
+    var params = new MapSqlParameterSource();
+    var sql = new StringBuilder("SELECT COUNT(*) FROM question q WHERE q.deleted_at IS NULL");
+    appendWhere(sql, params, ageYear, status, questionType, troubleSceneId, keyword);
+    Long count = jdbc.queryForObject(sql.toString(), params, Long.class);
     return count == null ? 0L : count;
   }
 
-  public List<QuestionSummaryRow> listQuestions(Integer ageYear, int offset, int limit) {
+  public List<QuestionSummaryRow> listQuestions(
+      Integer ageYear, Integer status, String questionType, Long troubleSceneId, String keyword, int offset, int limit) {
+    var params = new MapSqlParameterSource().addValue("offset", offset).addValue("limit", limit);
     var where = new StringBuilder("WHERE q.deleted_at IS NULL");
-    var params = new java.util.HashMap<String, Object>();
-    if (ageYear != null) {
-      where.append(" AND q.min_age <= :ageYear AND q.max_age >= :ageYear");
-      params.put("ageYear", ageYear);
-    }
+    appendWhere(where, params, ageYear, status, questionType, troubleSceneId, keyword);
     var sql =
         """
         SELECT q.id, q.min_age, q.max_age, q.question_type, q.status, q.content
@@ -52,6 +48,44 @@ public class QuestionQueryRepository {
                 rs.getString("question_type"),
                 rs.getInt("status"),
                 rs.getString("content")));
+  }
+
+  private static void appendWhere(
+      StringBuilder sql,
+      MapSqlParameterSource params,
+      Integer ageYear,
+      Integer status,
+      String questionType,
+      Long troubleSceneId,
+      String keyword) {
+    if (ageYear != null) {
+      sql.append("\n  AND q.min_age <= :ageYear AND q.max_age >= :ageYear");
+      params.addValue("ageYear", ageYear);
+    }
+    if (status != null) {
+      sql.append("\n  AND q.status = :status");
+      params.addValue("status", status);
+    }
+    if (questionType != null && !questionType.trim().isBlank()) {
+      sql.append("\n  AND q.question_type = :questionType");
+      params.addValue("questionType", questionType.trim().toUpperCase(Locale.ROOT));
+    }
+    if (troubleSceneId != null) {
+      sql.append(
+          """
+
+            AND EXISTS (
+              SELECT 1
+              FROM question_trouble_scene qts
+              WHERE qts.question_id = q.id AND qts.scene_id = :troubleSceneId
+            )
+          """);
+      params.addValue("troubleSceneId", troubleSceneId);
+    }
+    if (keyword != null && !keyword.trim().isBlank()) {
+      sql.append("\n  AND q.content LIKE :keyword");
+      params.addValue("keyword", "%" + keyword.trim() + "%");
+    }
   }
 
   public List<QuestionDetailRow> getQuestionDetail(long questionId) {

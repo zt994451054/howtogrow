@@ -2,6 +2,32 @@ const { getCachedMe, fetchMe } = require("../../services/auth");
 const { fetchPlans, createOrder } = require("../../services/subscriptions");
 const { getSystemMetrics } = require("../../utils/system");
 
+function formatYuanFromCent(amountCent) {
+  const cent = Number(amountCent || 0);
+  if (!Number.isFinite(cent)) return "0.00";
+  return (cent / 100).toFixed(2);
+}
+
+function normalizePlanForDisplay(plan) {
+  const rawPriceCent = Number(plan.priceCent || 0);
+  const priceCent = Number.isFinite(rawPriceCent) ? Math.max(rawPriceCent, 0) : 0;
+  const rawOriginalCent = plan.originalPriceCent;
+  const originalCandidate = rawOriginalCent == null ? priceCent : Number(rawOriginalCent);
+  const originalPriceCent =
+    Number.isFinite(originalCandidate) ? Math.max(originalCandidate, priceCent) : priceCent;
+  const discountCent = Math.max(originalPriceCent - priceCent, 0);
+
+  return {
+    ...plan,
+    priceCent,
+    originalPriceCent,
+    priceYuan: formatYuanFromCent(priceCent),
+    originalPriceYuan: formatYuanFromCent(originalPriceCent),
+    discountBadge: discountCent > 0 ? `立省¥${formatYuanFromCent(discountCent)}` : "",
+    showOriginalPrice: originalPriceCent > priceCent,
+  };
+}
+
 function requestPayment(payParams) {
   return new Promise((resolve, reject) => {
     wx.requestPayment({
@@ -31,13 +57,13 @@ Page({
   },
   loadPlans() {
     fetchPlans()
-      .then((plans) => this.setData({ plans: plans.map((p) => ({ ...p, priceYuan: (Number(p.priceCent || 0) / 100).toFixed(2) })) }))
+      .then((plans) => this.setData({ plans: (plans || []).map((p) => normalizePlanForDisplay(p)) }))
       .catch(() => {
         this.setData({
           plans: [
-            { planId: 1, name: "月度会员", days: 30, priceCent: 2990, priceYuan: "29.90" },
-            { planId: 2, name: "季度会员", days: 90, priceCent: 7990, priceYuan: "79.90" },
-            { planId: 3, name: "年度会员", days: 365, priceCent: 19990, priceYuan: "199.90" },
+            normalizePlanForDisplay({ planId: 1, name: "月度会员", days: 30, originalPriceCent: 3990, priceCent: 2990 }),
+            normalizePlanForDisplay({ planId: 2, name: "季度会员", days: 90, originalPriceCent: 9990, priceCent: 7990 }),
+            normalizePlanForDisplay({ planId: 3, name: "年度会员", days: 365, originalPriceCent: 29990, priceCent: 19990 }),
           ],
         });
       });
@@ -62,4 +88,3 @@ Page({
       .finally(() => this.setData({ paying: false }));
   },
 });
-

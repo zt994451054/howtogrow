@@ -2,6 +2,7 @@ package com.howtogrow.backend.controller.admin;
 
 import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
+import com.howtogrow.backend.controller.admin.dto.AssessmentDetailView;
 import com.howtogrow.backend.controller.admin.dto.AssessmentView;
 import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.service.admin.AdminAssessmentService;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +50,12 @@ public class AdminAssessmentController {
         TraceId.current());
   }
 
+  @GetMapping("/{assessmentId:\\d+}")
+  public ApiResponse<AssessmentDetailView> detail(
+      @Parameter(description = "自测ID") @PathVariable long assessmentId) {
+    return ApiResponse.ok(assessmentService.detail(assessmentId), TraceId.current());
+  }
+
   @GetMapping("/export-excel")
   public ResponseEntity<byte[]> exportExcel(
       @Parameter(description = "提交日期起（yyyy-MM-dd，北京时间口径，可选）") @RequestParam(required = false)
@@ -66,6 +74,21 @@ public class AdminAssessmentController {
         .contentType(
             MediaType.parseMediaType(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+        .header(HttpHeaders.CONTENT_DISPOSITION, cd.toString())
+        .header(HttpHeaders.CACHE_CONTROL, "no-store")
+        .body(bytes);
+  }
+
+  @GetMapping("/{assessmentId:\\d+}/export-word")
+  public ResponseEntity<byte[]> exportWord(
+      @Parameter(description = "自测ID") @PathVariable long assessmentId) {
+    var bytes = assessmentService.exportWord(assessmentId);
+    var filename = "自测结果_" + assessmentId + ".docx";
+    var cd = ContentDisposition.attachment().filename(filename, StandardCharsets.UTF_8).build();
+    return ResponseEntity.ok()
+        .contentType(
+            MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
         .header(HttpHeaders.CONTENT_DISPOSITION, cd.toString())
         .header(HttpHeaders.CACHE_CONTROL, "no-store")
         .body(bytes);

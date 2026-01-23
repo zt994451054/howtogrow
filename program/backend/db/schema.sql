@@ -372,7 +372,8 @@ CREATE TABLE IF NOT EXISTS subscription_plan (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   name VARCHAR(64) NOT NULL COMMENT '套餐名称',
   days INT NOT NULL COMMENT '订阅天数',
-  price_cent INT NOT NULL COMMENT '价格（分）',
+  original_price_cent INT NOT NULL COMMENT '原价（分）',
+  price_cent INT NOT NULL COMMENT '现价（分）',
   status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1启用 0停用',
   sort_no INT NOT NULL DEFAULT 0 COMMENT '排序号（升序）',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -381,7 +382,9 @@ CREATE TABLE IF NOT EXISTS subscription_plan (
   PRIMARY KEY (id),
   KEY idx_plan_status (status),
   CONSTRAINT ck_plan_days CHECK (days > 0),
-  CONSTRAINT ck_plan_price CHECK (price_cent >= 0)
+  CONSTRAINT ck_plan_original_price CHECK (original_price_cent >= 0),
+  CONSTRAINT ck_plan_price CHECK (price_cent >= 0),
+  CONSTRAINT ck_plan_original_ge_price CHECK (original_price_cent >= price_cent)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订阅套餐';
 
 CREATE TABLE IF NOT EXISTS purchase_order (

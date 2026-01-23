@@ -271,7 +271,7 @@ Page({
       startedAt: Date.now(),
     };
 
-    const MAX_WAIT_MS = 60 * 1000;
+    const MAX_WAIT_MS = 120 * 1000;
     const INTERVAL_MS = 2000;
 
     this._aiFallbackTimer = setInterval(() => {
@@ -279,7 +279,8 @@ Page({
       if (!s) return;
       if (!this.data.typing) return;
       if (Date.now() - s.startedAt > MAX_WAIT_MS) {
-        this.stopAiFallbackPoll();
+        // Avoid leaving the UI in an infinite "typing" state when streaming/polling both fail.
+        this.failAiTyping("（AI 回复超时。请稍后重试）");
         return;
       }
 
@@ -441,11 +442,11 @@ Page({
               onDone: () => {
                 this.endAiTyping();
               },
-              onError: () => {
-                this.failAiTyping("（当前环境不支持流式，或网络异常。稍后再试）");
+              onError: (message, code) => {
+                if (code === "NETWORK_ERROR") return;
+                this.failAiTyping(`（${String(message || "请求失败")}）`);
               },
             });
-            if (!task.supportsChunk) wx.showToast({ title: "当前为非流式模式", icon: "none", duration: 3000 });
           })
           .catch((e) => {
             const code = e && e.code ? String(e.code) : "";

@@ -20,6 +20,7 @@ import com.howtogrow.backend.service.common.SubscriptionService;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -142,7 +143,7 @@ public class AiChatService {
       throw new AppException(ErrorCode.FORBIDDEN_RESOURCE, "无权限");
     }
 
-    var emitter = new SseEmitter(60_000L);
+    var emitter = new SseEmitter(120_000L);
     var latest = messageRepo.listPageDesc(sessionId, 1, null).stream().findFirst().orElse(null);
     if (latest == null || !"user".equalsIgnoreCase(latest.role())) {
       emitter.complete();
@@ -154,6 +155,7 @@ public class AiChatService {
       return emitter;
     }
 
+    var streamWritable = new AtomicBoolean(true);
     taskExecutor.execute(
         () -> {
           try {
@@ -167,18 +169,24 @@ public class AiChatService {
                   if (delta == null || delta.isEmpty()) {
                     return;
                   }
+                  replyBuilder.append(delta);
+                  if (!streamWritable.get()) {
+                    return;
+                  }
                   try {
-                    replyBuilder.append(delta);
                     emitter.send(SseEmitter.event().name("delta").data(delta, MediaType.TEXT_PLAIN));
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
+                  } catch (Exception ignored) {
+                    streamWritable.set(false);
                   }
                 },
                 done -> {
+                  if (!streamWritable.get()) {
+                    return;
+                  }
                   try {
                     emitter.send(SseEmitter.event().name("done").data("[DONE]", MediaType.TEXT_PLAIN));
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
+                  } catch (Exception ignored) {
+                    streamWritable.set(false);
                   }
                 });
 

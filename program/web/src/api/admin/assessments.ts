@@ -18,6 +18,37 @@ export type AssessmentView = {
   dimensionScores: { dimensionCode: string; dimensionName: string; score: number }[];
 };
 
+export type AssessmentDetailView = {
+  assessmentId: number;
+  userId: number;
+  userNickname: string | null;
+  userAvatarUrl: string | null;
+  childId: number;
+  childNickname: string | null;
+  bizDate: string;
+  submittedAt: string | null;
+  aiSummary: string | null;
+  dimensionScores: { dimensionCode: string; dimensionName: string; score: number }[];
+  items: AssessmentDetailItemView[];
+};
+
+export type AssessmentDetailItemView = {
+  displayOrder: number;
+  questionId: number;
+  questionType: "SINGLE" | "MULTI" | string;
+  questionContent: string;
+  options: AssessmentDetailOptionView[];
+  selectedOptionIds: number[];
+};
+
+export type AssessmentDetailOptionView = {
+  optionId: number;
+  content: string;
+  suggestFlag: 0 | 1 | number;
+  improvementTip: string | null;
+  sortNo: number;
+};
+
 export type AssessmentListParams = {
   page: number;
   pageSize: number;
@@ -57,11 +88,24 @@ export async function listAssessments(params: AssessmentListParams): Promise<Pag
   return res.data.data;
 }
 
+export async function getAssessmentDetail(assessmentId: number): Promise<AssessmentDetailView> {
+  const res = await http.get<ApiResponse<AssessmentDetailView>>(`/api/v1/admin/assessments/${assessmentId}`);
+  return res.data.data;
+}
+
 export async function exportAssessmentsExcel(
   params: AssessmentExportParams
 ): Promise<{ blob: Blob; filename?: string }> {
   const res = await http.get<Blob>("/api/v1/admin/assessments/export-excel", {
     params,
+    responseType: "blob"
+  });
+  const filename = parseContentDispositionFilename(res.headers?.["content-disposition"]);
+  return { blob: res.data, filename };
+}
+
+export async function exportAssessmentWord(assessmentId: number): Promise<{ blob: Blob; filename?: string }> {
+  const res = await http.get<Blob>(`/api/v1/admin/assessments/${assessmentId}/export-word`, {
     responseType: "blob"
   });
   const filename = parseContentDispositionFilename(res.headers?.["content-disposition"]);

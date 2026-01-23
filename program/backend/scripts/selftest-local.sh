@@ -172,7 +172,7 @@ PY
 
 echo "== Admin create plan/quote =="
 curl_json POST "${BASE_URL}/api/v1/admin/plans" \
-  "{\"name\":\"${PLAN_NAME}\",\"days\":30,\"priceCent\":990,\"status\":1}" \
+  "{\"name\":\"${PLAN_NAME}\",\"days\":30,\"originalPriceCent\":1290,\"priceCent\":990,\"status\":1}" \
   "${AUTHZ_ADMIN[@]}" >/dev/null
 curl_json POST "${BASE_URL}/api/v1/admin/quotes" \
   "{\"content\":\"${QUOTE_CONTENT}\",\"scene\":\"每日觉察\",\"minAge\":0,\"maxAge\":18,\"status\":1}" \
@@ -207,7 +207,7 @@ PY
 
 echo "== Admin update plan/quote =="
 curl_json PUT "${BASE_URL}/api/v1/admin/plans/${PLAN_ID}" \
-  "{\"name\":\"${PLAN_NAME}\",\"days\":30,\"priceCent\":990,\"status\":1}" \
+  "{\"name\":\"${PLAN_NAME}\",\"days\":30,\"originalPriceCent\":1290,\"priceCent\":990,\"status\":1}" \
   "${AUTHZ_ADMIN[@]}" >/dev/null
 curl_json PUT "${BASE_URL}/api/v1/admin/quotes/${QUOTE_ID}" \
   "{\"content\":\"${QUOTE_CONTENT} (updated)\",\"scene\":\"每日觉察\",\"minAge\":0,\"maxAge\":18,\"status\":1}" \

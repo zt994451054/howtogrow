@@ -16,7 +16,7 @@ public class SubscriptionPlanRepository {
   public List<PlanRow> listActivePlans() {
     var sql =
         """
-        SELECT id, name, days, price_cent
+        SELECT id, name, days, original_price_cent, price_cent
         FROM subscription_plan
         WHERE status = 1 AND deleted_at IS NULL
         ORDER BY created_at DESC, id DESC
@@ -29,13 +29,14 @@ public class SubscriptionPlanRepository {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getInt("days"),
+                rs.getInt("original_price_cent"),
                 rs.getInt("price_cent")));
   }
 
   public PlanRow requirePlan(long planId) {
     var sql =
         """
-        SELECT id, name, days, price_cent
+        SELECT id, name, days, original_price_cent, price_cent
         FROM subscription_plan
         WHERE id = :id AND status = 1 AND deleted_at IS NULL
         """;
@@ -48,6 +49,7 @@ public class SubscriptionPlanRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getInt("days"),
+                    rs.getInt("original_price_cent"),
                     rs.getInt("price_cent")));
     return rows.stream().findFirst().orElseThrow();
   }
@@ -55,7 +57,7 @@ public class SubscriptionPlanRepository {
   public java.util.Optional<PlanRow> findById(long planId) {
     var sql =
         """
-        SELECT id, name, days, price_cent
+        SELECT id, name, days, original_price_cent, price_cent
         FROM subscription_plan
         WHERE id = :id AND deleted_at IS NULL
         """;
@@ -68,6 +70,7 @@ public class SubscriptionPlanRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getInt("days"),
+                    rs.getInt("original_price_cent"),
                     rs.getInt("price_cent")));
     return rows.stream().findFirst();
   }
@@ -75,7 +78,7 @@ public class SubscriptionPlanRepository {
   public java.util.Optional<PlanRow> findActiveById(long planId) {
     var sql =
         """
-        SELECT id, name, days, price_cent
+        SELECT id, name, days, original_price_cent, price_cent
         FROM subscription_plan
         WHERE id = :id AND status = 1 AND deleted_at IS NULL
         """;
@@ -88,9 +91,10 @@ public class SubscriptionPlanRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getInt("days"),
+                    rs.getInt("original_price_cent"),
                     rs.getInt("price_cent")));
     return rows.stream().findFirst();
   }
 
-  public record PlanRow(long planId, String name, int days, int priceCent) {}
+  public record PlanRow(long planId, String name, int days, int originalPriceCent, int priceCent) {}
 }

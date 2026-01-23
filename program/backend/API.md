@@ -236,6 +236,10 @@
 #### `GET /api/v1/admin/questions`
 - Query：
   - `ageYear`：筛选年龄（岁，可选，返回满足 `minAge<=ageYear<=maxAge` 的题目）
+  - `questionType`：题型筛选（可选，`SINGLE`/`MULTI`）
+  - `status`：状态筛选（可选，`0`/`1`）
+  - `troubleSceneId`：烦恼场景ID（可选，返回关联该场景的题目）
+  - `keyword`：关键字（可选，`content` 模糊匹配）
   - `page`：页码（从 1 开始）
   - `pageSize`：每页条数（1-200）
 - 响应 data：`PageResponse<QuestionSummaryView>`
@@ -293,6 +297,16 @@
   - `childId`：孩子ID
   - `keyword`：用户/孩子昵称关键词
 - 响应：Excel 文件（`.xlsx`，`Content-Disposition: attachment`）
+
+#### `GET /api/v1/admin/assessments/{assessmentId}`
+- Path：
+  - `assessmentId`：自测ID
+- 响应 data：`AssessmentDetailView`
+
+#### `GET /api/v1/admin/assessments/{assessmentId}/export-word`
+- Path：
+  - `assessmentId`：自测ID
+- 响应：Word 文件（`.docx`，`Content-Disposition: attachment`）
 
 #### `GET /api/v1/admin/children`
 - Query：
@@ -619,7 +633,8 @@
 | `planId` | number | 套餐ID |
 | `name` | string | 套餐名称 |
 | `days` | number | 套餐天数 |
-| `priceCent` | number | 价格（分） |
+| `originalPriceCent` | number | 原价（分） |
+| `priceCent` | number | 现价（分） |
 
 #### `SubscriptionOrderCreateRequest`
 | 字段 | 类型 | 说明 |
@@ -724,7 +739,8 @@
 | --- | --- | --- |
 | `name` | string | 套餐名称 |
 | `days` | number | 套餐天数 |
-| `priceCent` | number | 价格（分） |
+| `originalPriceCent` | number | 原价（分） |
+| `priceCent` | number | 现价（分） |
 | `status` | number | 状态：0禁用 1启用 |
 
 #### `PlanView`
@@ -733,7 +749,8 @@
 | `planId` | number | 套餐ID |
 | `name` | string | 套餐名称 |
 | `days` | number | 套餐天数 |
-| `priceCent` | number | 价格（分） |
+| `originalPriceCent` | number | 原价（分） |
+| `priceCent` | number | 现价（分） |
 | `status` | number | 状态：0禁用 1启用 |
 
 #### `QuoteCreateRequest` / `QuoteUpdateRequest`
@@ -894,6 +911,40 @@
 | `relationshipBuildingScore` | number | 关系建设力得分 |
 | `learningSupportScore` | number | 学习支持力得分 |
 | `dimensionScores` | array | `AssessmentDimensionScoreView[]` |
+
+#### `AssessmentDetailView`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `assessmentId` | number | 自测ID |
+| `userId` | number | 用户ID |
+| `userNickname` | string/null | 用户昵称 |
+| `userAvatarUrl` | string/null | 用户头像URL |
+| `childId` | number | 孩子ID |
+| `childNickname` | string/null | 孩子昵称 |
+| `bizDate` | string | 提交日期（yyyy-MM-dd） |
+| `submittedAt` | string | 提交时间（ISO-8601） |
+| `aiSummary` | string/null | AI 总结（可为空） |
+| `dimensionScores` | array | `AssessmentDimensionScoreView[]` |
+| `items` | array | `AssessmentDetailView.ItemView[]` |
+
+#### `AssessmentDetailView.ItemView`（`AssessmentDetailView.items[]`）
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `displayOrder` | number | 题目展示顺序（1..10） |
+| `questionId` | number | 问题ID |
+| `questionType` | string | 题型：SINGLE/MULTI |
+| `questionContent` | string | 题目内容 |
+| `options` | array | `AssessmentDetailView.OptionView[]` |
+| `selectedOptionIds` | array | 已选中的选项ID列表 |
+
+#### `AssessmentDetailView.OptionView`（`AssessmentDetailView.items[].options[]`）
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `optionId` | number | 选项ID |
+| `content` | string | 选项内容 |
+| `suggestFlag` | number | 是否建议：0否 1是 |
+| `improvementTip` | string/null | 改进建议（可为空） |
+| `sortNo` | number | 排序号（越小越靠前） |
 
 #### `AssessmentDimensionScoreView`
 | 字段 | 类型 | 说明 |

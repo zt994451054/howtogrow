@@ -15,6 +15,7 @@ const formRef = ref<FormInstance>();
 type PlanFormState = {
   name: string;
   days: number;
+  originalPriceYuan: number;
   priceYuan: number;
   status: number;
 };
@@ -22,6 +23,7 @@ type PlanFormState = {
 const form = reactive<PlanFormState>({
   name: "",
   days: 30,
+  originalPriceYuan: 0,
   priceYuan: 0,
   status: 1
 });
@@ -29,7 +31,8 @@ const form = reactive<PlanFormState>({
 const rules: FormRules = {
   name: [{ required: true, message: "请输入套餐名称", trigger: "blur" }],
   days: [{ required: true, message: "请输入套餐天数", trigger: "blur" }],
-  priceYuan: [{ required: true, message: "请输入价格（元）", trigger: "blur" }]
+  originalPriceYuan: [{ required: true, message: "请输入原价（元）", trigger: "blur" }],
+  priceYuan: [{ required: true, message: "请输入现价（元）", trigger: "blur" }]
 };
 
 async function reload() {
@@ -45,6 +48,7 @@ function openCreate() {
   editing.value = null;
   form.name = "";
   form.days = 30;
+  form.originalPriceYuan = 0;
   form.priceYuan = 0;
   form.status = 1;
   dialogVisible.value = true;
@@ -54,6 +58,7 @@ function openEdit(row: PlanView) {
   editing.value = row;
   form.name = row.name;
   form.days = row.days;
+  form.originalPriceYuan = row.originalPriceCent / 100;
   form.priceYuan = row.priceCent / 100;
   form.status = row.status;
   dialogVisible.value = true;
@@ -68,9 +73,15 @@ async function save() {
   const ok = await formRef.value?.validate();
   if (!ok) return;
 
+  if (form.originalPriceYuan < form.priceYuan) {
+    ElMessage.error("原价不能小于现价");
+    return;
+  }
+
   const request: PlanUpsertRequest = {
     name: form.name.trim(),
     days: form.days,
+    originalPriceCent: moneyYuanToCent(form.originalPriceYuan),
     priceCent: moneyYuanToCent(form.priceYuan),
     status: form.status
   };
@@ -113,7 +124,10 @@ onMounted(() => {
       <el-table-column prop="planId" label="ID" width="90" />
       <el-table-column prop="name" label="名称" />
       <el-table-column prop="days" label="天数" width="90" />
-      <el-table-column label="价格(元)" width="120">
+      <el-table-column label="原价(元)" width="120">
+        <template #default="{ row }">¥ {{ formatMoneyCent(row.originalPriceCent) }}</template>
+      </el-table-column>
+      <el-table-column label="现价(元)" width="120">
         <template #default="{ row }">¥ {{ formatMoneyCent(row.priceCent) }}</template>
       </el-table-column>
       <el-table-column label="状态" width="90">
@@ -137,7 +151,10 @@ onMounted(() => {
         <el-form-item label="套餐天数" prop="days">
           <el-input-number v-model="form.days" :min="1" :step="1" />
         </el-form-item>
-        <el-form-item label="价格(元)" prop="priceYuan">
+        <el-form-item label="原价(元)" prop="originalPriceYuan">
+          <el-input-number v-model="form.originalPriceYuan" :min="0" :step="0.01" :precision="2" />
+        </el-form-item>
+        <el-form-item label="现价(元)" prop="priceYuan">
           <el-input-number v-model="form.priceYuan" :min="0" :step="0.01" :precision="2" />
         </el-form-item>
         <el-form-item label="状态">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import StatusTag from "@/components/StatusTag.vue";
 import { listDimensions, type DimensionView } from "@/api/admin/dimensions";
@@ -13,6 +13,7 @@ import {
   updateQuestion,
   type QuestionDetailView,
   type QuestionSummaryView,
+  type QuestionType,
   type QuestionUpsertRequest
 } from "@/api/admin/questions";
 import QuestionEditorDialog from "@/pages/questions/QuestionEditorDialog.vue";
@@ -30,6 +31,22 @@ const page = ref<PageState>({ page: 1, pageSize: 20, total: 0 });
 const selected = ref<QuestionSummaryView[]>([]);
 const batchDeleting = ref(false);
 
+type QuestionFilter = {
+  ageYear: string;
+  questionType: "" | QuestionType;
+  status: number | null;
+  troubleSceneId: number | null;
+  keyword: string;
+};
+
+const filter = reactive<QuestionFilter>({
+  ageYear: "",
+  questionType: "",
+  status: null,
+  troubleSceneId: null,
+  keyword: ""
+});
+
 const dimensions = ref<DimensionView[]>([]);
 const troubleScenes = ref<TroubleSceneView[]>([]);
 
@@ -41,9 +58,24 @@ const importVisible = ref(false);
 const templateUrl = computed(() => `${import.meta.env.BASE_URL}question-import-template.xlsx`);
 
 async function reload() {
+  const ageText = filter.ageYear.trim();
+  const ageYear = ageText ? Number(ageText) : undefined;
+  if (ageYear !== undefined && (!Number.isInteger(ageYear) || ageYear < 0 || ageYear > 18)) {
+    ElMessage.warning("年龄请输入 0-18 的整数");
+    return;
+  }
+
   loading.value = true;
   try {
-    const res = await listQuestions({ page: page.value.page, pageSize: page.value.pageSize });
+    const res = await listQuestions({
+      page: page.value.page,
+      pageSize: page.value.pageSize,
+      ageYear,
+      status: filter.status ?? undefined,
+      questionType: filter.questionType || undefined,
+      troubleSceneId: filter.troubleSceneId ?? undefined,
+      keyword: filter.keyword.trim() || undefined
+    });
     items.value = res.items;
     page.value.total = res.total;
     if (page.value.page > 1 && page.value.total > 0 && items.value.length === 0) {
@@ -143,6 +175,21 @@ function onCurrentChange(p: number) {
   void reload();
 }
 
+function onSearch() {
+  page.value.page = 1;
+  void reload();
+}
+
+function onReset() {
+  filter.ageYear = "";
+  filter.questionType = "";
+  filter.status = null;
+  filter.troubleSceneId = null;
+  filter.keyword = "";
+  page.value.page = 1;
+  void reload();
+}
+
 onMounted(async () => {
   await loadReferenceData();
   await reload();
@@ -162,6 +209,38 @@ onMounted(async () => {
         <el-button @click="openImport">导入题库</el-button>
         <el-button type="primary" @click="openCreate">新增</el-button>
       </div>
+    </div>
+
+    <div class="filters">
+      <el-form :inline="true" label-width="60px" @submit.prevent>
+        <el-form-item label="年龄">
+          <el-input v-model="filter.ageYear" placeholder="0-18" clearable style="width: 110px" @keyup.enter="onSearch" />
+        </el-form-item>
+        <el-form-item label="题型">
+          <el-select v-model="filter.questionType" placeholder="全部" style="width: 120px" clearable>
+            <el-option label="单选" value="SINGLE" />
+            <el-option label="多选" value="MULTI" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="filter.status" placeholder="全部" style="width: 120px" clearable>
+            <el-option label="启用" :value="1" />
+            <el-option label="禁用" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="场景">
+          <el-select v-model="filter.troubleSceneId" placeholder="全部" style="width: 200px" clearable filterable>
+            <el-option v-for="s in troubleScenes" :key="s.id" :label="s.name" :value="s.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关键词">
+          <el-input v-model="filter.keyword" placeholder="问题" clearable style="width: 220px" @keyup.enter="onSearch" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">查询</el-button>
+          <el-button @click="onReset">重置</el-button>
+        </el-form-item>
+      </el-form>
     </div>
 
     <el-table :data="items" v-loading="loading" style="width: 100%" @selection-change="onSelectionChange">
@@ -227,6 +306,9 @@ onMounted(async () => {
 .actions {
   display: flex;
   gap: 8px;
+}
+.filters {
+  margin-bottom: 10px;
 }
 .pager {
   margin-top: 12px;

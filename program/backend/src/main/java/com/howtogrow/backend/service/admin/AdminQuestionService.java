@@ -25,11 +25,12 @@ public class AdminQuestionService {
     this.writeRepo = writeRepo;
   }
 
-  public PageResponse<QuestionSummaryView> list(Integer ageYear, int page, int pageSize) {
+  public PageResponse<QuestionSummaryView> list(
+      Integer ageYear, String questionType, Integer status, Long troubleSceneId, String keyword, int page, int pageSize) {
     int offset = (page - 1) * pageSize;
-    long total = queryRepo.countQuestions(ageYear);
+    long total = queryRepo.countQuestions(ageYear, status, questionType, troubleSceneId, keyword);
     var items =
-        queryRepo.listQuestions(ageYear, offset, pageSize).stream()
+        queryRepo.listQuestions(ageYear, status, questionType, troubleSceneId, keyword, offset, pageSize).stream()
             .map(r -> new QuestionSummaryView(r.id(), r.minAge(), r.maxAge(), r.questionType(), r.status(), r.content()))
             .toList();
     return new PageResponse<>(page, pageSize, total, items);

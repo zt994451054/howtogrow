@@ -31,8 +31,7 @@ public class HttpAiClient implements AiClient {
                 new ChatMessage(
                     "system",
                     "你是正向育儿陪伴助手。请基于给定信息生成共情、正向引导总结，不做诊断、不贴标签。"),
-                new ChatMessage("user", prompt)),
-            120);
+                new ChatMessage("user", prompt)));
 
     var resp =
         restClient
@@ -60,7 +59,7 @@ public class HttpAiClient implements AiClient {
   }
 
   record ChatCompletionsRequest(
-      String model, List<ChatMessage> messages, @JsonProperty("max_tokens") int maxTokens) {}
+      String model, List<ChatMessage> messages) {}
 
   record ChatMessage(String role, String content) {}
 

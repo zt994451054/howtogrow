@@ -67,11 +67,17 @@ export type QuestionImportResponse = {
   failures: { row: number; reason: string }[];
 };
 
-export async function listQuestions(params: {
+export type ListQuestionsParams = {
   page: number;
   pageSize: number;
   ageYear?: number;
-}): Promise<PageResponse<QuestionSummaryView>> {
+  keyword?: string;
+  status?: number;
+  questionType?: QuestionType;
+  troubleSceneId?: number;
+};
+
+export async function listQuestions(params: ListQuestionsParams): Promise<PageResponse<QuestionSummaryView>> {
   const res = await http.get<ApiResponse<PageResponse<QuestionSummaryView>>>("/api/v1/admin/questions", {
     params
   });

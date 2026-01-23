@@ -13,6 +13,7 @@ import com.howtogrow.backend.service.miniprogram.AiChatService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,6 +79,8 @@ public class MiniprogramAiChatController {
     var user = AuthContext.requireMiniprogram();
     return ResponseEntity.ok()
         .contentType(MediaType.TEXT_EVENT_STREAM)
+        .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-transform")
+        .header("X-Accel-Buffering", "no")
         .body(chatService.streamAssistantReply(user.userId(), sessionId));
   }
 }
