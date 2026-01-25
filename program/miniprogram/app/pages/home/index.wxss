@@ -226,15 +226,17 @@
 
 .banner-wrap {
   position: relative;
-  width: 100%;
+  width: calc(100% + 64rpx);
   height: 280rpx;
+  margin-left: -32rpx;
+  margin-right: -32rpx;
   margin-bottom: 24rpx;
 }
 
 .banner {
   width: 100%;
   height: 280rpx;
-  border-radius: var(--radius-16);
+  border-radius: 0;
   overflow: hidden;
 }
 
