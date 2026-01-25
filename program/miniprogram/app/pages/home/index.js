@@ -381,6 +381,8 @@ Page({
     children: [],
     selectedChildId: 0,
     greetText: "您好",
+    greetName: "",
+    greetSuffix: "您好",
     avatarText: "妈",
     avatarUrl: "",
     monthText: "",
@@ -533,12 +535,16 @@ Page({
     const childId = Number(this.data.selectedChildId || 0);
     const selected = (this.data.children || []).find((c) => Number(c.id) === childId) || null;
     if (!selected) {
-      this.setData({ greetText: "您好" });
+      this.setData({ greetText: "您好", greetName: "", greetSuffix: "您好" });
       return;
     }
     const identity = selected.parentIdentity ? String(selected.parentIdentity) : "妈妈";
+    const greetName = `${selected.nickname}${identity}`;
+    const greetSuffix = "您好";
     this.setData({
-      greetText: `${selected.nickname}${identity}，您好`,
+      greetText: `${greetName}，${greetSuffix}`,
+      greetName,
+      greetSuffix,
     });
   },
 
