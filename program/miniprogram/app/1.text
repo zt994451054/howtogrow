@@ -1,9 +1,19 @@
-width: 294.94rpx;
-height: 293.72rpx;
-border-radius: 29.09rpx 29.09rpx 29.09rpx 29.09rpx;
-opacity: 0.1;
-background: #e18638;
+font-weight: -GBK1-0;
+width: 107rpx;
+height: 26rpx;
+font-size: 26.38rpx;
+text-align: left;
+color: #E18638 100%;
+letter-spacing: 11rpx;
 
-1、这是 obs 区域的标注数据；
+
+font-weight: -GBK1-0;
+width: 158rpx;
+height: 25rpx;
+font-size: 26.38rpx;
+text-align: left;
+color: #3C3C3B 100%;
+
+1、这是 month row between 区域的标注数据；
 2、如上截图是 UI 设计图；
 3、请根据标注数据和 UI 设计图修改对应区域，注意不修改任何数据交互

@@ -93,7 +93,7 @@
         <picker mode="date" fields="month" value="{{monthValue}}" start="{{minMonthStart}}" end="{{maxMonthEnd}}" bindchange="onMonthChange">
           <view class="month__picker row a">
             <view class="month__picker-text">{{monthText}}</view>
-            <view class="month__picker-icon">›</view>
+            <view class="month__picker-icon">⌄</view>
           </view>
         </picker>
       </view>

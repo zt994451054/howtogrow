@@ -100,7 +100,7 @@ function toMonthValue(date) {
 }
 
 function toMonthText(date) {
-  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+  return `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
 }
 
 function dayOfWeekText(date) {
