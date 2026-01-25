@@ -345,13 +345,13 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding-bottom: 10rpx;
+  padding: 0 12rpx 10rpx;
 }
 
 .obs {
   display: flex;
   flex-direction: column;
-  width: calc((100% - 18rpx) / 2);
+  width: 294.94rpx;
   margin-bottom: 18rpx;
 }
 
@@ -369,20 +369,20 @@
 .thumb {
   position: relative;
   width: 100%;
-  padding-top: 100%;
-  border-radius: var(--radius-16);
+  height: 293.72rpx;
+  border-radius: 29.09rpx;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
 
 .thumb-notdone {
-  background: #fff9f2;
+  background: rgba(225, 134, 56, 0.1);
 }
 
 .thumb__inner {
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-16);
+  border-radius: 29.09rpx;
   overflow: hidden;
 }
 
@@ -394,44 +394,81 @@
   display: block;
 }
 
-.date-tag {
+.thumb__date {
   position: absolute;
   top: 14rpx;
   left: 14rpx;
   z-index: 10;
-  border-radius: 14rpx;
-  padding: 10rpx 12rpx;
-  min-width: 112rpx;
-  width: 112rpx;
-  text-align: center;
-  border: 2rpx solid rgba(255, 255, 255, 0.16);
-}
-
-.date-tag-done {
-  background: rgba(0, 0, 0, 0.35);
   color: #fff;
-}
-
-.date-tag-undone {
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--brand);
-  border-color: rgba(249, 115, 22, 0.16);
-}
-
-.date-tag__d {
-  font-size: 44rpx;
-  font-weight: 900;
-  line-height: 1;
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.28);
   white-space: nowrap;
   overflow: hidden;
 }
 
-.date-tag__w {
-  margin-top: 6rpx;
-  font-size: 18rpx;
-  font-weight: 700;
-  opacity: 0.9;
-  line-height: 1.1;
+.thumb__camera {
+  position: absolute;
+  top: 14rpx;
+  right: 14rpx;
+  z-index: 10;
+  width: 22rpx;
+  height: 20rpx;
+  opacity: 0.8;
+  color: #fff;
+  pointer-events: none;
+}
+
+.camera-icon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.camera-icon__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4rpx;
+  bottom: 0;
+  border: 2rpx solid currentColor;
+  border-radius: 5rpx;
+  box-sizing: border-box;
+}
+
+.camera-icon__top {
+  position: absolute;
+  top: 0;
+  left: 4rpx;
+  width: 10rpx;
+  height: 5rpx;
+  border: 2rpx solid currentColor;
+  border-bottom: 0;
+  border-radius: 4rpx 4rpx 0 0;
+  box-sizing: border-box;
+}
+
+.camera-icon__lens {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  width: 8rpx;
+  height: 8rpx;
+  border: 2rpx solid currentColor;
+  border-radius: 9999rpx;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+.camera-icon__dot {
+  position: absolute;
+  right: 3rpx;
+  top: 8rpx;
+  width: 2rpx;
+  height: 2rpx;
+  background: currentColor;
+  border-radius: 9999rpx;
 }
 
 .mood-notch {
@@ -445,13 +482,12 @@
   background: #fff;
   z-index: 9;
   pointer-events: none;
-  border: 2rpx solid rgba(243, 244, 246, 1);
 }
 
 .mood {
   position: absolute;
-  left: 6rpx;
-  bottom: 6rpx;
+  left: 0;
+  bottom: 0;
   width: 72rpx;
   height: 72rpx;
   border-radius: 9999rpx;
@@ -459,7 +495,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 10rpx 18rpx rgba(17, 24, 39, 0.12);
-  border: 6rpx solid #fff;
+  border: 4rpx solid #fff;
   z-index: 10;
   overflow: hidden;
   pointer-events: none;
@@ -477,13 +513,53 @@
 }
 
 .mood-empty {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(243, 244, 246, 1);
+  background: rgba(225, 134, 56, 0.7);
+  border-color: #fff;
+  color: #fff;
 }
 
 .mood__blank {
   width: 100%;
   height: 100%;
+}
+
+.smile-icon {
+  position: relative;
+  width: 44rpx;
+  height: 44rpx;
+  color: currentColor;
+}
+
+.smile-icon__eye {
+  position: absolute;
+  top: 14rpx;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 9999rpx;
+  background: currentColor;
+}
+
+.smile-icon__eye--l {
+  left: 12rpx;
+}
+
+.smile-icon__eye--r {
+  right: 12rpx;
+}
+
+.smile-icon__mouth {
+  position: absolute;
+  left: 50%;
+  top: 24rpx;
+  width: 26rpx;
+  height: 16rpx;
+  border: 6rpx solid currentColor;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0 0 9999rpx 9999rpx;
+  transform: translateX(-50%);
+  box-sizing: border-box;
 }
 
 .mood-orange {
@@ -532,9 +608,10 @@
 }
 
 .foot__t {
-  font-size: 22rpx;
-  font-weight: 900;
-  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #3c3c3b;
+  letter-spacing: 2rpx;
   margin-bottom: 4rpx;
 }
 
@@ -543,6 +620,8 @@
 }
 
 .foot__s {
-  font-size: 20rpx;
-  color: var(--text-muted);
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #3c3c3b;
+  letter-spacing: 2rpx;
 }

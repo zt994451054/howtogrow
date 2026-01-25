@@ -107,11 +107,16 @@
           data-date="{{item.date}}"
         >
           <view class="thumb-wrap">
-            <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
+              <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
                 <view class="thumb__inner">
-                <view class="date-tag {{item.isDone ? 'date-tag-done' : 'date-tag-undone'}}">
-                  <view class="date-tag__d">{{item.dayText}}</view>
-                  <view class="date-tag__w">{{item.weekday}}</view>
+                <view class="thumb__date">{{item.dayText}} / {{item.weekday}}</view>
+                <view class="thumb__camera">
+                  <view class="camera-icon">
+                    <view class="camera-icon__body" />
+                    <view class="camera-icon__top" />
+                    <view class="camera-icon__lens" />
+                    <view class="camera-icon__dot" />
+                  </view>
                 </view>
 
                 <image wx:if="{{item.isDone && item.imageUrl}}" class="thumb__img" src="{{item.imageUrl}}" mode="aspectFill" />
@@ -123,7 +128,11 @@
                 <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}}">
                   <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
                   <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
-                  <view wx:else class="mood__blank" />
+                  <view wx:else class="smile-icon">
+                    <view class="smile-icon__eye smile-icon__eye--l" />
+                    <view class="smile-icon__eye smile-icon__eye--r" />
+                    <view class="smile-icon__mouth" />
+                  </view>
                 </view>
               </view>
             </view>
