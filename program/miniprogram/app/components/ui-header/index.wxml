@@ -2,7 +2,8 @@
   <view class="bar" style="height: {{navContentHeight}}px;">
     <view class="side">
       <view wx:if="{{left}}" class="btn" bindtap="onLeft">
-        <ui-icon name="{{left}}" size="{{24}}" />
+        <!-- <ui-icon name="{{left}}" size="{{48}}" /> -->
+         <image src="../../assets/image/uni-left.png" class="left-icon"/>
       </view>
     </view>
     <view class="center-content">
