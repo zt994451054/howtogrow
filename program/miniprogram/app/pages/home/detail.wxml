@@ -34,12 +34,7 @@
 
   <!-- 育儿状态（全屏） -->
   <view wx:if="{{showStatusSheet}}" class="overlay">
-    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
-    <view class="overlay__header row between">
-      <view class="overlay__back" bindtap="closeSheets">‹</view>
-      <view class="overlay__title">{{dateSlash}}育儿状态</view>
-      <view class="overlay__spacer" />
-    </view>
+    <ui-header title="{{dateSlash}}育儿状态" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
     <view class="overlay__quote">{{statusQuote}}</view>
 
@@ -80,12 +75,7 @@
 
   <!-- 烦恼存档（全屏） -->
   <view wx:if="{{showTroubleSheet}}" class="overlay">
-    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
-    <view class="overlay__header row between">
-      <view class="overlay__back" bindtap="closeSheets">‹</view>
-      <view class="overlay__title">{{dateSlash}}烦恼存档</view>
-      <view class="overlay__spacer" />
-    </view>
+    <ui-header title="{{dateSlash}}烦恼存档" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
     <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
       <view class="trouble-hero">
@@ -131,12 +121,7 @@
 
   <!-- 育儿日记（全屏） -->
   <view wx:if="{{showDiarySheet}}" class="overlay">
-    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
-    <view class="overlay__header row between">
-      <view class="overlay__back" bindtap="closeSheets">‹</view>
-      <view class="overlay__title">{{dateSlash}}育儿日记</view>
-      <view class="overlay__spacer" />
-    </view>
+    <ui-header title="{{dateSlash}}育儿日记" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
     <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
       <view class="diary-wrap">
