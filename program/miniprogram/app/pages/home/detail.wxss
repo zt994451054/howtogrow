@@ -353,13 +353,12 @@
 }
 
 .overlay__quote {
-  padding: 20rpx 64rpx 10rpx;
-  text-align: center;
-  color: rgba(249, 115, 22, 1);
-  font-size: 28rpx;
-  font-weight: 900;
-  line-height: 1.6;
-  white-space: pre-line;
+  font-weight: bold;
+font-size: 24rpx;
+text-align: left;
+color: #F08019;
+margin-top: 50rpx;
+margin-left: 48rpx;
 }
 
 .mood-area {
@@ -369,6 +368,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -60rpx;
 }
 
 .mood-orbit {
@@ -387,7 +387,7 @@
 }
 
 .mood-center__circle {
-  width: 240rpx;
+  /* width: 240rpx;
   height: 240rpx;
   border-radius: 9999rpx;
   background: rgba(249, 115, 22, 0.10);
@@ -396,11 +396,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: hidden; */
 }
 
 .mood-center__emoji {
-  font-size: 120rpx;
+  font-size: 188rpx;
   line-height: 1;
 }
 
@@ -411,8 +411,13 @@
 }
 
 .mood-center__text {
-  margin-top: 40rpx;
   text-align: center;
+
+ color: #3c3c3be6;
+ font-weight: bold;
+ font-size: 20.36rpx;
+ text-align: left;
+ letter-spacing: 8rpx;
 }
 
 .mood-center__line {
@@ -437,12 +442,10 @@
 }
 
 .mood-option__circle {
-  width: 112rpx;
-  height: 112rpx;
+  width: 90rpx;
+  height: 90rpx;
   border-radius: 9999rpx;
   background: rgba(249, 115, 22, 0.10);
-  border: 2rpx solid transparent;
-  box-shadow: 0 10rpx 20rpx rgba(17, 24, 39, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -470,7 +473,7 @@
 .mood-option__label {
   font-size: 18rpx;
   font-weight: 900;
-  color: rgba(156, 163, 175, 1);
+  color: #3C3C3B !important;
 }
 
 .mood-option.on .mood-option__label {
