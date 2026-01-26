@@ -263,7 +263,7 @@
 
 .section {
   align-items: center;
-  margin-top: 10rpx;
+  margin-top: 40rpx;
 }
 
 .section__title {
