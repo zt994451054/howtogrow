@@ -507,9 +507,7 @@ margin-left: 48rpx;
 }
 
 .overlay__btn--disabled {
-  background: rgba(229, 231, 235, 1) !important;
-  color: rgba(156, 163, 175, 1) !important;
-  box-shadow: none;
+  opacity: 0.5;
 }
 
 .trouble-hero {
