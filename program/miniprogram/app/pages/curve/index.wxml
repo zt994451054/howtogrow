@@ -88,7 +88,7 @@
           wx:for="{{dimensions}}"
           wx:key="code"
           class="dim-pill {{item._on ? 'on' : 'off'}}"
-          style="background: {{item._on ? item.bg : defaultDimPillBg}};"
+          style="background: {{item._on ? item.bg : '#E7E7E7'}};"
           bindtap="onToggleDimension"
           data-code="{{item.code}}"
         >
