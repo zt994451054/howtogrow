@@ -482,8 +482,7 @@ margin-left: 48rpx;
 
 .overlay__footer {
   padding: 18rpx 40rpx 22rpx;
-  border-top: 2rpx solid rgba(243, 244, 246, 0.8);
-  margin-bottom: 48rpx;
+  margin-bottom: 200rpx;
 }
 
 .overlay__scroll {
@@ -671,10 +670,10 @@ margin-left: 48rpx;
 }
 
 .diary-prompt__box {
-  background: rgba(255, 249, 242, 1);
-  border-radius: 24rpx;
+  /* background: rgba(255, 249, 242, 1); */
+  /* border-radius: 24rpx; */
   padding: 22rpx 22rpx 18rpx;
-  border: 2rpx solid rgba(254, 215, 170, 0.65);
+  /* border: 2rpx solid rgba(254, 215, 170, 0.65); */
 }
 
 .diary-prompt__text {
@@ -685,14 +684,14 @@ margin-left: 48rpx;
 }
 
 .diary-prompt__actions {
-  margin-top: 18rpx;
-  gap: 12rpx;
+  margin-top: 40rpx;
+  gap: 18rpx;
   align-items: center;
   justify-content: flex-start;
 }
 
 .diary-prompt__use {
-  width: auto !important;
+  width: 144rpx;
   flex: 0 0 auto;
   margin: 0;
   background: rgba(249, 115, 22, 1) !important;
@@ -700,8 +699,8 @@ margin-left: 48rpx;
   border-radius: 9999rpx;
   font-size: 22rpx;
   font-weight: 900;
-  height: 64rpx;
-  line-height: 64rpx;
+  height: 56rpx;
+  line-height: 56rpx;
   padding: 0 26rpx;
 }
 
@@ -710,18 +709,18 @@ margin-left: 48rpx;
 }
 
 .diary-prompt__next {
-  width: auto !important;
+  width: 144rpx;
   flex: 0 0 auto;
   margin: 0;
   background: transparent !important;
   color: rgba(251, 146, 60, 1) !important;
   font-size: 22rpx;
   font-weight: 900;
-  height: 64rpx;
-  line-height: 64rpx;
-  padding: 0 22rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 26rpx;
   border-radius: 9999rpx;
-  border: 2rpx solid rgba(251, 146, 60, 0.35);
+  border: 2rpx solid rgba(249, 115, 22, 1);
 }
 
 .diary-prompt__next::after {
@@ -737,11 +736,12 @@ margin-left: 48rpx;
   width: 100%;
   min-height: 220rpx;
   padding: 22rpx 22rpx 54rpx;
-  background: rgba(249, 250, 251, 1);
+  background: #fff;
   border-radius: 32rpx;
   font-size: 28rpx;
   color: rgba(31, 41, 55, 1);
   line-height: 1.6;
+  border: solid 2rpx #B2B2B2;
 }
 
 .diary-editor__count {
@@ -756,6 +756,7 @@ margin-left: 48rpx;
 .diary-photo {
   margin-top: 30rpx;
   padding-bottom: 20rpx;
+  margin-left: calc(50% - 130rpx);
 }
 
 .diary-photo__camera {

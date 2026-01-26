@@ -126,10 +126,10 @@
     <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
       <view class="diary-wrap">
         <view class="diary-prompt">
-          <view class="diary-prompt__head row">
+          <!-- <view class="diary-prompt__head row">
             <view class="diary-prompt__spark">✦</view>
             <view class="diary-prompt__label">你记录的每一次感悟，都是你成长的脚印</view>
-          </view>
+          </view> -->
           <view class="diary-prompt__box">
             <view class="diary-prompt__text">{{diaryPromptText}}</view>
             <view class="diary-prompt__actions row">
@@ -152,10 +152,10 @@
         </view>
 
         <view class="diary-photo">
-          <view class="diary-photo__head row">
+          <!-- <view class="diary-photo__head row">
             <view class="diary-photo__camera">📷</view>
             <view class="diary-photo__label">定格瞬间 (可选)</view>
-          </view>
+          </view> -->
 
           <view wx:if="{{diaryDraftImageUrl}}" class="diary-photo__preview">
             <image class="diary-photo__img" src="{{diaryDraftImageUrl}}" mode="aspectFill" bindtap="onPreviewDiaryImage" />
