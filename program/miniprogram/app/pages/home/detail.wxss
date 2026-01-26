@@ -514,16 +514,17 @@ margin-left: 48rpx;
 }
 
 .trouble-hero {
-  padding: 12rpx 48rpx 26rpx;
+  padding: 134rpx 68rpx 24rpx;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 32rpx;
 }
 
 .trouble-hero__ball {
-  width: 256rpx;
-  height: 256rpx;
+  width: 216rpx;
+  height: 216rpx;
   border-radius: 9999rpx;
   background: rgba(255, 237, 213, 1);
   position: relative;
@@ -574,12 +575,14 @@ margin-left: 48rpx;
 }
 
 .trouble-hero__title {
-  margin-top: 18rpx;
-  text-align: center;
-  color: rgba(249, 115, 22, 1);
+  margin-top: 0;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  color: #F08019;
   font-size: 28rpx;
   font-weight: 900;
-  line-height: 1.6;
+  line-height: 48rpx;
   white-space: pre-line;
 }
 
