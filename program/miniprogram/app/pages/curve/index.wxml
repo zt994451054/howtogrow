@@ -88,7 +88,7 @@
           wx:for="{{dimensions}}"
           wx:key="code"
           class="dim-pill {{item._on ? 'on' : 'off'}}"
-          style="background: {{item._on ? item.bg : '##E7E7E7'}};"
+          style="background: {{item._on ? item.bg : defaultDimPillBg}};"
           bindtap="onToggleDimension"
           data-code="{{item.code}}"
         >
@@ -113,16 +113,28 @@
           <view class="mood-card__sub">已记录 {{statusTotalDays}} 天</view>
         </view>
 
-        <view class="mood-grid">
-          <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-item">
-            <view class="mood-item__pct">{{item.percentage}}%</view>
-            <view class="mood-item__bar" style="height: {{item.barHeight}}rpx; background: {{item.color}};" />
-            <view class="mood-item__face" style="background: {{item.bg}}; color: {{item.color}};">
-              <image wx:if="{{item.imageUrl}}" class="mood-item__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-              <view wx:else>{{item.emoji}}</view>
+        <view class="mood-row">
+          <view wx:for="{{statusStatsTop}}" wx:key="moodId" class="mood-row__item">
+            <view class="mood-row__face" style="background: {{item.color}};">
+              <image wx:if="{{item.imageUrl}}" class="mood-row__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+              <view wx:else class="mood-row__emoji">{{item.emoji}}</view>
             </view>
-            <view class="mood-item__label">{{item.label}}</view>
+            <view class="mood-row__pill">
+              <text class="mood-row__pct" style="color: {{item.color}};">{{item.percentage}}%</text>
+            </view>
           </view>
+        </view>
+
+        <view class="mood-stack">
+          <view wx:if="{{statusTotalDays > 0}}" class="mood-stack__bar">
+            <view
+              wx:for="{{statusStatsTop}}"
+              wx:key="moodId"
+              class="mood-stack__seg {{index === 0 ? 'first' : ''}} {{index === statusStatsTopLastIndex ? 'last' : ''}}"
+              style="flex: {{item.count}} 0 0; background: {{item.color}};"
+            />
+          </view>
+          <view wx:else class="mood-stack__bar empty" />
         </view>
       </view>
 

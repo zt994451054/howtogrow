@@ -397,60 +397,87 @@
   color: var(--text-muted);
 }
 
-.mood-grid {
-  margin-top: 26rpx;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 26rpx 12rpx;
+.mood-row {
+  margin-top: 34rpx;
+  display: flex;
+  justify-content: space-between;
 }
 
-.mood-item {
+.mood-row__item {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
 }
 
-.mood-item__pct {
-  font-size: 18rpx;
-  font-weight: 800;
-  color: rgba(107, 114, 128, 1);
-  margin-bottom: 6rpx;
-  transform: scale(0.92);
-}
-
-.mood-item__bar {
-  width: 10rpx;
-  border-radius: 9999rpx 9999rpx 0 0;
-}
-
-.mood-item__face {
-  width: 64rpx;
-  height: 64rpx;
+.mood-row__face {
+  width: 92rpx;
+  height: 92rpx;
   border-radius: 9999rpx;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34rpx;
-  font-weight: 900;
-  box-shadow: var(--shadow-sm);
-  margin-top: 10rpx;
-  overflow: hidden;
 }
 
-.mood-item__img {
+.mood-row__img {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-.mood-item__label {
-  margin-top: 10rpx;
-  font-size: 20rpx;
-  font-weight: 700;
-  color: rgba(107, 114, 128, 1);
-  white-space: nowrap;
-  transform: scale(0.92);
+.mood-row__emoji {
+  font-size: 44rpx;
+  line-height: 1;
+}
+
+.mood-row__pill {
+  margin-top: 18rpx;
+  width: 124rpx;
+  height: 52rpx;
+  border-radius: 9999rpx;
+  background: rgba(17, 24, 39, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-row__pct {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.mood-stack {
+  margin-top: 34rpx;
+}
+
+.mood-stack__bar {
+  height: 64rpx;
+  border-radius: 9999rpx;
+  overflow: hidden;
+  display: flex;
+  background: rgba(17, 24, 39, 0.08);
+}
+
+.mood-stack__bar.empty {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.mood-stack__seg {
+  height: 100%;
+}
+
+.mood-stack__seg.first {
+  border-radius: 9999rpx 0 0 9999rpx;
+}
+
+.mood-stack__seg.first.last {
+  border-radius: 9999rpx;
+}
+
+.mood-stack__seg.last {
+  border-radius: 0 9999rpx 9999rpx 0;
 }
 
 .chart {

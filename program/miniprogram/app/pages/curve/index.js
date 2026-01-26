@@ -425,6 +425,8 @@ Page({
     chartLoading: false,
 
     statusStats: [],
+    statusStatsTop: [],
+    statusStatsTopLastIndex: 0,
     statusTotalDays: 0,
     statusLoading: false,
     troubleLoading: false,
@@ -778,12 +780,20 @@ Page({
           return acc;
         }, []);
         const { total, items } = buildStatusStats(days, from, to);
+        const top = total > 0 ? items.slice(0, 5) : [];
+        let topLastIndex = 0;
+        for (let i = top.length - 1; i >= 0; i -= 1) {
+          if (Number(top[i]?.count || 0) > 0) {
+            topLastIndex = i;
+            break;
+          }
+        }
         const topTroubles = buildTopTroubles(days, from, to);
-        this.setData({ statusStats: items, statusTotalDays: total, topTroubles });
+        this.setData({ statusStats: items, statusStatsTop: top, statusStatsTopLastIndex: topLastIndex, statusTotalDays: total, topTroubles });
       })
       .catch(() => {
         if (reqId !== awarenessReqSeq) return;
-        this.setData({ statusStats: [], statusTotalDays: 0, topTroubles: [] });
+        this.setData({ statusStats: [], statusStatsTop: [], statusStatsTopLastIndex: 0, statusTotalDays: 0, topTroubles: [] });
       })
       .finally(() => {
         if (reqId !== awarenessReqSeq) return;
