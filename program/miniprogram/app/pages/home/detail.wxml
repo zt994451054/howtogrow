@@ -17,42 +17,8 @@
           bindtap="onTapItem"
           data-id="{{item.id}}"
         >
-          <view class="item__icon {{item.done ? 'on' : ''}}">
-            <image
-              wx:if="{{item.id == 'parentingStatus' && item.done && item.statusImageUrl}}"
-              class="item__icon-img"
-              src="{{item.statusImageUrl}}"
-              mode="aspectFill"
-              lazy-load="{{true}}"
-            />
-            <view wx:else class="obs-icon obs-icon--{{item.icon}}">
-              <view wx:if="{{item.icon == 'status'}}" class="obs-icon__status">
-                <view class="obs-icon__status-eye left" />
-                <view class="obs-icon__status-eye right" />
-                <view class="obs-icon__status-mouth" />
-              </view>
-              <view wx:elif="{{item.icon == 'troubles'}}" class="obs-icon__troubles">
-                <view class="obs-icon__troubles-bump top" />
-                <view class="obs-icon__troubles-bump right" />
-              </view>
-              <view wx:elif="{{item.icon == 'mirror'}}" class="obs-icon__mirror">
-                <view class="obs-icon__mirror-clip" />
-                <view class="obs-icon__mirror-line l1" />
-                <view class="obs-icon__mirror-line l2" />
-                <view class="obs-icon__mirror-line l3" />
-              </view>
-              <view wx:elif="{{item.icon == 'diary'}}" class="obs-icon__diary">
-                <view class="obs-icon__diary-page left" />
-                <view class="obs-icon__diary-page right" />
-                <view class="obs-icon__diary-seam" />
-              </view>
-              <view wx:elif="{{item.icon == 'expert'}}" class="obs-icon__expert">
-                <view class="obs-icon__expert-cap" />
-                <view class="obs-icon__expert-base" />
-                <view class="obs-icon__expert-tassel" />
-                <view class="obs-icon__expert-tassel-dot" />
-              </view>
-            </view>
+          <view class="item__icon">
+            <image class="item__icon-img" src="{{item.iconImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
           </view>
 
           <view class="item__body">

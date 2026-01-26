@@ -99,6 +99,14 @@ const DIARY_PROMPTS = [
   "最好的爱是陪伴，今天我做到了吗？",
 ];
 
+const TIMELINE_ICON_BY_ID = {
+  parentingStatus: "/assets/timeline/status.svg",
+  troubles: "/assets/timeline/troubles.svg",
+  mirror: "/assets/timeline/mirror.svg",
+  diary: "/assets/timeline/diary.svg",
+  expert: "/assets/timeline/expert.svg",
+};
+
 function normalizeText(value) {
   return safeText(value).replace(/\r\n/g, "\n");
 }
@@ -206,26 +214,26 @@ function buildItems(record, date) {
   const items = [
     {
       id: "parentingStatus",
-      icon: "status",
       title: "育儿状态",
       done: statusDone,
       statusImageUrl,
+      iconImageUrl: statusImageUrl || TIMELINE_ICON_BY_ID.parentingStatus,
       desc: statusDone ? `已记录：${statusCode}` : "今天的你是温柔耐心的爸妈，还是被气到想“重启系统”？",
       isLast: false,
     },
     {
       id: "troubles",
-      icon: "troubles",
       title: "烦恼存档",
       done: troubleDone,
+      iconImageUrl: TIMELINE_ICON_BY_ID.troubles,
       desc: troubleDone ? `已记录：${troubleNames.join("、")}` : "拖拉磨蹭，情绪失控，隔代教育矛盾不断",
       isLast: false,
     },
     {
       id: "mirror",
-      icon: "mirror",
       title: "行为镜子",
       done: assessmentDone,
+      iconImageUrl: TIMELINE_ICON_BY_ID.mirror,
       desc: assessmentDone
         ? "已完成每日自测，点击查看答题与建议"
         : canStartAssessment
@@ -235,9 +243,9 @@ function buildItems(record, date) {
     },
     {
       id: "diary",
-      icon: "diary",
       title: "育儿日记",
       done: diaryDone,
+      iconImageUrl: TIMELINE_ICON_BY_ID.diary,
       desc: diaryDone
         ? clampDesc(diaryContent || "已记录日记配图", 60)
         : "别一个人扛，写下来，不是抱怨，而是一次自我梳理，也可能是改变的起点",
@@ -245,9 +253,9 @@ function buildItems(record, date) {
     },
     {
       id: "expert",
-      icon: "expert",
       title: "继续深度咨询",
       done: expertDone,
+      iconImageUrl: TIMELINE_ICON_BY_ID.expert,
       desc: expertDone ? clampDesc(aiSummary, 60) : "点击进入马上沟通，继续深度咨询",
       isLast: true,
     },
