@@ -65,6 +65,7 @@ Page({
           sessionId: `history-${assessmentId}`,
           childId: detail.childId || 0,
           childName: detail.childName || "（未知）",
+          submittedAt: detail.submittedAt || "",
           items: detail.items || [],
           answers,
           submitResult: null,

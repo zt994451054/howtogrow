@@ -2,6 +2,46 @@ const { fetchAiSummary } = require("../../services/assessments");
 const { clearDailySession, getDailySession, setDailySession } = require("../../services/daily-session");
 const { getSystemMetrics } = require("../../utils/system");
 
+function normalizeInlineText(value) {
+  if (value == null) return "";
+  return String(value).replace(/\\n/g, "").trim();
+}
+
+function normalizeMultilineText(value) {
+  if (value == null) return "";
+  return String(value).replace(/\\n/g, "\n").trim();
+}
+
+function parseDateInput(value) {
+  if (!value) return null;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+  const s = String(value).trim();
+  if (!s) return null;
+
+  const ymd = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (ymd) {
+    const year = Number(ymd[1]);
+    const month = Number(ymd[2]);
+    const day = Number(ymd[3]);
+    if (Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)) {
+      return new Date(year, month - 1, day);
+    }
+  }
+
+  const dt = new Date(s);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt;
+}
+
+function formatReviewTitle(date) {
+  const dt = parseDateInput(date);
+  const safe = dt || new Date();
+  const y = safe.getFullYear();
+  const m = safe.getMonth() + 1;
+  const d = safe.getDate();
+  return `${y}年${m}月${d}日自测建议`;
+}
+
 function getPageRoute(page) {
   if (!page) return "";
   return String(page.route || page.__route__ || "").trim();
@@ -32,7 +72,16 @@ function normalizeSuggestFlag(value) {
 }
 
 Page({
-  data: { statusBarHeight: 20, mode: "complete", doneText: "完成自测", reviewItems: [], canGenerateAiSummary: false, aiLoading: false, aiSummary: "" },
+  data: {
+    statusBarHeight: 20,
+    mode: "complete",
+    doneText: "完成自测",
+    reviewTitle: "",
+    reviewItems: [],
+    canGenerateAiSummary: false,
+    aiLoading: false,
+    aiSummary: "",
+  },
   onLoad(query) {
     const { statusBarHeight } = getSystemMetrics();
     const mode = query.mode || "complete";
@@ -49,6 +98,9 @@ Page({
       return;
     }
     const existingAiSummary = typeof session.aiSummary === "string" ? session.aiSummary : "";
+    const reviewTitle = formatReviewTitle(
+      session.submittedAt || session.recordDate || session.date || (session.submitResult && session.submitResult.submittedAt) || null,
+    );
     const reviewItems = (session.items || [])
       .map((it) => {
         const optionIds = session.answers[it.questionId] || [];
@@ -56,10 +108,10 @@ Page({
         const options = (it.options || [])
           .map((o) => ({
             optionId: o.optionId,
-            content: o.content,
+            content: normalizeInlineText(o.content),
             sortNo: o.sortNo,
             suggestFlag: normalizeSuggestFlag(o.suggestFlag),
-            improvementTip: o.improvementTip || "",
+            improvementTip: normalizeMultilineText(o.improvementTip),
             selected: optionIds.includes(o.optionId),
           }))
           .sort((a, b) => (a.sortNo || 0) - (b.sortNo || 0) || (a.optionId || 0) - (b.optionId || 0));
@@ -69,15 +121,22 @@ Page({
           .map((o) => o.content)
           .filter(Boolean)
           .join("、") || "（未选择）";
+
+        const adviceText = selectedOptions
+          .map((o) => o.improvementTip)
+          .filter(Boolean)
+          .join("\n\n");
+
         return {
           questionId: it.questionId,
-          question: String(it.content || "").replace(/\\n/g, ""),
+          question: normalizeInlineText(it.content),
           selectedText,
-          selectedOptions,
+          adviceText,
         };
       })
       .filter(Boolean);
     this.setData({
+      reviewTitle,
       reviewItems,
       aiSummary: existingAiSummary,
       canGenerateAiSummary:

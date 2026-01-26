@@ -21,27 +21,18 @@
     </view>
 
     <view class="review">
-      <view wx:for="{{reviewItems}}" wx:key="questionId" class="block">
-        <view class="q row">
-          <view class="q__no">{{index + 1}}</view>
-          <view class="q__title">{{item.question}}</view>
+      <view wx:if="{{reviewTitle}}" class="review__meta">{{reviewTitle}}</view>
+
+      <view wx:for="{{reviewItems}}" wx:key="questionId" class="review-card">
+        <view class="review-card__question">{{item.question}}</view>
+
+        <view class="review-card__desc">
+          <text class="review-card__desc-label">你选择的做法是：</text>
+          <text class="review-card__desc-text">{{item.selectedText}}</text>
         </view>
 
-        <view class="your">
-          <view class="your__label">你的做法</view>
-          <view class="your__text">{{item.selectedText}}</view>
-        </view>
-
-        <view class="opts">
-          <view class="opts__label">觉察建议</view>
-          <view wx:for="{{item.selectedOptions}}" wx:for-item="opt" wx:key="optionId" class="opt is-selected {{opt.suggestFlag == 1 ? 'is-ok' : 'is-warn'}}">
-            <view class="opt__head row">
-              <view class="opt__icon">{{opt.suggestFlag == 1 ? '✓' : '!'}}</view>
-              <view class="opt__content">{{opt.content}}</view>
-            </view>
-            <view wx:if="{{opt.improvementTip}}" class="opt__tip">{{opt.improvementTip}}</view>
-          </view>
-        </view>
+        <view wx:if="{{item.adviceText}}" class="review-card__advice-title">下次遇到类似情况，你可以</view>
+        <view wx:if="{{item.adviceText}}" class="review-card__advice">{{item.adviceText}}</view>
       </view>
     </view>
 
