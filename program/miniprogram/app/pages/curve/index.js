@@ -26,13 +26,27 @@ function pickValidChildId(children, preferredId) {
   return list.length ? toSafeId(list[0]?.id) : 0;
 }
 
+function hexToRgba(hex, alpha) {
+  const match = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || "").trim());
+  const aRaw = Number(alpha);
+  const a = Number.isFinite(aRaw) ? Math.min(1, Math.max(0, aRaw)) : 0.12;
+  if (!match) return `rgba(0, 0, 0, ${a})`;
+  const value = parseInt(match[1], 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
 const DIMENSIONS = [
   { code: "RELATIONSHIP_BUILDING", label: "亲子关系", color: "#F97316" },
   { code: "RULE_GUIDANCE", label: "规则建立", color: "#EC4899" },
   { code: "LEARNING_SUPPORT", label: "学习支持", color: "#10B981" },
   { code: "EMOTION_MANAGEMENT", label: "情绪管理", color: "#3B82F6" },
   { code: "COMMUNICATION_EXPRESSION", label: "沟通表达", color: "#8B5CF6" },
-];
+].map((d) => ({ ...d, bg: hexToRgba(d.color, 0.12) }));
+
+const DEFAULT_DIM_PILL_BG = hexToRgba("#f08019", 0.12);
 
 const STATUS_IMAGE_BY_LABEL = {
   乐观: "https://howtotalk.oss-cn-beijing.aliyuncs.com/parenting/%E4%B9%90%E8%A7%82.jpg",
@@ -400,8 +414,9 @@ Page({
     customToDraft: "",
     customRangeDays: 0,
 
-    dimensions: DIMENSIONS.map((d) => ({ ...d, _on: true })),
-    visibleDimensionCodes: DIMENSIONS.map((d) => d.code),
+    dimensions: DIMENSIONS.map((d, idx) => ({ ...d, _on: idx === 0 })),
+    visibleDimensionCodes: DIMENSIONS.length ? [DIMENSIONS[0].code] : [],
+    defaultDimPillBg: DEFAULT_DIM_PILL_BG,
 
     // Keep this JSON-serializable; chart init is handled via `bind:init`.
     // Enable touch so users can drag on chart to inspect daily values.
@@ -690,13 +705,11 @@ Page({
     const code = String(e?.currentTarget?.dataset?.code || "").trim();
     if (!code) return;
 
-    const current = Array.isArray(this.data.visibleDimensionCodes) ? this.data.visibleDimensionCodes.slice() : [];
-    const idx = current.indexOf(code);
-    if (idx >= 0) current.splice(idx, 1);
-    else current.push(code);
+    const currentCode = Array.isArray(this.data.visibleDimensionCodes) ? String(this.data.visibleDimensionCodes[0] || "") : "";
+    if (currentCode === code) return;
 
-    const nextCodes = current.length ? current : DIMENSIONS.map((d) => d.code);
-    const dims = DIMENSIONS.map((d) => ({ ...d, _on: nextCodes.includes(d.code) }));
+    const nextCodes = [code];
+    const dims = DIMENSIONS.map((d) => ({ ...d, _on: d.code === code }));
     this.setData({ visibleDimensionCodes: nextCodes, dimensions: dims });
 
     const option = buildOption(lastDaysRaw, nextCodes);

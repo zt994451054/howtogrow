@@ -59,9 +59,10 @@
       <view class="section-head row between">
         <view class="section-head__title">我的成长曲线</view>
         <view class="date-chip row a" bindtap="onPickDateRange">
-          <ui-icon name="calendar" size="{{18}}" />
+          <ui-icon name="calendar" size="{{10}}" />
           <view class="date-chip__text">{{rangeLabel}}</view>
-          <ui-icon name="chevronDown" size="{{18}}" />
+          <image src='../../assets/image/uni-down.png' style='width: 14px;height: 14px;'/>
+          <!-- <ui-icon name="chevronDown" size="{{14}}"/> -->
         </view>
       </view>
 
@@ -87,17 +88,17 @@
           wx:for="{{dimensions}}"
           wx:key="code"
           class="dim-pill {{item._on ? 'on' : 'off'}}"
-          style="border-color: {{item.color}}; color: {{item.color}};"
+          style="background: {{item._on ? item.bg : '##E7E7E7'}};"
           bindtap="onToggleDimension"
           data-code="{{item.code}}"
         >
-          {{item.label}}
+          <text class="dim-pill__text">{{item.label}}</text>
         </button>
       </view>
 
-      <view class="persist col center">
+      <view class="persist col center" wx:if="{{false}}">
         <view class="persist__icon">
-          <ui-icon name="bookmark" size="{{28}}" />
+          <image src='https://picsum.photos/seed/picsum/300/300'/>
         </view>
         <view class="persist__name">{{progressName}}</view>
         <view class="persist__desc">

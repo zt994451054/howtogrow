@@ -1,6 +1,7 @@
 .page {
   min-height: 100vh;
-  background: var(--bg-page);
+  /* background: var(--bg-page); */
+  background-color: #fff;
 }
 
 .status {
@@ -64,7 +65,7 @@
   height: 72rpx;
   border-radius: 9999rpx;
   background: #fff;
-  box-shadow: var(--shadow-sm);
+  /* box-shadow: var(--shadow-sm); */
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -147,7 +148,9 @@
 }
 
 .body {
-  background: var(--bg-page);
+  /* background: var(--bg-page); */
+  background-color: #fff;
+
 }
 
 .wrap {
@@ -238,7 +241,7 @@
 }
 
 .section-head__title {
-  font-size: 32rpx;
+  font-size: 24rpx;
   font-weight: 900;
   color: var(--text-primary);
 }
@@ -248,15 +251,14 @@
   padding: 14rpx 18rpx;
   border-radius: var(--radius-pill);
   background: #fff;
-  border: 2rpx solid rgba(17, 24, 39, 0.06);
-  box-shadow: var(--shadow-sm);
+  /* border: 2rpx solid rgba(17, 24, 39, 0.06); */
+  /* box-shadow: var(--shadow-sm); */
   color: var(--text-secondary);
 }
 
 .date-chip__text {
-  font-size: 26rpx;
-  font-weight: 800;
-  color: var(--text-secondary);
+  font-size: 20rpx;
+  color: var(--text-primary);
 }
 
 .section {
@@ -286,24 +288,23 @@
 }
 
 .dim-pills {
-  margin-top: 16rpx;
+  margin-top: 48rpx;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
 .dim-pill {
-  background: #fff;
-  border: 2rpx solid transparent;
-  border-radius: 18rpx;
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 12rpx 0;
-  font-size: 22rpx;
-  font-weight: 900;
-  box-shadow: var(--shadow-sm);
-  white-space: nowrap;
-  text-align: center;
+  width: 115.75rpx;
+  height: 44.44rpx;
+  border-radius: 16rpx;
+  padding: 10rpx 8rpx;
+  border: 0;
+  background: #E7E7E7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
   margin: 0;
 }
 
@@ -316,7 +317,15 @@
 }
 
 .dim-pill.off {
-  opacity: 0.35;
+  opacity: 1;
+}
+
+.dim-pill__text {
+  font-size: 20rpx;
+  line-height: 24rpx;
+  text-align: left;
+  color: #3c3c3b;
+  font-weight: 700;
 }
 
 .persist {
@@ -325,20 +334,21 @@
 }
 
 .persist__icon {
-  width: 112rpx;
-  height: 112rpx;
+  width: 104rpx;
+  height: 104rpx;
   border-radius: 9999rpx;
-  background: rgba(249, 115, 22, 0.12);
-  color: var(--brand);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-top: 78rpx;
+  margin-bottom: 34rpx;
 }
+
 
 .persist__name {
   margin-top: 18rpx;
-  font-size: 28rpx;
+  font-size: 20rpx;
   font-weight: 900;
   color: var(--text-primary);
 }
