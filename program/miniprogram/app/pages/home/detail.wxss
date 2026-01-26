@@ -22,13 +22,11 @@
 }
 
 .quote {
-  color: rgba(249, 115, 22, 1);
-  font-size: 28rpx;
-  font-weight: 900;
-  line-height: 1.6;
-  white-space: pre-line;
-  text-align: center;
-  padding: 10rpx 0 18rpx;
+ color: #e18638;
+ font-weight: bold;
+ font-size: 35.55rpx;
+ text-align: left;
+ line-height: 60.94rpx;
 }
 
 .timeline {
