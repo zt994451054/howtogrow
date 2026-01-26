@@ -354,7 +354,7 @@
 
 .overlay__quote {
   font-weight: bold;
-font-size: 24rpx;
+font-size: 28rpx;
 text-align: left;
 color: #F08019;
 margin-top: 50rpx;
