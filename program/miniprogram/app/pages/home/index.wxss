@@ -329,26 +329,26 @@
 }
 
 .month__picker {
-  color: #3c3c3b;
-  gap: 8rpx;
+  padding: 14rpx 18rpx;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--text-secondary);
 }
 
 .month__picker-text {
-  min-width: 158rpx;
   height: 25rpx;
   font-size: 26.38rpx;
   font-weight: 800;
   text-align: left;
-  color: #3c3c3b;
+  color: var(--text-primary);
   line-height: 25rpx;
   white-space: nowrap;
 }
 
 .month__picker-icon {
-  font-size: 26.38rpx;
-  line-height: 1;
-  color: #3c3c3b;
-  transform: translateY(2rpx);
+  width: 28rpx;
+  height: 28rpx;
+  flex: 0 0 auto;
 }
 
 .grid {
