@@ -1,4 +1,4 @@
-<view class="tabbar safe-bottom">
+<view class="tabbar">
   <view class="tabbar__inner">
     <view class="tabbar__item {{selected == 0 ? 'is-active' : ''}}" bindtap="onTap" data-index="0" data-path="/pages/home/index">
       <view class="tabbar__icon">
@@ -11,17 +11,10 @@
       <view class="tabbar__icon">
         <image class="icon-image" mode="aspectFit" src="{{selected == 1 ? '/assets/tab/jzqx-active.png' : '/assets/tab/jzqx.png'}}" />
       </view>
-      <view class="tabbar__label">家长曲线11</view>
+      <view class="tabbar__label">家长曲线</view>
     </view>
 
-    <view class="tabbar__center">
-      <view class="center-btn" bindtap="onMoodTap">
-        <view class="center-logo">
-          <view class="center-logo__curve" />
-          <view class="center-logo__stem" />
-        </view>
-      </view>
-    </view>
+    <view class="tabbar__spacer" />
 
     <view class="tabbar__item {{selected == 2 ? 'is-active' : ''}}" bindtap="onTap" data-index="2" data-path="/pages/chat/index">
       <view class="tabbar__icon">
@@ -36,6 +29,11 @@
       </view>
       <view class="tabbar__label">我的设置</view>
     </view>
+
+    <view class="tabbar__center">
+      <view class="center-btn" bindtap="onMoodTap">
+        <image class="center-icon" mode="aspectFit" src="/assets/image/ctp.png" />
+      </view>
+    </view>
   </view>
-  <view class="home-indicator" />
 </view>
