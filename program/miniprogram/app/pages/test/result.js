@@ -81,6 +81,7 @@ Page({
     canGenerateAiSummary: false,
     aiLoading: false,
     aiSummary: "",
+    scrollIntoView: "",
   },
   onLoad(query) {
     const { statusBarHeight } = getSystemMetrics();
@@ -141,6 +142,7 @@ Page({
       aiSummary: existingAiSummary,
       canGenerateAiSummary:
         typeof session.assessmentId === "number" && session.assessmentId > 0 && !existingAiSummary,
+      scrollIntoView: "",
     });
   },
   onDone() {
@@ -172,7 +174,9 @@ Page({
       .then((content) => {
         session.aiSummary = content;
         setDailySession(session);
-        this.setData({ aiSummary: content, canGenerateAiSummary: false });
+        this.setData({ aiSummary: content, canGenerateAiSummary: false, scrollIntoView: "" }, () => {
+          wx.nextTick(() => this.setData({ scrollIntoView: "tail-anchor" }));
+        });
       })
       .catch((err) => {
         wx.hideLoading();

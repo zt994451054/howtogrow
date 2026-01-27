@@ -17,7 +17,14 @@
     </view>
   </view>
 
-  <scroll-view class="body" scroll-y="true" enhanced="true" show-scrollbar="false">
+  <scroll-view
+    class="body"
+    scroll-y="true"
+    enhanced="true"
+    show-scrollbar="false"
+    scroll-with-animation="true"
+    scroll-into-view="{{scrollIntoView}}"
+  >
     <view class="flag-wrap">
       <view class="flag">
         <view class="flag__bar" />
@@ -46,7 +53,7 @@
       <view class="summary__text">{{aiSummary}}</view>
     </view>
 
-    <view class="tail" />
+    <view id="tail-anchor" class="tail" />
   </scroll-view>
 
   <view class="footer safe-bottom">
