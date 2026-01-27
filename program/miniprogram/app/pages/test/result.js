@@ -165,7 +165,9 @@ Page({
   onGenerateAiSummary() {
     const session = getDailySession();
     if (!session || !session.assessmentId) return;
+    if (this.data.aiLoading) return;
     this.setData({ aiLoading: true });
+    wx.showLoading({ title: "生成中", mask: true });
     fetchAiSummary(session.assessmentId)
       .then((content) => {
         session.aiSummary = content;
@@ -173,6 +175,7 @@ Page({
         this.setData({ aiSummary: content, canGenerateAiSummary: false });
       })
       .catch((err) => {
+        wx.hideLoading();
         const code = err && err.code ? String(err.code) : "";
         const message = err && typeof err.message === "string" && err.message.trim() ? err.message.trim() : "生成失败";
         if (code === "SUBSCRIPTION_REQUIRED") {
@@ -191,6 +194,9 @@ Page({
         }
         wx.showToast({ title: message, icon: "none" });
       })
-      .finally(() => this.setData({ aiLoading: false }));
+      .finally(() => {
+        wx.hideLoading();
+        this.setData({ aiLoading: false });
+      });
   },
 });

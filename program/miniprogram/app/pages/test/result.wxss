@@ -208,8 +208,8 @@
   background: var(--brand);
   color: #fff;
   border-radius: var(--radius-pill);
-  padding: 20rpx 0;
-  font-size: 30rpx;
+  padding: 10rpx 0;
+  font-size: 28rpx;
   font-weight: 900;
   box-shadow: var(--shadow-brand);
 }
@@ -220,8 +220,8 @@
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-secondary);
   border-radius: var(--radius-pill);
-  padding: 20rpx 0;
-  font-size: 26rpx;
+  padding: 10rpx 0;
+  font-size: 28rpx;
   font-weight: 900;
   border: 2rpx solid rgba(17, 24, 39, 0.06);
 }

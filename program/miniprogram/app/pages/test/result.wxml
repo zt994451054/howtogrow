@@ -51,8 +51,15 @@
 
   <view class="footer safe-bottom">
     <button class="btn" bindtap="onDone">{{doneText}}</button>
-    <button wx:if="{{canGenerateAiSummary}}" class="btn-ghost" loading="{{aiLoading}}" bindtap="onGenerateAiSummary">
-      生成 AI 总结
+    <button
+      wx:if="{{canGenerateAiSummary}}"
+      class="btn-ghost"
+      loading="{{aiLoading}}"
+      disabled="{{aiLoading}}"
+      bindtap="onGenerateAiSummary"
+    >
+      <text wx:if="{{aiLoading}}">生成中</text>
+      <text wx:else>生成 AI 总结</text>
     </button>
   </view>
 </view>
