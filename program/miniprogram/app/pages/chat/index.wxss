@@ -438,6 +438,7 @@
   padding: 20rpx 24rpx 24rpx;
   background: #fff;
   border-top: 1rpx solid var(--border);
+  padding-bottom: 80rpx;
 }
 
 .box {
