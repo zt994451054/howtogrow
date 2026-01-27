@@ -235,7 +235,9 @@
 
 #### `GET /api/v1/admin/questions`
 - Query：
-  - `ageYear`：筛选年龄（岁，可选，返回满足 `minAge<=ageYear<=maxAge` 的题目）
+  - `minAge`：筛选最小年龄（岁，可选，返回题目年龄范围与筛选范围有交集的题目）
+  - `maxAge`：筛选最大年龄（岁，可选，返回题目年龄范围与筛选范围有交集的题目）
+  - `ageYear`：筛选年龄（岁，可选，兼容旧参数：等价于 `minAge=ageYear` 且 `maxAge=ageYear`）
   - `questionType`：题型筛选（可选，`SINGLE`/`MULTI`）
   - `status`：状态筛选（可选，`0`/`1`）
   - `troubleSceneId`：烦恼场景ID（可选，返回关联该场景的题目）
@@ -250,6 +252,9 @@
 
 #### `POST /api/v1/admin/questions/batch-delete`
 - Body(JSON)：`BatchDeleteRequest`
+
+#### `POST /api/v1/admin/questions/batch-update-trouble-scenes`
+- Body(JSON)：`BatchUpdateQuestionTroubleScenesRequest`
 
 #### `POST /api/v1/admin/questions/import-excel`
 - Content-Type：`multipart/form-data`
@@ -783,6 +788,7 @@
 | `questionType` | string | 题型：SINGLE/MULTI |
 | `status` | number | 状态：0禁用 1启用 |
 | `content` | string | 题干内容 |
+| `troubleSceneIds` | array | 关联烦恼场景ID列表（可为空） |
 
 #### `QuestionDetailView`
 | 字段 | 类型 | 说明 |
@@ -792,6 +798,7 @@
 | `maxAge` | number | 适用最大年龄（整数，单位：岁，含边界） |
 | `questionType` | string | 题型：SINGLE/MULTI |
 | `content` | string | 题干内容 |
+| `troubleSceneIds` | array | 关联烦恼场景ID列表（可为空） |
 | `options` | array | `OptionView[]` |
 
 #### `OptionView`（`QuestionDetailView.options[]`）
@@ -818,6 +825,7 @@
 | `maxAge` | number | 适用最大年龄（整数，单位：岁，含边界） |
 | `questionType` | string | 题型：SINGLE/MULTI |
 | `content` | string | 题干内容 |
+| `troubleSceneIds` | array | 关联烦恼场景ID列表（可为空） |
 | `status` | number | 状态：0禁用 1启用 |
 | `options` | array | `OptionUpsert[]` |
 
@@ -876,6 +884,19 @@
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `ids` | array | ID 列表（最大 2000） |
+
+#### `TroubleSceneUpdateMode`
+| 值 | 说明 |
+| --- | --- |
+| `APPEND` | 追加：在原有关联上增加（去重） |
+| `REPLACE` | 覆盖：用新列表替换（为空表示清空） |
+
+#### `BatchUpdateQuestionTroubleScenesRequest`
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `ids` | array | 题目ID列表（最大 2000） |
+| `troubleSceneIds` | array | 烦恼场景ID列表（最大 200；REPLACE 为空表示清空；APPEND 不能为空） |
+| `mode` | string | 更新模式：`APPEND`/`REPLACE` |
 
 #### `OrderView`
 | 字段 | 类型 | 说明 |

@@ -3,6 +3,7 @@ package com.howtogrow.backend.controller.admin;
 import com.howtogrow.backend.api.ApiResponse;
 import com.howtogrow.backend.api.TraceId;
 import com.howtogrow.backend.controller.admin.dto.BatchDeleteRequest;
+import com.howtogrow.backend.controller.admin.dto.BatchUpdateQuestionTroubleScenesRequest;
 import com.howtogrow.backend.controller.admin.dto.PageResponse;
 import com.howtogrow.backend.controller.admin.dto.QuestionDetailView;
 import com.howtogrow.backend.controller.admin.dto.QuestionSummaryView;
@@ -38,14 +39,29 @@ public class AdminQuestionController {
 
   @GetMapping
   public ApiResponse<PageResponse<QuestionSummaryView>> list(
-      @Parameter(description = "年龄（岁，可选）") @RequestParam(required = false) @Min(0) @Max(18) Integer ageYear,
+      @Parameter(description = "筛选最小年龄（岁，可选）") @RequestParam(required = false) @Min(0) @Max(18) Integer minAge,
+      @Parameter(description = "筛选最大年龄（岁，可选）") @RequestParam(required = false) @Min(0) @Max(18) Integer maxAge,
+      @Parameter(description = "年龄（岁，可选，兼容旧参数：等价于 minAge=maxAge=ageYear）")
+          @RequestParam(required = false)
+          @Min(0)
+          @Max(18)
+          Integer ageYear,
       @Parameter(description = "题型：SINGLE/MULTI") @RequestParam(required = false) String questionType,
       @Parameter(description = "状态：0禁用 1启用") @RequestParam(required = false) @Min(0) @Max(1) Integer status,
       @Parameter(description = "烦恼场景ID（可选）") @RequestParam(required = false) @Min(1) Long troubleSceneId,
       @Parameter(description = "关键字（content 模糊匹配）") @RequestParam(required = false) String keyword,
       @Parameter(description = "页码（从1开始）") @RequestParam(defaultValue = "1") @Min(1) int page,
       @Parameter(description = "每页条数（1-200）") @RequestParam(defaultValue = "20") @Min(1) @Max(200) int pageSize) {
-    return ApiResponse.ok(questionService.list(ageYear, questionType, status, troubleSceneId, keyword, page, pageSize), TraceId.current());
+    Integer effectiveMinAge = minAge;
+    Integer effectiveMaxAge = maxAge;
+    if (effectiveMinAge == null && effectiveMaxAge == null && ageYear != null) {
+      effectiveMinAge = ageYear;
+      effectiveMaxAge = ageYear;
+    }
+    return ApiResponse.ok(
+        questionService.list(
+            effectiveMinAge, effectiveMaxAge, questionType, status, troubleSceneId, keyword, page, pageSize),
+        TraceId.current());
   }
 
   @GetMapping("/{questionId}")
@@ -75,6 +91,13 @@ public class AdminQuestionController {
   @PostMapping("/batch-delete")
   public ApiResponse<Void> batchDelete(@Valid @RequestBody BatchDeleteRequest request) {
     questionWriteService.batchDelete(request.ids());
+    return ApiResponse.ok(null, TraceId.current());
+  }
+
+  @PostMapping("/batch-update-trouble-scenes")
+  public ApiResponse<Void> batchUpdateTroubleScenes(
+      @Valid @RequestBody BatchUpdateQuestionTroubleScenesRequest request) {
+    questionWriteService.batchUpdateTroubleScenes(request.ids(), request.troubleSceneIds(), request.mode());
     return ApiResponse.ok(null, TraceId.current());
   }
 }

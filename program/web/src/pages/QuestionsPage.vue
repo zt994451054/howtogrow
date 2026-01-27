@@ -6,6 +6,7 @@ import { listDimensions, type DimensionView } from "@/api/admin/dimensions";
 import { listAllTroubleScenes, type TroubleSceneView } from "@/api/admin/trouble-scenes";
 import {
   batchDeleteQuestions,
+  batchUpdateQuestionTroubleScenes,
   createQuestion,
   deleteQuestion,
   getQuestion,
@@ -13,9 +14,11 @@ import {
   updateQuestion,
   type QuestionDetailView,
   type QuestionSummaryView,
+  type TroubleSceneBatchUpdateMode,
   type QuestionType,
   type QuestionUpsertRequest
 } from "@/api/admin/questions";
+import QuestionBatchTroubleSceneDialog from "@/pages/questions/QuestionBatchTroubleSceneDialog.vue";
 import QuestionEditorDialog from "@/pages/questions/QuestionEditorDialog.vue";
 import QuestionImportDialog from "@/pages/questions/QuestionImportDialog.vue";
 
@@ -32,7 +35,8 @@ const selected = ref<QuestionSummaryView[]>([]);
 const batchDeleting = ref(false);
 
 type QuestionFilter = {
-  ageYear: string;
+  minAge: string;
+  maxAge: string;
   questionType: "" | QuestionType;
   status: number | null;
   troubleSceneId: number | null;
@@ -40,7 +44,8 @@ type QuestionFilter = {
 };
 
 const filter = reactive<QuestionFilter>({
-  ageYear: "",
+  minAge: "",
+  maxAge: "",
   questionType: "",
   status: null,
   troubleSceneId: null,
@@ -49,6 +54,20 @@ const filter = reactive<QuestionFilter>({
 
 const dimensions = ref<DimensionView[]>([]);
 const troubleScenes = ref<TroubleSceneView[]>([]);
+const troubleSceneOptions = computed(() => troubleScenes.value.map((s) => ({ id: s.id, name: s.name })));
+const troubleSceneNameById = computed(() => {
+  const out = new Map<number, string>();
+  for (const s of troubleScenes.value) {
+    out.set(s.id, s.name);
+  }
+  return out;
+});
+
+function formatTroubleSceneNames(troubleSceneIds: number[] | undefined) {
+  const ids = Array.isArray(troubleSceneIds) ? troubleSceneIds : [];
+  if (ids.length === 0) return "-";
+  return ids.map((id) => troubleSceneNameById.value.get(id) ?? String(id)).join("、");
+}
 
 const editorVisible = ref(false);
 const editorTitle = ref("新增题目");
@@ -57,11 +76,27 @@ const editorInitial = ref<QuestionDetailView | null>(null);
 const importVisible = ref(false);
 const templateUrl = computed(() => `${import.meta.env.BASE_URL}question-import-template.xlsx`);
 
+const batchTroubleSceneVisible = ref(false);
+const batchTroubleSceneMode = ref<TroubleSceneBatchUpdateMode>("APPEND");
+const batchTroubleSceneSubmitting = ref(false);
+
 async function reload() {
-  const ageText = filter.ageYear.trim();
-  const ageYear = ageText ? Number(ageText) : undefined;
-  if (ageYear !== undefined && (!Number.isInteger(ageYear) || ageYear < 0 || ageYear > 18)) {
-    ElMessage.warning("年龄请输入 0-18 的整数");
+  const minAgeText = filter.minAge.trim();
+  const maxAgeText = filter.maxAge.trim();
+  const minAge = minAgeText ? Number(minAgeText) : undefined;
+  const maxAge = maxAgeText ? Number(maxAgeText) : undefined;
+
+  const invalidAge = (age: number) => !Number.isInteger(age) || age < 0 || age > 18;
+  if (minAge !== undefined && invalidAge(minAge)) {
+    ElMessage.warning("最小年龄请输入 0-18 的整数");
+    return;
+  }
+  if (maxAge !== undefined && invalidAge(maxAge)) {
+    ElMessage.warning("最大年龄请输入 0-18 的整数");
+    return;
+  }
+  if (minAge !== undefined && maxAge !== undefined && minAge > maxAge) {
+    ElMessage.warning("最小年龄不能大于最大年龄");
     return;
   }
 
@@ -70,7 +105,8 @@ async function reload() {
     const res = await listQuestions({
       page: page.value.page,
       pageSize: page.value.pageSize,
-      ageYear,
+      minAge,
+      maxAge,
       status: filter.status ?? undefined,
       questionType: filter.questionType || undefined,
       troubleSceneId: filter.troubleSceneId ?? undefined,
@@ -102,6 +138,14 @@ function openCreate() {
 
 function openImport() {
   importVisible.value = true;
+}
+
+function openBatchTroubleScene(mode: TroubleSceneBatchUpdateMode | string) {
+  if (!selected.value.length) return;
+  const normalized = String(mode || "").toUpperCase();
+  if (normalized !== "APPEND" && normalized !== "REPLACE") return;
+  batchTroubleSceneMode.value = normalized as TroubleSceneBatchUpdateMode;
+  batchTroubleSceneVisible.value = true;
 }
 
 function questionTypeLabel(questionType: string) {
@@ -164,6 +208,25 @@ async function removeSelected() {
   }
 }
 
+async function onBatchTroubleSceneSubmit(payload: { mode: TroubleSceneBatchUpdateMode; troubleSceneIds: number[] }) {
+  if (!selected.value.length) return;
+  const ids = Array.from(new Set(selected.value.map((x) => x.questionId)));
+
+  batchTroubleSceneSubmitting.value = true;
+  try {
+    await batchUpdateQuestionTroubleScenes({
+      ids,
+      troubleSceneIds: payload.troubleSceneIds,
+      mode: payload.mode
+    });
+    ElMessage.success("已更新烦恼场景");
+    batchTroubleSceneVisible.value = false;
+    await reload();
+  } finally {
+    batchTroubleSceneSubmitting.value = false;
+  }
+}
+
 function onSizeChange(size: number) {
   page.value.pageSize = size;
   page.value.page = 1;
@@ -181,7 +244,8 @@ function onSearch() {
 }
 
 function onReset() {
-  filter.ageYear = "";
+  filter.minAge = "";
+  filter.maxAge = "";
   filter.questionType = "";
   filter.status = null;
   filter.troubleSceneId = null;
@@ -202,6 +266,21 @@ onMounted(async () => {
       <h3>题库</h3>
       <div class="actions">
         <el-button @click="reload">刷新</el-button>
+        <el-dropdown
+          trigger="click"
+          :disabled="!selected.length || batchTroubleSceneSubmitting"
+          @command="openBatchTroubleScene"
+        >
+          <el-button :disabled="!selected.length || batchTroubleSceneSubmitting">
+            批量场景<span v-if="selected.length">({{ selected.length }})</span>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="APPEND">增加烦恼场景</el-dropdown-item>
+              <el-dropdown-item command="REPLACE">修改烦恼场景</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button type="danger" :disabled="!selected.length" :loading="batchDeleting" @click="removeSelected">
           批量删除<span v-if="selected.length">({{ selected.length }})</span>
         </el-button>
@@ -213,8 +292,12 @@ onMounted(async () => {
 
     <div class="filters">
       <el-form :inline="true" label-width="60px" @submit.prevent>
-        <el-form-item label="年龄">
-          <el-input v-model="filter.ageYear" placeholder="0-18" clearable style="width: 110px" @keyup.enter="onSearch" />
+        <el-form-item label="年龄范围">
+          <div class="age-range">
+            <el-input v-model="filter.minAge" placeholder="最小" clearable style="width: 110px" @keyup.enter="onSearch" />
+            <span class="range-sep">-</span>
+            <el-input v-model="filter.maxAge" placeholder="最大" clearable style="width: 110px" @keyup.enter="onSearch" />
+          </div>
         </el-form-item>
         <el-form-item label="题型">
           <el-select v-model="filter.questionType" placeholder="全部" style="width: 120px" clearable>
@@ -257,6 +340,9 @@ onMounted(async () => {
           <StatusTag :status="row.status" />
         </template>
       </el-table-column>
+      <el-table-column label="烦恼场景" min-width="200" show-overflow-tooltip>
+        <template #default="{ row }">{{ formatTroubleSceneNames(row.troubleSceneIds) }}</template>
+      </el-table-column>
       <el-table-column prop="content" label="问题" />
       <el-table-column label="操作" width="220">
         <template #default="{ row }">
@@ -283,11 +369,20 @@ onMounted(async () => {
       :title="editorTitle"
       :initial="editorInitial"
       :dimensions="dimensions"
-      :trouble-scenes="troubleScenes.map((s) => ({ id: s.id, name: s.name }))"
+      :trouble-scenes="troubleSceneOptions"
       @submit="onSubmit"
     />
 
     <QuestionImportDialog v-model="importVisible" @imported="reload" />
+
+    <QuestionBatchTroubleSceneDialog
+      v-model="batchTroubleSceneVisible"
+      :mode="batchTroubleSceneMode"
+      :selected-count="selected.length"
+      :trouble-scenes="troubleSceneOptions"
+      :loading="batchTroubleSceneSubmitting"
+      @submit="onBatchTroubleSceneSubmit"
+    />
   </div>
 </template>
 
@@ -309,6 +404,15 @@ onMounted(async () => {
 }
 .filters {
   margin-bottom: 10px;
+}
+.age-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.range-sep {
+  line-height: 32px;
+  color: #909399;
 }
 .pager {
   margin-top: 12px;

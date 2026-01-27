@@ -2,6 +2,7 @@ package com.howtogrow.backend.service.admin;
 
 import com.howtogrow.backend.api.ErrorCode;
 import com.howtogrow.backend.api.exception.AppException;
+import com.howtogrow.backend.controller.admin.dto.TroubleSceneUpdateMode;
 import com.howtogrow.backend.controller.admin.dto.QuestionUpsertRequest;
 import com.howtogrow.backend.domain.capability.CapabilityDimension;
 import com.howtogrow.backend.infrastructure.admin.QuestionAdminRepository;
@@ -79,6 +80,43 @@ public class AdminQuestionWriteService {
     questionRepo.softDeleteOptionsByQuestionIds(ids);
     questionRepo.softDeleteQuestions(ids);
     questionRepo.deleteQuestionTroubleScenesByQuestionIds(ids);
+  }
+
+  @Transactional
+  public void batchUpdateTroubleScenes(
+      List<Long> questionIds, List<Long> troubleSceneIds, TroubleSceneUpdateMode mode) {
+    var ids = normalizeIds(questionIds);
+    if (ids.isEmpty()) {
+      return;
+    }
+
+    var normalizedMode = mode == null ? TroubleSceneUpdateMode.REPLACE : mode;
+    var sceneIds = normalizeSceneIds(troubleSceneIds);
+    if (normalizedMode == TroubleSceneUpdateMode.APPEND && sceneIds.isEmpty()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "troubleSceneIds 不能为空");
+    }
+
+    validateQuestionsExist(ids);
+    if (!sceneIds.isEmpty()) {
+      var existing = sceneRepo.listActiveIds(sceneIds);
+      if (existing.size() != sceneIds.size()) {
+        throw new AppException(ErrorCode.INVALID_REQUEST, "烦恼场景不存在或已删除");
+      }
+    }
+
+    if (normalizedMode == TroubleSceneUpdateMode.REPLACE) {
+      questionRepo.replaceQuestionTroubleScenesByQuestionIds(ids, sceneIds);
+    } else {
+      questionRepo.appendQuestionTroubleScenesByQuestionIds(ids, sceneIds);
+    }
+    questionRepo.touchQuestionsUpdatedAt(ids);
+  }
+
+  private void validateQuestionsExist(List<Long> questionIds) {
+    var existing = questionRepo.listActiveQuestionIds(questionIds);
+    if (existing.size() != questionIds.size()) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "题目不存在或已删除");
+    }
   }
 
   private void validate(QuestionUpsertRequest request) {

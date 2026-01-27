@@ -10,6 +10,7 @@ export type QuestionSummaryView = {
   questionType: QuestionType;
   status: number;
   content: string;
+  troubleSceneIds?: number[];
 };
 
 export type DimensionScoreView = {
@@ -67,9 +68,19 @@ export type QuestionImportResponse = {
   failures: { row: number; reason: string }[];
 };
 
+export type TroubleSceneBatchUpdateMode = "APPEND" | "REPLACE";
+
+export type BatchUpdateQuestionTroubleScenesRequest = {
+  ids: number[];
+  troubleSceneIds?: number[];
+  mode: TroubleSceneBatchUpdateMode;
+};
+
 export type ListQuestionsParams = {
   page: number;
   pageSize: number;
+  minAge?: number;
+  maxAge?: number;
   ageYear?: number;
   keyword?: string;
   status?: number;
@@ -103,6 +114,10 @@ export async function deleteQuestion(questionId: number): Promise<void> {
 
 export async function batchDeleteQuestions(ids: number[]): Promise<void> {
   await http.post<ApiResponse<unknown>>("/api/v1/admin/questions/batch-delete", { ids });
+}
+
+export async function batchUpdateQuestionTroubleScenes(request: BatchUpdateQuestionTroubleScenesRequest): Promise<void> {
+  await http.post<ApiResponse<unknown>>("/api/v1/admin/questions/batch-update-trouble-scenes", request);
 }
 
 export async function importQuestionsExcel(file: File): Promise<QuestionImportResponse> {

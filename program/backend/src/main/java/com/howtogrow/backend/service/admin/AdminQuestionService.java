@@ -26,12 +26,37 @@ public class AdminQuestionService {
   }
 
   public PageResponse<QuestionSummaryView> list(
-      Integer ageYear, String questionType, Integer status, Long troubleSceneId, String keyword, int page, int pageSize) {
+      Integer minAge,
+      Integer maxAge,
+      String questionType,
+      Integer status,
+      Long troubleSceneId,
+      String keyword,
+      int page,
+      int pageSize) {
+    if (minAge != null && maxAge != null && minAge > maxAge) {
+      throw new AppException(ErrorCode.INVALID_REQUEST, "最小年龄不能大于最大年龄");
+    }
+
     int offset = (page - 1) * pageSize;
-    long total = queryRepo.countQuestions(ageYear, status, questionType, troubleSceneId, keyword);
+    long total = queryRepo.countQuestions(minAge, maxAge, status, questionType, troubleSceneId, keyword);
+    var questionRows =
+        queryRepo.listQuestions(minAge, maxAge, status, questionType, troubleSceneId, keyword, offset, pageSize);
+    var troubleSceneIdsByQuestionId =
+        queryRepo.mapTroubleSceneIdsByQuestionIds(
+            questionRows.stream().map(QuestionQueryRepository.QuestionSummaryRow::id).toList());
     var items =
-        queryRepo.listQuestions(ageYear, status, questionType, troubleSceneId, keyword, offset, pageSize).stream()
-            .map(r -> new QuestionSummaryView(r.id(), r.minAge(), r.maxAge(), r.questionType(), r.status(), r.content()))
+        questionRows.stream()
+            .map(
+                r ->
+                    new QuestionSummaryView(
+                        r.id(),
+                        r.minAge(),
+                        r.maxAge(),
+                        r.questionType(),
+                        r.status(),
+                        r.content(),
+                        troubleSceneIdsByQuestionId.getOrDefault(r.id(), List.of())))
             .toList();
     return new PageResponse<>(page, pageSize, total, items);
   }

@@ -2,7 +2,9 @@ package com.howtogrow.backend.infrastructure.admin;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -218,5 +220,68 @@ public class QuestionAdminRepository {
       return;
     }
     jdbc.update("DELETE FROM question_trouble_scene WHERE question_id IN (:qids)", Map.of("qids", questionIds));
+  }
+
+  public List<Long> listActiveQuestionIds(List<Long> questionIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return List.of();
+    }
+    var sql = "SELECT id FROM question WHERE id IN (:ids) AND deleted_at IS NULL";
+    return jdbc.queryForList(sql, Map.of("ids", questionIds), Long.class);
+  }
+
+  public void replaceQuestionTroubleScenesByQuestionIds(List<Long> questionIds, List<Long> sceneIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return;
+    }
+    jdbc.update("DELETE FROM question_trouble_scene WHERE question_id IN (:qids)", Map.of("qids", questionIds));
+    if (sceneIds == null || sceneIds.isEmpty()) {
+      return;
+    }
+    batchInsertQuestionTroubleScenes(questionIds, sceneIds, false);
+  }
+
+  public void appendQuestionTroubleScenesByQuestionIds(List<Long> questionIds, List<Long> sceneIds) {
+    if (questionIds == null || questionIds.isEmpty() || sceneIds == null || sceneIds.isEmpty()) {
+      return;
+    }
+    batchInsertQuestionTroubleScenes(questionIds, sceneIds, true);
+  }
+
+  public void touchQuestionsUpdatedAt(List<Long> questionIds) {
+    if (questionIds == null || questionIds.isEmpty()) {
+      return;
+    }
+    jdbc.update("UPDATE question SET updated_at = NOW(3) WHERE id IN (:ids) AND deleted_at IS NULL", Map.of("ids", questionIds));
+  }
+
+  private void batchInsertQuestionTroubleScenes(List<Long> questionIds, List<Long> sceneIds, boolean ignoreDuplicate) {
+    var sql =
+        ignoreDuplicate
+            ? """
+            INSERT INTO question_trouble_scene(question_id, scene_id, created_at)
+            VALUES (:qid, :sid, NOW(3))
+            ON DUPLICATE KEY UPDATE created_at = created_at
+            """
+            : """
+            INSERT INTO question_trouble_scene(question_id, scene_id, created_at)
+            VALUES (:qid, :sid, NOW(3))
+            """;
+    var batch = new java.util.ArrayList<SqlParameterSource>(questionIds.size() * sceneIds.size());
+    for (var qid : questionIds) {
+      if (qid == null || qid <= 0) {
+        continue;
+      }
+      for (var sid : sceneIds) {
+        if (sid == null || sid <= 0) {
+          continue;
+        }
+        batch.add(new MapSqlParameterSource().addValue("qid", qid).addValue("sid", sid));
+      }
+    }
+    if (batch.isEmpty()) {
+      return;
+    }
+    jdbc.batchUpdate(sql, batch.toArray(SqlParameterSource[]::new));
   }
 }
