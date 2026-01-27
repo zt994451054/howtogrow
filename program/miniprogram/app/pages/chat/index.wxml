@@ -50,11 +50,15 @@
     bindscrolltoupper="onMessagesScrollToUpper"
   >
     <view class="msg-list">
-	      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
-	        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
-	          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
-	            <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
-	          </view>
+      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
+        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
+          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
+            <image
+              class="avatar__img"
+              src="{{item.role == 'user' ? '/assets/tab/me.png' : '/assets/logo-placeholder.png'}}"
+              mode="aspectFill"
+            />
+          </view>
           <view wx:if="{{item.role == 'user'}}" class="bubble b-me">{{item.text}}</view>
           <view wx:else class="bubble b-ai">
             <view wx:if="{{typing && idx == messages.length - 1 && !item.text}}" class="typing-hint">
@@ -82,10 +86,7 @@
           </view>
         </view>
 
-        <view
-          wx:if="{{idx == 0 && !typing && quickQuestions.length > 0 && messages.length <= 1}}"
-          class="quick"
-        >
+        <view wx:if="{{idx == 0 && !typing && quickQuestions.length > 0 && messages.length <= 1}}" class="quick">
           <view
             wx:for="{{quickQuestions}}"
             wx:key="*this"

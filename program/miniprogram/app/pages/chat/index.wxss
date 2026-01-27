@@ -1,5 +1,5 @@
 .page {
-  height: 100vh;
+  min-height: 100vh;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -8,12 +8,12 @@
 }
 
 .status {
-  background: #fff;
+  background: var(--brand);
 }
 
 .header {
   padding: 18rpx 24rpx;
-  border-bottom: 1rpx solid var(--border);
+  background: var(--brand);
   align-items: center;
   height: 120rpx;
 }
@@ -24,15 +24,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .title {
-  font-size: 26rpx;
+  font-size: 30rpx;
   font-weight: 900;
   letter-spacing: 2rpx;
-  color: var(--text-primary);
-  text-transform: uppercase;
+  color: #fff;
+  text-transform: none;
 }
 
 .drawer-layer {
@@ -166,7 +166,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 14rpx;
-  margin-left: 80rpx;
+  margin-left: 106rpx;
   padding-right: 32rpx;
   box-sizing: border-box;
 }
@@ -230,8 +230,12 @@
 .messages {
   flex: 1;
   min-height: 0;
-  background: rgba(249, 250, 251, 0.7);
-  padding: 24rpx 24rpx;
+  background: #f7f7ff;
+  padding: 36rpx 24rpx 24rpx;
+  border-top-left-radius: 56rpx;
+  border-top-right-radius: 56rpx;
+  box-shadow: 0 -14rpx 40rpx rgba(15, 23, 42, 0.08);
+  overflow: hidden;
 }
 
 .msg {
@@ -241,14 +245,14 @@
 .msg-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 40rpx;
 }
 
 .bubble-row {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
-  gap: 16rpx;
+  align-items: flex-start;
+  gap: 18rpx;
   width: 100%;
 }
 
@@ -257,38 +261,57 @@
 }
 
 .avatar {
-  width: 64rpx;
-  height: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 9999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 34rpx;
   flex-shrink: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 2rpx solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10rpx 18rpx rgba(15, 23, 42, 0.06);
+}
+
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .avatar.a-me {
-  background: rgba(249, 115, 22, 0.12);
+  background: #fff;
 }
 
 .avatar.a-ai {
   background: #fff;
-  border: 2rpx solid rgba(17, 24, 39, 0.08);
+  border: none;
+  box-shadow: none;
 }
 
 .bubble {
-  max-width: 85%;
-  padding: 22rpx 24rpx;
+  max-width: 600rpx;
+  padding: 26rpx 30rpx;
   font-size: 28rpx;
-  line-height: 42rpx;
-  border-radius: 32rpx;
-  box-shadow: 0 6rpx 14rpx rgba(17, 24, 39, 0.06);
+  line-height: 44rpx;
+  border-radius: 36rpx;
+  box-shadow: 0 22rpx 44rpx rgba(15, 23, 42, 0.12);
   white-space: pre-line;
+  word-break: break-word;
 }
 
 /* towxml 默认正文样式会带外边距，这里收敛到气泡内 */
 .bubble.b-ai {
   white-space: normal;
+}
+
+.bubble.b-ai .h2w-light,
+.bubble.b-ai .h2w-dark {
+  background: transparent;
+  background-color: transparent;
+  color: inherit;
 }
 
 .bubble.b-ai .h2w__main {
@@ -298,20 +321,35 @@
 
 .bubble.b-ai .h2w {
   font-size: 28rpx;
-  line-height: 42rpx;
+  line-height: 44rpx;
   text-align: left;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.bubble.b-ai .h2w__p,
+.bubble.b-ai .h2w__h1,
+.bubble.b-ai .h2w__h2,
+.bubble.b-ai .h2w__h3,
+.bubble.b-ai .h2w__h4,
+.bubble.b-ai .h2w__h5,
+.bubble.b-ai .h2w__h6,
+.bubble.b-ai .h2w__blockquote,
+.bubble.b-ai .h2w__li,
+.bubble.b-ai .h2w__a {
+  color: inherit;
 }
 
 .bubble.b-me {
-  background: var(--brand);
-  color: #fff;
+  background: #fff;
+  color: var(--text-primary);
+  border: 2rpx solid rgba(15, 23, 42, 0.06);
   border-top-right-radius: 12rpx;
 }
 
 .bubble.b-ai {
-  background: #fff;
-  color: var(--text-secondary);
-  border: 2rpx solid rgba(243, 244, 246, 1);
+  background: var(--brand);
+  color: #fff;
+  border: none;
   border-top-left-radius: 12rpx;
 }
 
@@ -326,17 +364,17 @@
 
 .copy-btn {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 8rpx;
+  bottom: 8rpx;
   width: 52rpx;
   height: 52rpx;
-  background: #f3f4f6;
-  border: 1rpx solid rgba(17, 24, 39, 0.06);
+  background: rgba(255, 255, 255, 0.22);
+  border: 1rpx solid rgba(255, 255, 255, 0.45);
   border-radius: 9999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .copy-btn--hover,
@@ -349,7 +387,7 @@
   align-items: center;
   gap: 10rpx;
   font-size: 26rpx;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .typing-hint__dots {
@@ -361,7 +399,7 @@
 .typing-hint__dot {
   width: 10rpx;
   height: 10rpx;
-  background: #9ca3af;
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 9999rpx;
   opacity: 0.25;
   animation: typing-blink 1.2s infinite ease-in-out;
