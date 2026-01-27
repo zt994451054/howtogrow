@@ -324,7 +324,6 @@
   font-weight: 800;
   text-align: left;
   color: #e18638;
-  letter-spacing: 11rpx;
   line-height: 26rpx;
   white-space: nowrap;
 }
