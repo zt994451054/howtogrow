@@ -1,14 +1,19 @@
-<view class="page">
+  <view class="page">
   <view class="status" style="height: {{statusBarHeight}}px;" />
 
-  <view class="top row between">
-    <view wx:if="{{mode == 'history'}}" class="back" bindtap="onBack">
-      <ui-icon name="back" size="{{24}}" />
+  <view class="top row between" style="padding: 0 24rpx 12rpx;">
+    <view
+      wx:if="{{mode == 'history'}}"
+      class="back"
+      style="background: transparent; box-shadow: none; border: 0;"
+      bindtap="onBack"
+    >
+      <image mode="aspectFit" src="/assets/image/uni-left.png" style="width: 48rpx; height: 48rpx; display: block;" />
     </view>
     <view wx:else class="spacer" />
     <view class="top__title" wx:if="{{mode == 'history'}}">测试详情</view>
-    <view class="close" bindtap="onDone">
-      <ui-icon name="close" size="{{24}}" />
+    <view class="close" style="background: transparent; box-shadow: none; border: 0;" bindtap="onDone">
+      <image mode="aspectFit" src="/assets/tab/test-active.png" style="width: 48rpx; height: 48rpx; display: block;" />
     </view>
   </view>
 
