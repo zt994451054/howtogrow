@@ -355,7 +355,7 @@
 
 .ai-content {
   position: relative;
-  padding-bottom: 56rpx;
+  padding-bottom: 26rpx;
 }
 
 .ai-plain {
