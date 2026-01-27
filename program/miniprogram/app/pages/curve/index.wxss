@@ -648,7 +648,7 @@
   align-items: center;
   justify-content: center;
   gap: 10rpx;
-  min-height: 170rpx;
+  min-height: 200rpx;
 }
 
 .trouble__rank {
@@ -661,8 +661,8 @@
 }
 
 .trouble__icon {
-  width: 80rpx;
-  height: 80rpx;
+  width: 108rpx;
+  height: 108rpx;
   border-radius: 9999rpx;
   background: #fff;
   border: 2rpx solid rgba(17, 24, 39, 0.06);
@@ -684,18 +684,24 @@
 }
 
 .trouble__name {
-  font-size: 22rpx;
-  font-weight: 800;
-  color: var(--text-secondary);
+  font-size: 20rpx;
+  color: rgba(60, 60, 59, 0.5);
   text-align: center;
+  font-weight: bold;
 }
 
 .footer-hint {
-  margin-top: 28rpx;
+  margin-top: 30rpx;
   text-align: center;
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #F0811D;
   line-height: 38rpx;
+  font-weight: bold;
+  
+}
+.footer-hint .def {
+  color: #000000;
+  margin-right: 10rpx;
 }
 
 .sheet {
