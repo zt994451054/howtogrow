@@ -41,15 +41,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
-  background: #fff;
   border-radius: 9999rpx;
-  box-shadow: var(--shadow-sm);
-  border: 2rpx solid rgba(17, 24, 39, 0.06);
+  background: transparent;
+  border: 0;
 }
 
-.icon-btn.close {
-  color: var(--text-secondary);
+.action-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
 }
 
 .icon-btn:active {
@@ -64,9 +64,9 @@
 .title {
   margin-top: 26rpx;
   text-align: center;
-  color: var(--brand);
-  font-size: 38rpx;
-  font-weight: 900;
+  color: #F08019;
+  font-size: 28rpx;
+  font-weight: 600;
   line-height: 52rpx;
   white-space: pre-line;
 }
@@ -101,19 +101,19 @@
   width: 100%;
   padding: 28rpx 28rpx;
   border-radius: 32rpx;
-  font-size: 28rpx;
+  font-size: 22rpx;
   font-weight: 800;
-  line-height: 42rpx;
-  background: rgba(255, 246, 230, 0.45);
+  line-height: 36rpx;
+  background: #FCE6D1;
   border: 4rpx solid transparent;
-  color: var(--text-secondary);
+  color: #000000;
   box-sizing: border-box;
 }
 
 .opt--on {
-  background: rgba(255, 246, 230, 1);
-  border-color: rgba(249, 115, 22, 0.30);
-  color: #111827;
+  /* background: rgba(255, 246, 230, 1); */
+  border-color: #F08019;
+  /* color: #111827; */
   box-shadow: var(--shadow-sm);
 }
 
@@ -135,9 +135,8 @@
 .next {
   width: 100%;
   border-radius: var(--radius-pill);
-  padding: 26rpx 0;
-  font-size: 30rpx;
-  font-weight: 900;
+  padding: 12rpx 0;
+  font-size: 24rpx;
   transition: transform 100ms ease;
 }
 

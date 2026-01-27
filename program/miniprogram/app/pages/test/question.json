@@ -1,6 +1,4 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {
-    "ui-icon": "/components/ui-icon/index"
-  }
+  "usingComponents": {}
 }
