@@ -80,7 +80,7 @@
                 bindtap="onCopyAi"
                 data-id="{{item.id}}"
               >
-                <ui-icon name="copy" size="{{18}}" />
+                <image class="copy-icon" src="../../assets/image/uni-copy.png" mode="aspectFit" />
               </view>
             </view>
           </view>
