@@ -52,10 +52,10 @@
   </scroll-view>
 
   <view class="footer safe-bottom">
-    <button class="btn" bindtap="onDone">{{doneText}}</button>
+    <button class="btn-cta" bindtap="onDone">{{doneText}}</button>
     <button
       wx:if="{{canGenerateAiSummary}}"
-      class="btn-ghost"
+      class="btn-cta btn-cta--ghost"
       loading="{{aiLoading}}"
       disabled="{{aiLoading}}"
       bindtap="onGenerateAiSummary"
