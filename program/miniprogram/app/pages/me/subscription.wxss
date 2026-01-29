@@ -33,7 +33,7 @@
 
 .t1 {
   font-size: 34rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .t2 {
@@ -63,7 +63,7 @@
 
 .h3 {
   padding: 36rpx 0 18rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 26rpx;
 }
@@ -84,7 +84,7 @@
 }
 
 .plan__name {
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 26rpx;
 }
@@ -103,7 +103,7 @@
 }
 
 .price__current {
-  font-weight: 900;
+  font-weight: 600;
   color: #ea580c;
   font-size: 34rpx;
   line-height: 1;
@@ -156,7 +156,7 @@
   border-radius: var(--radius-pill);
   padding: 26rpx 0;
   font-size: 30rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .buy.off {

@@ -41,7 +41,7 @@
 
 .avatar__text {
   font-size: 24rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .greet {
@@ -51,7 +51,6 @@
 }
 
 .greet__name {
-  font-weight: 900;
 }
 
 .greet__suffix {
@@ -157,7 +156,7 @@
 
 .menu-item.add {
   color: var(--brand);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .body {

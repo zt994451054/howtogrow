@@ -49,7 +49,7 @@
 
 .avatar__text {
   font-size: 24rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .greet {
@@ -59,7 +59,7 @@
 }
 
 .greet__name {
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .greet__suffix {

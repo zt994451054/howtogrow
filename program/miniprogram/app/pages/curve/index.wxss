@@ -143,7 +143,7 @@
 
 .menu-item.add {
   color: var(--brand);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .body {
@@ -278,7 +278,7 @@
 
 .section__title {
   font-size: 28rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -358,7 +358,7 @@
 .persist__name {
   margin-top: 18rpx;
   font-size: 20rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -371,7 +371,7 @@
 
 .persist__num {
   color: var(--brand);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .persist__hint {
@@ -395,7 +395,7 @@
 
 .mood-card__title {
   font-size: 28rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -424,14 +424,20 @@
   height: 92rpx;
   border-radius: 9999rpx;
   overflow: hidden;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .mood-row__img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% + 2rpx);
+  height: calc(100% + 2rpx);
+  transform: translate(-50%, -50%);
+  border-radius: 9999rpx;
   display: block;
 }
 
@@ -453,7 +459,7 @@
 
 .mood-row__pct {
   font-size: 30rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .mood-stack {
@@ -503,7 +509,7 @@
 }
 
 .chart-empty__t1 {
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 28rpx;
 }
@@ -522,7 +528,7 @@
   padding: 20rpx 0;
   background: var(--brand);
   color: #fff;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 24rpx;
 }
 
@@ -561,7 +567,7 @@
   margin-top: 6rpx;
   font-size: 24rpx;
   color: var(--text-primary);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .moods {
@@ -580,7 +586,7 @@
 
 .mood__pct {
   font-size: 18rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 8rpx;
 }
@@ -660,7 +666,7 @@
   left: 14rpx;
   top: 10rpx;
   font-size: 20rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(156, 163, 175, 0.9);
 }
 
@@ -683,7 +689,7 @@
 
 .trouble__fallback {
   font-size: 28rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(156, 163, 175, 1);
 }
 
@@ -756,7 +762,7 @@
 
 .sheet__title {
   font-size: 32rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -822,7 +828,7 @@
   border-radius: var(--radius-pill);
   padding: 22rpx 0;
   font-size: 28rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .range-btn::after {

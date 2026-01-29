@@ -42,7 +42,7 @@
 }
 
 .meta .name {
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 28rpx;
 }
@@ -60,7 +60,7 @@
 
 .btn-link {
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--brand);
   padding: 10rpx 14rpx;
   border-radius: 9999rpx;
@@ -75,7 +75,7 @@
   border-radius: 24rpx;
   padding: 24rpx 0;
   font-size: 26rpx;
-  font-weight: 900;
+  font-weight: 600;
   background: transparent;
   display: flex;
   align-items: center;
@@ -144,7 +144,7 @@
 
 .gender-label {
   font-size: 24rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(156, 163, 175, 1);
 }
 
@@ -163,7 +163,7 @@
 .label {
   font-size: 22rpx;
   color: var(--text-secondary);
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 10rpx;
 }
 
@@ -209,7 +209,7 @@
   padding: 18rpx 0;
   text-align: center;
   font-size: 24rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
@@ -239,7 +239,7 @@
   background: var(--brand) !important;
   color: #fff !important;
   font-size: 30rpx;
-  font-weight: 900;
+  font-weight: 600;
   box-shadow: var(--shadow-brand);
 }
 

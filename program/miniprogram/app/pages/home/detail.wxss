@@ -83,7 +83,7 @@
 
 .item__title {
   font-size: 32rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(17, 24, 39, 1);
 }
 
@@ -150,7 +150,7 @@
 
 .sheet__title {
   font-size: 32rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -206,7 +206,7 @@
 
 .status-text {
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .trouble-grid {
@@ -240,7 +240,7 @@
 
 .trouble-name {
   font-size: 24rpx;
-  font-weight: 900;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -298,7 +298,7 @@
   background: rgba(243, 244, 246, 0.9) !important;
   color: var(--text-secondary) !important;
   border-radius: 16rpx;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 24rpx;
   padding: 18rpx 22rpx;
 }
@@ -336,14 +336,14 @@
   justify-content: center;
   font-size: 44rpx;
   color: rgba(55, 65, 81, 1);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .overlay__title {
   flex: 1;
   text-align: center;
   font-size: 30rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(17, 24, 39, 1);
 }
 
@@ -422,7 +422,7 @@ margin-left: 48rpx;
 
 .mood-center__line {
   font-size: 26rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(31, 41, 55, 1);
   letter-spacing: 2rpx;
   margin-top: 10rpx;
@@ -472,7 +472,7 @@ margin-left: 48rpx;
 
 .mood-option__label {
   font-size: 18rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: #3C3C3B !important;
 }
 
@@ -498,7 +498,7 @@ margin-left: 48rpx;
   background: rgba(249, 115, 22, 1) !important;
   color: #fff !important;
   font-size: 26rpx;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 92rpx;
 }
 
@@ -578,7 +578,7 @@ margin-left: 48rpx;
   text-align: left;
   color: #F08019;
   font-size: 28rpx;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 48rpx;
   white-space: pre-line;
 }
@@ -628,7 +628,7 @@ margin-left: 48rpx;
 
 .trouble-chip__fallback {
   font-size: 44rpx;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1;
 }
 
@@ -656,7 +656,7 @@ margin-left: 48rpx;
 
 .diary-prompt__spark {
   color: rgba(251, 146, 60, 1);
-  font-weight: 900;
+  font-weight: 600;
   font-size: 24rpx;
 }
 
@@ -664,7 +664,7 @@ margin-left: 48rpx;
 .diary-photo__label {
   color: rgba(107, 114, 128, 1);
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .diary-prompt__box {
@@ -696,7 +696,7 @@ margin-left: 48rpx;
   color: #fff !important;
   border-radius: 9999rpx;
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
   height: 56rpx;
   line-height: 56rpx;
   padding: 0 26rpx;
@@ -713,7 +713,7 @@ margin-left: 48rpx;
   background: transparent !important;
   color: rgba(251, 146, 60, 1) !important;
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
   height: 56rpx;
   line-height: 56rpx;
   padding: 0 26rpx;
@@ -811,12 +811,12 @@ margin-left: 48rpx;
 
 .diary-photo__plus {
   font-size: 64rpx;
-  font-weight: 900;
+  font-weight: 600;
   opacity: 0.55;
   line-height: 1;
 }
 
 .diary-photo__add-text {
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
 }

@@ -47,7 +47,7 @@
 
 .title {
   font-size: 32rpx;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.2;
   color: #fff;
   text-transform: none;
@@ -138,7 +138,7 @@
 
 .drawer__t1 {
   font-size: 32rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .drawer__t2 {
@@ -159,7 +159,7 @@
   background: rgba(249, 115, 22, 0.10);
   color: #ea580c;
   font-size: 24rpx;
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 20rpx;
   box-sizing: border-box;
 }
@@ -170,7 +170,7 @@
 
 .tag {
   font-size: 20rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-muted);
   letter-spacing: 3rpx;
   text-transform: uppercase;

@@ -82,7 +82,7 @@
   justify-content: center;
   gap: 10rpx;
   color: var(--text-muted);
-  font-weight: 900;
+  font-weight: 600;
   font-size: 20rpx;
 }
 
@@ -161,7 +161,7 @@
   border-radius: var(--radius-pill);
   padding: 26rpx 0;
   font-size: 30rpx;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .btn--off {
