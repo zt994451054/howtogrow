@@ -11,7 +11,7 @@ function toIntroUrlFromSession(session) {
 
 Page({
   data: {
-    statusBarHeight: 20,
+    navBarHeight: 0,
     session: null,
     currentIndex: 0,
     progressPercent: 0,
@@ -24,8 +24,10 @@ Page({
     canContinue: false,
   },
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
-    this.setData({ statusBarHeight });
+    const { navBarHeight } = getSystemMetrics();
+    const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
+    this.setData({ navBarHeight: navHeight });
   },
   onShow() {
     const session = getDailySession();

@@ -1,5 +1,5 @@
-<view class="page">
-  <view class="status" style="height: {{statusBarHeight + 10}}px;" />
+<view class="page" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="status" />
 
   <view class="header">
     <view class="progress">

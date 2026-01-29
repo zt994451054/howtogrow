@@ -5,15 +5,16 @@
 
 .status {
   background: #fff;
+  height: var(--page-nav-height);
 }
 
 .header {
-  padding: 0 32rpx 10rpx;
+  padding: var(--page-padding) var(--page-padding) 10rpx;
   background: #fff;
 }
 
 .progress {
-  padding-top: 20rpx;
+  padding-top: 0;
 }
 
 .progress__bar {
@@ -58,7 +59,7 @@
 
 .body {
   height: calc(100vh - 260rpx);
-  padding: 0 32rpx;
+  padding: 0 var(--page-padding);
 }
 
 .title {
@@ -126,7 +127,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 22rpx 32rpx var(--page-footer-gap);
+  padding: 22rpx var(--page-padding) var(--page-footer-gap);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
   border-top: 1rpx solid rgba(243, 244, 246, 0.7);
