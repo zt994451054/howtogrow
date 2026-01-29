@@ -155,7 +155,7 @@
 }
 
 .wrap {
-  padding: 20rpx var(--page-padding) 260rpx;
+  padding: var(--section-gap) var(--page-padding) 260rpx;
 }
 
 .empty {

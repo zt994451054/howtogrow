@@ -165,7 +165,7 @@
 }
 
 .wrap {
-  padding: 24rpx var(--page-padding) 220rpx;
+  padding: var(--section-gap) var(--page-padding) 220rpx;
 }
 
 .empty {
@@ -252,7 +252,7 @@
   height: 280rpx;
   margin-left: calc(0px - var(--page-padding));
   margin-right: calc(0px - var(--page-padding));
-  margin-bottom: 24rpx;
+  margin-bottom: var(--section-gap);
 }
 
 .banner {
