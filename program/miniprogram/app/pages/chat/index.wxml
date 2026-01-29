@@ -2,7 +2,11 @@
   <view class="status" />
   <view class="header row between">
     <view class="icon-btn" bindtap="openDrawer" hover-class="tap" hover-stay-time="80">
-      <ui-icon name="menu" size="{{37}}" />
+      <view class="menu-icon">
+        <view class="menu-icon__line" />
+        <view class="menu-icon__line" />
+        <view class="menu-icon__line" />
+      </view>
     </view>
     <view class="title">马上沟通</view>
     <view class="icon-btn" bindtap="startNewChat" hover-class="tap" hover-stay-time="80">
