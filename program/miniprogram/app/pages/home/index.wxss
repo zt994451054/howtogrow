@@ -383,11 +383,10 @@
   height: 293.72rpx;
   border-radius: 29.09rpx;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
 }
 
 .thumb-notdone {
-  background: rgba(225, 134, 56, 0.1);
+  background: #fcf4eb;
 }
 
 .thumb__inner {
@@ -414,7 +413,6 @@
   font-size: 20rpx;
   font-weight: 700;
   letter-spacing: 2rpx;
-  text-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.28);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -484,10 +482,10 @@
 
 .mood-notch {
   position: absolute;
-  left: -70rpx;
-  bottom: -70rpx;
-  width: 140rpx;
-  height: 140rpx;
+  left: -80rpx;
+  bottom: -80rpx;
+  width: 160rpx;
+  height: 160rpx;
   border-radius: 9999rpx;
   /* Same as page background so it looks like the card corner is carved out. */
   background: #fff;
@@ -497,16 +495,15 @@
 
 .mood {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 72rpx;
-  height: 72rpx;
+  left: -6rpx;
+  bottom: -6rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 9999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10rpx 18rpx rgba(17, 24, 39, 0.12);
-  border: 4rpx solid #fff;
+  border: 6rpx solid #fff;
   z-index: 10;
   overflow: hidden;
   pointer-events: none;
@@ -621,18 +618,28 @@
 .foot__t {
   font-size: 24rpx;
   font-weight: 700;
-  color: #3c3c3b;
+  color: var(--text-ink);
   letter-spacing: 2rpx;
   margin-bottom: 4rpx;
-}
-
-.foot__t.muted {
-  /* color: var(--text-muted); */
 }
 
 .foot__s {
   font-size: 24rpx;
   font-weight: 700;
-  color: #3c3c3b;
+  color: var(--text-ink);
   letter-spacing: 2rpx;
+}
+
+.foot--all-gray .foot__t,
+.foot--all-gray .foot__s {
+  color: var(--text-ink-muted);
+}
+
+.foot--mixed .foot__s {
+  color: var(--text-ink-muted);
+}
+
+.foot--all-black .foot__t,
+.foot--all-black .foot__s {
+  color: var(--text-ink);
 }

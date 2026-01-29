@@ -205,6 +205,12 @@ function buildAssessmentPreviewFromDetail(detail) {
   return { title, content: tip };
 }
 
+function resolveFootStyle(isDone, hasAssessment) {
+  if (!isDone) return "foot--all-gray";
+  if (hasAssessment) return "foot--all-black";
+  return "foot--mixed";
+}
+
 function uniqPositiveNumbers(values) {
   const list = Array.isArray(values) ? values : [];
   const seen = new Set();
@@ -298,6 +304,7 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         troubleNames.length > 0 ||
         Boolean(assessmentId) ||
         hasDiary;
+      const footStyle = resolveFootStyle(isDone, hasAssessment);
 
       // Home card footer (2 lines) is driven only by daily assessment data.
       // When the day has an assessment record, we further replace these placeholders with:
@@ -322,6 +329,7 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         imageUrl: isDone ? imageUrl : "",
         title,
         content,
+        footStyle,
         hasStatus,
         moodEmoji: hasStatus && moodStyle ? moodStyle.emoji : "",
         moodCls: hasStatus && moodStyle ? moodStyle.cls : "",
@@ -361,6 +369,7 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
       imageUrl: "",
       title: DEFAULT_FOOT_TITLE,
       content: DEFAULT_FOOT_CONTENT,
+      footStyle: resolveFootStyle(false, false),
       hasStatus: false,
       moodEmoji: "",
       moodCls: "",

@@ -4,7 +4,7 @@
 
 ## 文件说明
 
-- `tokens.wxss`：设计 token（CSS 变量），包括品牌色、背景色、文本色、圆角、阴影、页面间距（`--page-padding`、`--page-nav-height`）等。
+- `tokens.wxss`：设计 token（CSS 变量），包括品牌色、背景色、文本色（`--text-ink`、`--text-ink-muted`）、圆角、阴影、页面间距（`--page-padding`、`--page-nav-height`）等。
 - `util.wxss`：通用布局工具类（flex row/col、居中、两端对齐、单行省略、hairline、tap 等）。
 
 ## 使用方式

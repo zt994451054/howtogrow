@@ -9,6 +9,8 @@ page {
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
+  --text-ink: #3c3c3b;
+  --text-ink-muted: #3c3c3b;
 
   --border: #f3f4f6;
   --page-padding: 32rpx;

@@ -120,6 +120,7 @@
                 </view>
 
                 <image wx:if="{{item.isDone && item.imageUrl}}" class="thumb__img" src="{{item.imageUrl}}" mode="aspectFill" />
+                <image wx:elif="{{item.isDone}}" class="thumb__img thumb__img--fallback" src="../../assets/image/bgsw@x.png" mode="aspectFill" />
 
                 <view wx:if="{{!item.isDone}}" class="plus">＋</view>
 
@@ -138,8 +139,8 @@
             </view>
           </view>
 
-          <view class="foot">
-            <view class="foot__t text-ellipsis {{item.hasAssessment ? '' : 'muted'}}">{{item.title}}</view>
+          <view class="foot {{item.footStyle}}">
+            <view class="foot__t text-ellipsis">{{item.title}}</view>
             <view class="foot__s text-ellipsis">{{item.content}}</view>
           </view>
         </view>
