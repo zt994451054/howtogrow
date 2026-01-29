@@ -48,7 +48,7 @@
 }
 
 .menu {
-  margin-top: 24rpx;
+  margin-top: var(--section-gap);
   background: #fff;
   border-top: 1rpx solid var(--border);
   border-bottom: 1rpx solid var(--border);
@@ -56,7 +56,7 @@
 
 .item {
   align-items: center;
-  padding: 34rpx 40rpx;
+  padding: 34rpx var(--page-padding);
 }
 
 .item__title {
@@ -78,7 +78,7 @@
 .divider {
   height: 1rpx;
   background: var(--border);
-  margin-left: 40rpx;
+  margin-left: var(--page-padding);
 }
 
 .footer {
