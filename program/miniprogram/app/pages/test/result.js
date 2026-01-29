@@ -73,7 +73,7 @@ function normalizeSuggestFlag(value) {
 
 Page({
   data: {
-    statusBarHeight: 20,
+    navBarHeight: 0,
     mode: "complete",
     doneText: "完成自测",
     reviewTitle: "",
@@ -84,9 +84,15 @@ Page({
     scrollIntoView: "",
   },
   onLoad(query) {
-    const { statusBarHeight } = getSystemMetrics();
+    const { navBarHeight } = getSystemMetrics();
+    const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
     const mode = query.mode || "complete";
-    this.setData({ statusBarHeight, mode, doneText: mode === "history" ? "返回记录" : "完成自测" });
+    this.setData({
+      navBarHeight: navHeight,
+      mode,
+      doneText: mode === "history" ? "返回记录" : "完成自测",
+    });
   },
   onBack() {
     this.onDone();
