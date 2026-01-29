@@ -385,13 +385,18 @@
 
 .mood-card {
   margin-top: var(--section-gap);
+}
+
+.mood-card__panel {
   background: #fff7f0;
   border-radius: 32rpx;
-  padding: 26rpx 24rpx 30rpx;
+  padding: 36rpx 24rpx 40rpx;
 }
 
 .mood-card__head {
   align-items: center;
+  margin-top: 60rpx;
+  margin-bottom: 32rpx;
 }
 
 .mood-card__title {
@@ -409,7 +414,7 @@
 }
 
 .mood-row {
-  margin-top: 24rpx;
+  margin-top: 32rpx;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 24rpx 12rpx;

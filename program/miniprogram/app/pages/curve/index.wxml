@@ -105,18 +105,19 @@
           <view class="mood-card__sub">已记录 {{statusTotalDays}} 天</view>
         </view>
 
-        <view class="mood-row">
-          <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-row__item">
-            <view class="mood-row__face" style="background: {{item.bg ? item.bg : item.color}};">
-              <image wx:if="{{item.imageUrl}}" class="mood-row__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-              <view wx:else class="mood-row__emoji">{{item.emoji}}</view>
-            </view>
-            <view class="mood-row__pill">
-              <text class="mood-row__pct {{item.count > 0 ? 'on' : ''}}" style="--pct-color: {{item.color}};">{{item.percentage}}%</text>
+        <view class="mood-card__panel">
+          <view class="mood-row">
+            <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-row__item">
+              <view class="mood-row__face" style="background: {{item.bg ? item.bg : item.color}};">
+                <image wx:if="{{item.imageUrl}}" class="mood-row__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                <view wx:else class="mood-row__emoji">{{item.emoji}}</view>
+              </view>
+              <view class="mood-row__pill">
+                <text class="mood-row__pct {{item.count > 0 ? 'on' : ''}}" style="--pct-color: {{item.color}};">{{item.percentage}}%</text>
+              </view>
             </view>
           </view>
         </view>
-
       </view>
 
       <view class="section row between">
