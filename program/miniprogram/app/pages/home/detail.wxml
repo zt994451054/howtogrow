@@ -70,7 +70,7 @@
     </view>
 
     <view class="overlay__footer safe-bottom">
-      <button class="overlay__btn" loading="{{statusSaving}}" bindtap="onSaveStatus">确 定</button>
+      <button class="btn-cta" loading="{{statusSaving}}" bindtap="onSaveStatus">确 定</button>
     </view>
   </view>
 
@@ -110,7 +110,7 @@
 
     <view class="overlay__footer safe-bottom">
       <button
-        class="overlay__btn {{troubleDraftIds.length ? '' : 'overlay__btn--disabled'}}"
+        class="btn-cta {{troubleDraftIds.length ? '' : 'btn-cta--disabled'}}"
         loading="{{troubleSaving}}"
         disabled="{{!troubleDraftIds.length}}"
         bindtap="onSaveTroubles"
@@ -173,7 +173,7 @@
 
     <view class="overlay__footer safe-bottom">
       <button
-        class="overlay__btn {{diaryCanSubmit ? '' : 'overlay__btn--disabled'}}"
+        class="btn-cta {{diaryCanSubmit ? '' : 'btn-cta--disabled'}}"
         loading="{{diarySaving}}"
         disabled="{{!diaryCanSubmit}}"
         bindtap="onSaveDiary"

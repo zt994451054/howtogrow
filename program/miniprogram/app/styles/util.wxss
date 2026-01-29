@@ -32,3 +32,22 @@
 .tap {
   opacity: 0.85;
 }
+
+.btn-cta {
+  width: 100% !important;
+  height: 92rpx;
+  border-radius: 46rpx;
+  background: var(--brand) !important;
+  color: #fff !important;
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 92rpx;
+}
+
+.btn-cta::after {
+  border: none;
+}
+
+.btn-cta--disabled {
+  opacity: 0.5;
+}

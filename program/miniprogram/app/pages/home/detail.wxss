@@ -509,24 +509,6 @@
   padding-bottom: 18rpx;
 }
 
-.overlay__btn {
-  width: 100% !important;
-  height: 92rpx;
-  border-radius: 46rpx;
-  background: rgba(249, 115, 22, 1) !important;
-  color: #fff !important;
-  font-size: 26rpx;
-  font-weight: 600;
-  line-height: 92rpx;
-}
-
-.overlay__btn::after {
-  border: none;
-}
-
-.overlay__btn--disabled {
-  opacity: 0.5;
-}
 
 .trouble-hero {
   padding: 80rpx 68rpx 80rpx;
