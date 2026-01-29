@@ -87,7 +87,7 @@
           <view class="trouble-hero__tile t4" />
           <view class="trouble-hero__bar" />
         </view>
-        <view class="trouble-hero__title">{{troubleQuote}}</view>
+        <view class="trouble-hero__title quote">{{troubleQuote}}</view>
       </view>
 
       <view wx:if="{{troubleLoading}}" class="sheet__loading">加载中…</view>
