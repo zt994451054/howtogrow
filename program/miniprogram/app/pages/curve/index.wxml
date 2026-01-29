@@ -101,18 +101,18 @@
 
       <view class="mood-card">
         <view class="mood-card__head row between">
-          <view class="mood-card__title">我的育儿状态分布</view>
+          <view class="mood-card__title">我的育儿状态</view>
           <view class="mood-card__sub">已记录 {{statusTotalDays}} 天</view>
         </view>
 
         <view class="mood-row">
-          <view wx:for="{{statusStatsTop}}" wx:key="moodId" class="mood-row__item">
-            <view class="mood-row__face" style="background: {{item.color}};">
+          <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-row__item">
+            <view class="mood-row__face" style="background: {{item.bg ? item.bg : item.color}};">
               <image wx:if="{{item.imageUrl}}" class="mood-row__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
               <view wx:else class="mood-row__emoji">{{item.emoji}}</view>
             </view>
             <view class="mood-row__pill">
-              <text class="mood-row__pct" style="color: {{item.color}};">{{item.percentage}}%</text>
+              <text class="mood-row__pct {{item.count > 0 ? 'on' : ''}}" style="--pct-color: {{item.color}};">{{item.percentage}}%</text>
             </view>
           </view>
         </view>

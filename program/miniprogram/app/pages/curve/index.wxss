@@ -384,10 +384,10 @@
 }
 
 .mood-card {
-  margin-top: 50rpx;
-  background: rgba(255, 249, 245, 1);
+  margin-top: var(--section-gap);
+  background: #fff7f0;
   border-radius: 32rpx;
-  padding: 30rpx 24rpx 26rpx;
+  padding: 26rpx 24rpx 30rpx;
 }
 
 .mood-card__head {
@@ -402,16 +402,17 @@
 }
 
 .mood-card__sub {
-  margin-top: 0;
-  font-size: 20rpx;
+  font-size: 22rpx;
+  font-weight: 700;
   color: var(--text-muted);
   line-height: 1;
 }
 
 .mood-row {
-  margin-top: 34rpx;
-  display: flex;
-  justify-content: space-between;
+  margin-top: 24rpx;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24rpx 12rpx;
 }
 
 .mood-row__item {
@@ -423,8 +424,8 @@
 }
 
 .mood-row__face {
-  width: 92rpx;
-  height: 92rpx;
+  width: 96rpx;
+  height: 96rpx;
   border-radius: 9999rpx;
   overflow: hidden;
   position: relative;
@@ -450,19 +451,25 @@
 }
 
 .mood-row__pill {
-  margin-top: 18rpx;
-  width: 124rpx;
-  height: 52rpx;
+  margin-top: 12rpx;
+  width: 96rpx;
+  height: 32rpx;
   border-radius: 9999rpx;
-  background: rgba(17, 24, 39, 0.08);
+  background: #e7e7e7;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .mood-row__pct {
-  font-size: 30rpx;
+  font-size: 22rpx;
   font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.mood-row__pct.on {
+  color: var(--pct-color, var(--brand));
 }
 
 .mood-stack {
