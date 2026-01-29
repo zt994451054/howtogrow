@@ -125,7 +125,7 @@
                 <view wx:if="{{!item.isDone}}" class="plus">＋</view>
               </view>
 
-              <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}}">
+              <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}} {{item.hasStatus && item.moodImageUrl ? 'mood--image' : ''}}">
                 <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
                 <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
                 <view wx:else class="smile-icon">

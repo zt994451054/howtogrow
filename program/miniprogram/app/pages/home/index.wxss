@@ -496,6 +496,10 @@
   pointer-events: none;
 }
 
+.mood--image {
+  background: transparent !important;
+}
+
 .mood__emoji {
   font-size: 30rpx;
   line-height: 1;
