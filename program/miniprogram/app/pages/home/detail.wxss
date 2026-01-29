@@ -8,7 +8,7 @@
 }
 
 .wrap {
-  padding: 28rpx 32rpx 240rpx;
+  padding: var(--page-padding) var(--page-padding) 240rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
@@ -75,6 +75,12 @@
   display: block;
 }
 
+.item__icon-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+}
+
 .item__body {
   flex: 1;
   padding-top: 16rpx;
@@ -84,14 +90,30 @@
 .item__title {
   font-size: 32rpx;
   font-weight: 600;
-  color: rgba(17, 24, 39, 1);
+  color: var(--text-muted);
 }
 
 .item__desc {
   margin-top: 10rpx;
   font-size: 26rpx;
   line-height: 1.55;
-  color: rgba(107, 114, 128, 1);
+  color: var(--text-muted);
+}
+
+.item.done .item__title {
+  color: var(--text-ink);
+}
+
+.item.done .item__desc {
+  color: var(--text-ink-muted);
+}
+
+.timeline--muted .timeline__line {
+  background: var(--text-muted);
+}
+
+.item.todo .item__icon-img {
+  filter: grayscale(1);
 }
 
 .loading {

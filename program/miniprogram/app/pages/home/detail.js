@@ -14,11 +14,6 @@ const { getSystemMetrics } = require("../../utils/system");
 
 const OVERLAY_SAFE_TOP_GAP_PX = 12;
 
-function buildTitle(date) {
-  const d = String(date || "").replace(/-/g, "/");
-  return d ? `${d}每日觉察` : "每日觉察";
-}
-
 const DEFAULT_QUOTE = "你记下的每个烦躁瞬间\n都是写给孩子未来的一封信\n“看，爸爸妈妈也在学着长大”";
 const QUOTE_SCENE_DAILY_OBSERVATION = "每日觉察";
 const QUOTE_SCENE_PARENTING_STATUS = "育儿状态";
@@ -272,12 +267,13 @@ Page({
     date: "",
     dateSlash: "",
     dateText: "",
-    title: "每日觉察",
+    title: "我的觉察",
     quote: DEFAULT_QUOTE,
     overlaySafeTopPx: 0,
     statusQuote: DEFAULT_PARENTING_STATUS_QUOTE,
     troubleQuote: DEFAULT_TROUBLE_QUOTE,
     loading: false,
+    timelineHasData: false,
     record: {
       parentingStatusCode: "",
       moodId: "",
@@ -329,7 +325,7 @@ Page({
       dateText: toDateText(date),
       childName: "孩子",
       greetText: "",
-      title: buildTitle(date),
+      title: "我的觉察",
       quote: DEFAULT_QUOTE,
       overlaySafeTopPx: getOverlaySafeTopPx(),
       statusQuote: DEFAULT_PARENTING_STATUS_QUOTE,
@@ -428,9 +424,11 @@ Page({
           diaryImageUrl,
         };
 
+        const items = buildItems(record, date);
         this.setData({
           record,
-          items: buildItems(record, date),
+          items,
+          timelineHasData: items.some((item) => item.done),
         });
       })
       .catch(() => {
