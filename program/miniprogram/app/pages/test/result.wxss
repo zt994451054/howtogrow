@@ -145,13 +145,13 @@
 }
 
 .review-card__desc-label {
-  color: #3C3C3B;
-  font-weight: 600;
+  /* color: #3C3C3B; */
+  /* font-weight: 600; */
 }
 
 .review-card__desc-text {
-  color: #3C3C3B;
-  font-weight: 600;
+  /* color: #3C3C3B; */
+  /* font-weight: 600; */
 }
 
 .review-card__advice-title {
