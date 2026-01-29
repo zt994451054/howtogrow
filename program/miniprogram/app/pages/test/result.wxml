@@ -17,6 +17,13 @@
     </view>
   </view>
 
+  <view class="flag-wrap">
+    <view class="flag">
+      <view class="flag__bar" />
+      <view class="flag__tag">今日\n建议</view>
+    </view>
+  </view>
+
   <scroll-view
     class="body"
     scroll-y="true"
@@ -25,13 +32,6 @@
     scroll-with-animation="true"
     scroll-into-view="{{scrollIntoView}}"
   >
-    <view class="flag-wrap">
-      <view class="flag">
-        <view class="flag__bar" />
-        <view class="flag__tag">今日\n建议</view>
-      </view>
-    </view>
-
     <view class="review">
       <view wx:if="{{reviewTitle}}" class="review__meta">{{reviewTitle}}</view>
 
