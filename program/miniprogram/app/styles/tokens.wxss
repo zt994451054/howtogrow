@@ -1,4 +1,5 @@
-page {
+page,
+.tabbar {
   --brand: #f97316;
   --brand-weak: #fff6e6;
   --bg-page: #f3f4f6;
@@ -8,7 +9,7 @@ page {
 
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --text-muted: rgba(60, 60, 59, 0.3);
   --text-ink: #3c3c3b;
   --text-ink-muted: #3c3c3b;
 
