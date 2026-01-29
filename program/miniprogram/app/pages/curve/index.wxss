@@ -155,11 +155,11 @@
 }
 
 .wrap {
-  padding: 20rpx 32rpx 260rpx;
+  padding: 20rpx var(--page-padding) 260rpx;
 }
 
 .empty {
-  padding: 120rpx 32rpx 220rpx;
+  padding: 120rpx var(--page-padding) 220rpx;
 }
 
 .empty__logo {

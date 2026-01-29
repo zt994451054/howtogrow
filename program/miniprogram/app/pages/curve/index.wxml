@@ -1,21 +1,13 @@
 <view class="page" style="--page-nav-height: {{navBarHeight}}px;">
   <view class="status" />
 
-  <!-- 顶部参考「每日觉察」页面：头像问候 + 菜单 -->
-  <view class="header row between">
-    <view class="row a">
-      <view class="avatar" bindtap="onOpenProfile" hover-class="tap" hover-stay-time="80">
-        <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
-        <view wx:else class="avatar__text">{{avatarText}}</view>
-      </view>
-      <view class="col">
-        <view class="greet">{{greetText}}</view>
-      </view>
-    </view>
-    <view class="icon-btn" bindtap="toggleChildMenu">
-      <ui-icon name="menu" size="{{24}}" />
-    </view>
-  </view>
+  <home-header
+    avatar-url="{{avatarUrl}}"
+    avatar-text="{{avatarText}}"
+    greet-text="{{greetText}}"
+    bind:profile="onOpenProfile"
+    bind:menu="toggleChildMenu"
+  />
 
   <view wx:if="{{menuOpen}}" class="menu-layer">
     <view class="menu-mask" bindtap="closeChildMenu" />

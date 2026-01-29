@@ -1,28 +1,15 @@
 <view class="page" style="--page-nav-height: {{navBarHeight}}px;">
   <view class="status" />
 
-  <view class="header row between">
-    <view class="row a">
-      <view class="avatar" bindtap="onOpenProfile" hover-class="tap" hover-stay-time="80">
-        <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
-        <view wx:else class="avatar__text">{{avatarText}}</view>
-      </view>
-      <view class="col">
-        <view class="greet">
-          <text wx:if="{{greetName}}" class="greet__name">{{greetName}}</text>
-          <text wx:if="{{greetName}}" class="greet__suffix">，{{greetSuffix}}</text>
-          <text wx:else class="greet__suffix">{{greetSuffix}}</text>
-        </view>
-      </view>
-    </view>
-    <view class="icon-btn" bindtap="toggleChildMenu" hover-class="tap" hover-stay-time="80">
-      <view class="menu-icon">
-        <view class="menu-icon__line" />
-        <view class="menu-icon__line" />
-        <view class="menu-icon__line" />
-      </view>
-    </view>
-  </view>
+  <home-header
+    avatar-url="{{avatarUrl}}"
+    avatar-text="{{avatarText}}"
+    greet-name="{{greetName}}"
+    greet-suffix="{{greetSuffix}}"
+    greet-text="{{greetText}}"
+    bind:profile="onOpenProfile"
+    bind:menu="toggleChildMenu"
+  />
 
   <view wx:if="{{menuOpen}}" class="menu-layer">
     <view class="menu-mask" bindtap="closeChildMenu" />
