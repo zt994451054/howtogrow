@@ -13,6 +13,8 @@ const { formatDateYmd } = require("../../utils/date");
 const { getSystemMetrics } = require("../../utils/system");
 
 const OVERLAY_SAFE_TOP_GAP_PX = 12;
+const PAGE_PADDING_RPX = 32;
+const MOOD_OPTION_SIZE_RPX = 120;
 
 const DEFAULT_QUOTE = "你记下的每个烦躁瞬间\n都是写给孩子未来的一封信\n“看，爸爸妈妈也在学着长大”";
 const QUOTE_SCENE_DAILY_OBSERVATION = "每日觉察";
@@ -111,10 +113,22 @@ function findStatusOption(code) {
   return STATUS_OPTIONS.find((o) => o.code === value) || STATUS_OPTIONS[0];
 }
 
+function getOrbitRadiusPercent() {
+  const metrics = getSystemMetrics();
+  const windowWidth = Number(metrics.windowWidth || 0);
+  if (!windowWidth) return 42;
+  const rpxToPx = windowWidth / 750;
+  const orbitSizePx = windowWidth - PAGE_PADDING_RPX * rpxToPx * 2;
+  const optionSizePx = MOOD_OPTION_SIZE_RPX * rpxToPx;
+  if (orbitSizePx <= 0) return 42;
+  const radius = 50 - (optionSizePx / 2 / orbitSizePx) * 100;
+  return Math.min(50, Math.max(0, Number(radius.toFixed(2))));
+}
+
 function buildOrbitOptions(options) {
   const list = Array.isArray(options) ? options : [];
   const total = list.length || 1;
-  const radius = 42;
+  const radius = getOrbitRadiusPercent();
   return list.map((mood, index) => {
     const angleDeg = index * (360 / total) - 90;
     const angleRad = (angleDeg * Math.PI) / 180;

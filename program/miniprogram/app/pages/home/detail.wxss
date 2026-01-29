@@ -391,8 +391,8 @@
 
 .mood-orbit {
   position: relative;
-  width: 680rpx;
-  height: 680rpx;
+  width: calc(750rpx - var(--page-padding) * 2);
+  height: calc(750rpx - var(--page-padding) * 2);
 }
 
 .mood-center {
@@ -460,8 +460,8 @@
 }
 
 .mood-option__circle {
-  width: 90rpx;
-  height: 90rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 9999rpx;
   background: rgba(249, 115, 22, 0.10);
   display: flex;
@@ -483,8 +483,8 @@
 }
 
 .mood-option__img {
-  width: 92rpx;
-  height: 92rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 9999rpx;
 }
 
