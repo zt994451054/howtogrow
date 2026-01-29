@@ -273,7 +273,7 @@
 
 .section {
   align-items: center;
-  margin-top: var(--section-gap);
+  margin-top: 50rpx;
 }
 
 .section__title {
@@ -383,7 +383,7 @@
 }
 
 .mood-card {
-  margin-top: var(--section-gap);
+  margin-top: 50rpx;
   background: rgba(255, 249, 245, 1);
   border-radius: 32rpx;
   padding: 30rpx 24rpx 26rpx;
