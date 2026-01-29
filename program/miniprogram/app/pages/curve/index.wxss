@@ -279,7 +279,7 @@
 .section__title {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--brand);
   line-height: 1;
 }
 
