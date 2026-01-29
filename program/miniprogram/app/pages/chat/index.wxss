@@ -84,7 +84,7 @@
 
 .drawer__head {
   background: var(--brand);
-  padding: 48rpx 32rpx 32rpx;
+  padding: 48rpx var(--page-padding) 32rpx;
   color: #fff;
 }
 
@@ -139,7 +139,7 @@
 .new {
   width: 100%;
   text-align: left;
-  padding: 22rpx 22rpx;
+  padding: 22rpx var(--page-padding);
   border-radius: 24rpx;
   background: rgba(249, 115, 22, 0.10);
   color: #ea580c;
@@ -159,7 +159,7 @@
   color: var(--text-muted);
   letter-spacing: 3rpx;
   text-transform: uppercase;
-  padding: 0 10rpx 10rpx;
+  padding: 0 var(--page-padding) 10rpx;
 }
 
 .quick {
@@ -170,7 +170,7 @@
   align-items: flex-start;
   gap: 14rpx;
   margin-left: 106rpx;
-  padding-right: 32rpx;
+  padding-right: var(--page-padding);
   box-sizing: border-box;
 }
 
@@ -192,7 +192,7 @@
 .sess {
   width: 100%;
   text-align: left;
-  padding: 22rpx 22rpx;
+  padding: 22rpx var(--page-padding);
   border-radius: 24rpx;
   background: #fff;
   border: 2rpx solid transparent;
@@ -213,7 +213,7 @@
 }
 
 .drawer__foot {
-  padding: 20rpx 24rpx;
+  padding: 20rpx var(--page-padding);
   text-align: center;
   font-size: 20rpx;
   color: var(--text-muted);
@@ -223,8 +223,8 @@
 .drawer__foot::before {
   content: "";
   position: absolute;
-  left: 24rpx;
-  right: 24rpx;
+  left: var(--page-padding);
+  right: var(--page-padding);
   top: 0;
   height: 1rpx;
   background: var(--border);
@@ -234,7 +234,7 @@
   flex: 1;
   min-height: 0;
   background: #f7f7ff;
-  padding: 36rpx 24rpx 24rpx;
+  padding: 36rpx var(--page-padding) 24rpx;
   border-top-left-radius: 56rpx;
   border-top-right-radius: 56rpx;
   box-shadow: 0 -14rpx 40rpx rgba(15, 23, 42, 0.08);
@@ -438,7 +438,7 @@
   left: 0;
   right: 0;
   z-index: 30;
-  padding: 20rpx 24rpx 24rpx;
+  padding: 20rpx var(--page-padding) 24rpx;
   background: #fff;
   border-top: 1rpx solid var(--border);
   padding-bottom: 80rpx;
