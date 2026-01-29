@@ -499,8 +499,7 @@
 }
 
 .overlay__footer {
-  padding: 18rpx 40rpx 22rpx;
-  margin-bottom: 200rpx;
+  padding: 18rpx 40rpx var(--page-footer-gap);
 }
 
 .overlay__scroll {

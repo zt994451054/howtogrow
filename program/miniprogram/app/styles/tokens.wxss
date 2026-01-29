@@ -17,6 +17,7 @@ page,
   --page-padding: 32rpx;
   --page-nav-height: 0px;
   --section-gap: 24rpx;
+  --page-footer-gap: 60rpx;
 
   --radius-12: 24rpx;
   --radius-16: 32rpx;

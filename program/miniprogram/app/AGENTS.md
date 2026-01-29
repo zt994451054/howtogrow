@@ -58,7 +58,7 @@
 
 - 新增页面：必须在 `app.json` 注册；若需要 tab 项，需同步更新 `custom-tab-bar/index.wxml` 与 `app.json.tabBar.list`。
 - 数据缓存：统一使用 `services/storage.js` 与 `services/config.js` 的 `STORAGE_KEYS`；避免散落自定义 key。
-- UI：全局颜色/圆角/阴影优先使用 `styles/tokens.wxss` 的 CSS 变量；页面左右统一用 `--page-padding`，顶部安全区用 `--page-nav-height`（状态栏 + 系统按钮）并在其下加 `--page-padding` 间隔；板块上下间距使用 `--section-gap`；正文黑/灰使用 `--text-ink` / `--text-ink-muted`；底部主按钮使用 `styles/util.wxss` 的 `.btn-cta` / `.btn-cta--disabled`；布局类优先用 `styles/util.wxss`。
+- UI：全局颜色/圆角/阴影优先使用 `styles/tokens.wxss` 的 CSS 变量；页面左右统一用 `--page-padding`，顶部安全区用 `--page-nav-height`（状态栏 + 系统按钮）并在其下加 `--page-padding` 间隔；板块上下间距使用 `--section-gap`；底部按钮与底部距离统一用 `--page-footer-gap`；正文黑/灰使用 `--text-ink` / `--text-ink-muted`；底部主按钮使用 `styles/util.wxss` 的 `.btn-cta` / `.btn-cta--disabled`；布局类优先用 `styles/util.wxss`。
 - 第三方库：
   - `towxml/`、`components/ec-canvas/echarts.js` 属于 vendored 代码；不要“局部修修补补”，升级时建议整体替换并做回归。
 
