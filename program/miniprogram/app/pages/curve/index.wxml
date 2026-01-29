@@ -100,7 +100,7 @@
       </view>
 
       <view class="mood-card">
-        <view class="mood-card__head col center">
+        <view class="mood-card__head row between">
           <view class="mood-card__title">我的育儿状态分布</view>
           <view class="mood-card__sub">已记录 {{statusTotalDays}} 天</view>
         </view>
@@ -117,17 +117,6 @@
           </view>
         </view>
 
-        <view class="mood-stack">
-          <view wx:if="{{statusTotalDays > 0}}" class="mood-stack__bar">
-            <view
-              wx:for="{{statusStatsTop}}"
-              wx:key="moodId"
-              class="mood-stack__seg {{index === 0 ? 'first' : ''}} {{index === statusStatsTopLastIndex ? 'last' : ''}}"
-              style="flex: {{item.count}} 0 0; background: {{item.color}};"
-            />
-          </view>
-          <view wx:else class="mood-stack__bar empty" />
-        </view>
       </view>
 
       <view class="section row between">

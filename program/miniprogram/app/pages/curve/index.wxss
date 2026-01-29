@@ -391,19 +391,21 @@
 }
 
 .mood-card__head {
-  text-align: center;
+  align-items: center;
 }
 
 .mood-card__title {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--brand);
+  line-height: 1;
 }
 
 .mood-card__sub {
-  margin-top: 8rpx;
+  margin-top: 0;
   font-size: 20rpx;
   color: var(--text-muted);
+  line-height: 1;
 }
 
 .mood-row {
