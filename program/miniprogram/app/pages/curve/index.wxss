@@ -28,7 +28,7 @@
 
 .a {
   align-items: center;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .avatar {
@@ -233,19 +233,27 @@
 }
 
 .section-head {
-  margin-top: 0;
+  margin-top: 10rpx;
+  margin-bottom: 18rpx;
   align-items: center;
+  font-size: 26.38rpx;
+  font-weight: 800;
+  line-height: 26rpx;
 }
 
 .section-head__title {
-  font-size: 24rpx;
-  font-weight: 900;
+  min-width: 107rpx;
+  height: 26rpx;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: left;
   color: var(--text-primary);
+  line-height: inherit;
+  white-space: nowrap;
 }
 
 .date-chip {
-  gap: 10rpx;
-  padding: 14rpx 18rpx;
+  padding: 14rpx 0;
   border-radius: var(--radius-pill);
   background: #fff;
   /* border: 2rpx solid rgba(17, 24, 39, 0.06); */
@@ -254,8 +262,13 @@
 }
 
 .date-chip__text {
-  font-size: 20rpx;
+  height: 26rpx;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: left;
   color: var(--text-primary);
+  line-height: inherit;
+  white-space: nowrap;
 }
 
 .section {
