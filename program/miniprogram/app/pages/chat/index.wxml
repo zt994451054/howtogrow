@@ -1,12 +1,12 @@
-<view class="page">
-  <view class="status" style="height: {{statusBarHeight}}px;" />
+<view class="page" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="status" />
   <view class="header row between">
-    <view class="icon-btn" bindtap="openDrawer">
-      <ui-icon name="menu" size="{{24}}" />
+    <view class="icon-btn" bindtap="openDrawer" hover-class="tap" hover-stay-time="80">
+      <ui-icon name="menu" size="{{37}}" />
     </view>
     <view class="title">马上沟通</view>
-    <view class="icon-btn" bindtap="startNewChat">
-      <ui-icon name="edit" size="{{22}}" />
+    <view class="icon-btn" bindtap="startNewChat" hover-class="tap" hover-stay-time="80">
+      <ui-icon name="edit" size="{{37}}" />
     </view>
   </view>
 

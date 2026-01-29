@@ -38,7 +38,7 @@ function toUiMessages(descMessages) {
 
 Page({
   data: {
-    statusBarHeight: 20,
+    navBarHeight: 0,
     drawerOpen: false,
     sessions: [],
     sessionId: 0,
@@ -59,8 +59,10 @@ Page({
     historyBeforeMessageId: null,
   },
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
-    this.setData({ statusBarHeight });
+    const { navBarHeight } = getSystemMetrics();
+    const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
+    this.setData({ navBarHeight: navHeight });
   },
   onHide() {
     this.stopAiTyping();

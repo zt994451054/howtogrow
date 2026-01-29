@@ -9,28 +9,31 @@
 
 .status {
   background: var(--brand);
+  height: var(--page-nav-height);
 }
 
 .header {
-  padding: 18rpx 24rpx;
+  padding: var(--page-padding) var(--page-padding) 16rpx;
   background: var(--brand);
   align-items: center;
-  height: 120rpx;
 }
 
 .icon-btn {
   width: 72rpx;
   height: 72rpx;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.92);
+  background: transparent;
+  box-shadow: none;
+  color: #fff;
 }
 
 .title {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 900;
-  letter-spacing: 2rpx;
+  line-height: 1.2;
   color: #fff;
   text-transform: none;
 }
