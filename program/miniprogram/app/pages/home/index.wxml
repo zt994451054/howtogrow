@@ -107,8 +107,8 @@
           data-date="{{item.date}}"
         >
           <view class="thumb-wrap">
-              <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
-                <view class="thumb__inner">
+            <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
+              <view class="thumb__inner">
                 <view class="thumb__date">{{item.dayText}} / {{item.weekday}}</view>
                 <view class="thumb__camera">
                   <view class="camera-icon">
@@ -123,17 +123,15 @@
                 <image wx:elif="{{item.isDone}}" class="thumb__img thumb__img--fallback" src="../../assets/image/bgsw@x.png" mode="aspectFill" />
 
                 <view wx:if="{{!item.isDone}}" class="plus">＋</view>
+              </view>
 
-                <!-- Default badge for every card; keep it inside the card, but carve a corner arc under it. -->
-                <view class="mood-notch" />
-                <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}}">
-                  <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-                  <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
-                  <view wx:else class="smile-icon">
-                    <view class="smile-icon__eye smile-icon__eye--l" />
-                    <view class="smile-icon__eye smile-icon__eye--r" />
-                    <view class="smile-icon__mouth" />
-                  </view>
+              <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}}">
+                <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
+                <view wx:else class="smile-icon">
+                  <view class="smile-icon__eye smile-icon__eye--l" />
+                  <view class="smile-icon__eye smile-icon__eye--r" />
+                  <view class="smile-icon__mouth" />
                 </view>
               </view>
             </view>
