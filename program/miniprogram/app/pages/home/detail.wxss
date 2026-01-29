@@ -8,7 +8,7 @@
 }
 
 .wrap {
-  padding: var(--section-gap) var(--page-padding) 240rpx;
+  padding: var(--page-padding) var(--page-padding) 240rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
@@ -375,12 +375,7 @@
 }
 
 .overlay__quote {
-  font-weight: bold;
-font-size: 28rpx;
-text-align: left;
-color: #F08019;
-margin-top: 50rpx;
-margin-left: 48rpx;
+  margin: 50rpx var(--page-padding) 0;
 }
 
 .mood-area {

@@ -37,7 +37,7 @@
   <view wx:if="{{showStatusSheet}}" class="overlay">
     <ui-header title="{{dateSlash}}育儿状态" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
-    <view class="overlay__quote">{{statusQuote}}</view>
+    <view class="overlay__quote quote">{{statusQuote}}</view>
 
     <view class="mood-area">
       <view class="mood-center">
