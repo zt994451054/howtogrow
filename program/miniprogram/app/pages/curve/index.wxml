@@ -151,7 +151,7 @@
         </view>
       </view>
 
-      <view class="footer-hint"><text class="def">困扰您最多的是</text><text class="gra">动不动哭闹发脾气</text></view>
+      <!-- <view class="footer-hint"><text class="def">困扰您最多的是</text><text class="gra">动不动哭闹发脾气</text></view> -->
     </view>
   </view>
 
