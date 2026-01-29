@@ -4,14 +4,14 @@
       <view class="tabbar__icon">
         <image class="icon-image" mode="aspectFit" src="{{selected == 0 ? '/assets/tab/mrcj-active.png' : '/assets/tab/mrcj.png'}}" />
       </view>
-      <view class="tabbar__label">每日觉察</view>
+      <view class="tabbar__label">觉察</view>
     </view>
 
     <view class="tabbar__item {{selected == 1 ? 'is-active' : ''}}" bindtap="onTap" data-index="1" data-path="/pages/curve/index">
       <view class="tabbar__icon">
         <image class="icon-image" mode="aspectFit" src="{{selected == 1 ? '/assets/tab/jzqx-active.png' : '/assets/tab/jzqx.png'}}" />
       </view>
-      <view class="tabbar__label">家长曲线</view>
+      <view class="tabbar__label">数据</view>
     </view>
 
     <view class="tabbar__spacer" />
@@ -20,14 +20,14 @@
       <view class="tabbar__icon">
         <image class="icon-image" mode="aspectFit" src="{{selected == 2 ? '/assets/tab/ljzx-active.png' : '/assets/tab/ljzx.png'}}" />
       </view>
-      <view class="tabbar__label">立即咨询</view>
+      <view class="tabbar__label">育言师</view>
     </view>
 
     <view class="tabbar__item {{selected == 3 ? 'is-active' : ''}}" bindtap="onTap" data-index="3" data-path="/pages/me/index">
       <view class="tabbar__icon">
         <image class="icon-image" mode="aspectFit" src="{{selected == 3 ? '/assets/tab/wdsz-active.png' : '/assets/tab/wdsz.png'}}" />
       </view>
-      <view class="tabbar__label">我的设置</view>
+      <view class="tabbar__label">我</view>
     </view>
 
     <view class="tabbar__center">
