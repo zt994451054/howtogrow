@@ -372,8 +372,7 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
 
 Page({
   data: {
-    statusBarHeight: 20,
-    headerPadTopPx: 16,
+    navBarHeight: 0,
     banners: [],
     bannerIndex: 0,
     menuOpen: false,
@@ -412,18 +411,17 @@ Page({
       .catch(() => {});
   },
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
+    const { navBarHeight } = getSystemMetrics();
     const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
-    const headerPadTopPx = menuRect ? Math.max(12, Number(menuRect.bottom || 0) - Number(statusBarHeight || 0) + 8) : 16;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
     const today = new Date();
     const maxMonth = toMonthValue(today);
     const monthValue = clampMonthValue(toMonthValue(today), MIN_MONTH, maxMonth);
     const parsed = parseMonthValue(monthValue);
     const monthDate = parsed ? new Date(parsed.year, parsed.month - 1, 1) : today;
     this.setData({
-      statusBarHeight,
-      headerPadTopPx,
-      menuPopoverTopPx: menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(statusBarHeight || 0) + 56),
+      navBarHeight: navHeight,
+      menuPopoverTopPx: menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(navHeight || 0) + 56),
       monthText: toMonthText(monthDate),
       monthValue,
       minMonth: MIN_MONTH,

@@ -5,10 +5,11 @@
 
 .status {
   background: #fff;
+  height: var(--page-nav-height);
 }
 
 .header {
-  padding: 0 32rpx 16rpx;
+  padding: var(--page-padding) var(--page-padding) 16rpx;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -164,11 +165,11 @@
 }
 
 .wrap {
-  padding: 24rpx 32rpx 220rpx;
+  padding: 24rpx var(--page-padding) 220rpx;
 }
 
 .empty {
-  padding: 120rpx 32rpx 220rpx;
+  padding: 120rpx var(--page-padding) 220rpx;
 }
 
 .empty__logo {
@@ -247,10 +248,10 @@
 
 .banner-wrap {
   position: relative;
-  width: calc(100% + 64rpx);
+  width: calc(100% + var(--page-padding) + var(--page-padding));
   height: 280rpx;
-  margin-left: -32rpx;
-  margin-right: -32rpx;
+  margin-left: calc(0px - var(--page-padding));
+  margin-right: calc(0px - var(--page-padding));
   margin-bottom: 24rpx;
 }
 

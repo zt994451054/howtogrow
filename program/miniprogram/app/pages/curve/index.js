@@ -387,8 +387,7 @@ function buildOption(daysRaw, visibleCodes) {
 
 Page({
   data: {
-    statusBarHeight: 20,
-    headerPadTopPx: 16,
+    navBarHeight: 0,
     menuOpen: false,
     menuPopoverTopPx: 0,
     children: [],
@@ -434,10 +433,10 @@ Page({
   },
 
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
+    const { navBarHeight } = getSystemMetrics();
     const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
-    const headerPadTopPx = menuRect ? Math.max(12, Number(menuRect.bottom || 0) - Number(statusBarHeight || 0) + 8) : 16;
-    const menuPopoverTopPx = menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(statusBarHeight || 0) + 56);
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
+    const menuPopoverTopPx = menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(navHeight || 0) + 56);
 
     const today = new Date();
     const dateTo = formatDateYmd(today);
@@ -445,8 +444,7 @@ Page({
     const dateFrom = formatDateYmd(new Date(today.getTime() - rangeDays * 24 * 3600 * 1000));
 
     this.setData({
-      statusBarHeight,
-      headerPadTopPx,
+      navBarHeight: navHeight,
       menuPopoverTopPx,
       today: dateTo,
       dateFrom,

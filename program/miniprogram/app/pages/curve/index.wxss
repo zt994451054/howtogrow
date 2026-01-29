@@ -6,10 +6,11 @@
 
 .status {
   background: #fff;
+  height: var(--page-nav-height);
 }
 
 .header {
-  padding: 0 32rpx 16rpx;
+  padding: var(--page-padding) var(--page-padding) 16rpx;
   position: sticky;
   top: 0;
   z-index: 20;

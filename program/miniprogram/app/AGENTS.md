@@ -58,7 +58,7 @@
 
 - 新增页面：必须在 `app.json` 注册；若需要 tab 项，需同步更新 `custom-tab-bar/index.wxml` 与 `app.json.tabBar.list`。
 - 数据缓存：统一使用 `services/storage.js` 与 `services/config.js` 的 `STORAGE_KEYS`；避免散落自定义 key。
-- UI：全局颜色/圆角/阴影优先使用 `styles/tokens.wxss` 的 CSS 变量；页面左右/顶部统一使用 `--page-padding`；布局类优先用 `styles/util.wxss`。
+- UI：全局颜色/圆角/阴影优先使用 `styles/tokens.wxss` 的 CSS 变量；页面左右统一用 `--page-padding`，顶部安全区用 `--page-nav-height`（状态栏 + 系统按钮）并在其下加 `--page-padding` 间隔；布局类优先用 `styles/util.wxss`。
 - 第三方库：
   - `towxml/`、`components/ec-canvas/echarts.js` 属于 vendored 代码；不要“局部修修补补”，升级时建议整体替换并做回归。
 
