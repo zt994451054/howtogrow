@@ -11,6 +11,7 @@ page {
   --text-muted: #9ca3af;
 
   --border: #f3f4f6;
+  --page-padding: 32rpx;
 
   --radius-12: 24rpx;
   --radius-16: 32rpx;

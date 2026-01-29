@@ -70,8 +70,8 @@
 }
 
 .menu-icon {
-  width: 44rpx;
-  height: 30rpx;
+  width: 60rpx;
+  height: 40rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
