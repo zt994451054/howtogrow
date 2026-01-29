@@ -6,41 +6,45 @@
 
 .status {
   background: #fff;
+  height: var(--page-nav-height);
 }
 
 .header {
   background: #fff;
-  padding: 40rpx 40rpx 32rpx;
+  padding: var(--page-padding) var(--page-padding) 16rpx;
 }
 
 .profile {
   align-items: center;
-  gap: 28rpx;
+  gap: 16rpx;
 }
 
 .avatar {
-  width: 128rpx;
-  height: 128rpx;
+  width: 72rpx;
+  height: 72rpx;
   border-radius: 9999rpx;
-  border: 2rpx solid rgba(17, 24, 39, 0.06);
   background: #f3f4f6;
 }
 
 .profile__meta {
   flex: 1;
+  justify-content: center;
+  gap: 4rpx;
 }
 
 .nickname {
-  font-size: 38rpx;
-  font-weight: 800;
+  font-size: 32rpx;
+  font-weight: 900;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .edit {
-  margin-top: 12rpx;
+  margin-top: 0;
   font-size: 24rpx;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--brand);
+  line-height: 1.2;
 }
 
 .menu {

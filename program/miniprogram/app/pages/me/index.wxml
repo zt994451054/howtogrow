@@ -1,5 +1,5 @@
-<view class="page safe-bottom">
-  <view class="status" style="height: {{statusBarHeight}}px;" />
+<view class="page safe-bottom" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="status" />
 
   <view class="header" bindtap="goProfile" hover-class="tap" hover-stay-time="80">
     <view class="profile row">
