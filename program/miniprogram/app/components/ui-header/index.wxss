@@ -30,7 +30,7 @@
   height: 72rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   border-radius: 0;
   background: transparent;
   /* color: var(--text-secondary);
@@ -38,6 +38,10 @@
   border-radius: 9999rpx;
   box-shadow: var(--shadow-sm);
   border: 2rpx solid rgba(17, 24, 39, 0.06); */
+}
+
+.side.right .btn {
+  justify-content: flex-end;
 }
 
 .btn:active {
