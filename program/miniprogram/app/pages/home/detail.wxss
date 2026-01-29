@@ -8,7 +8,7 @@
 }
 
 .wrap {
-  padding: var(--page-padding) var(--page-padding) 240rpx;
+  padding: var(--section-gap) var(--page-padding) 240rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
@@ -391,6 +391,7 @@ margin-left: 48rpx;
   align-items: center;
   justify-content: center;
   margin-top: -60rpx;
+  padding: 0 var(--page-padding);
 }
 
 .mood-orbit {
