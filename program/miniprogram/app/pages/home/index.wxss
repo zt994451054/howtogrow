@@ -512,7 +512,7 @@
 
 .mood-empty {
   background: #fff;
-  border: 2rpx solid var(--border);
+  border: none;
 }
 
 .mood__blank {
