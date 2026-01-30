@@ -130,7 +130,7 @@
 .review-card {
   background: transparent;
   padding: 20rpx 0 32rpx;
-  border-bottom: 1rpx solid var(--border);
+  /* border-bottom: 1rpx solid var(--border); */
 }
 
 .review-card:last-child {
@@ -161,7 +161,7 @@
 }
 
 .review-card__advice-title {
-  margin-top: 48rpx;
+  margin-top: 96rpx;
   color: #E18638;
   font-size: 30rpx;
   font-weight: 600;
