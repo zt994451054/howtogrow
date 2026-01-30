@@ -208,13 +208,13 @@
 .sess {
   width: 100%;
   text-align: left;
-  padding: 22rpx var(--page-padding);
+  padding: 14rpx var(--page-padding);
   border-radius: 24rpx;
   background: #fff;
   border: 2rpx solid transparent;
   color: var(--text-secondary);
   font-size: 24rpx;
-  margin-bottom: 10rpx;
+  margin-bottom: 6rpx;
   box-sizing: border-box;
 }
 
