@@ -67,7 +67,9 @@
 .body {
   flex: 1;
   min-height: 0;
-  padding: 0 32rpx;
+  padding: 0 32rpx 16rpx;
+  display: flex;
+  flex-direction: column;
 }
 
 .flag-wrap {
@@ -113,18 +115,22 @@
   white-space: pre-line;
 }
 
-.review {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-  padding-bottom: 24rpx;
-}
-
 .review__meta {
   padding: 0 4rpx;
   color: var(--text-muted);
   font-size: 24rpx;
   font-weight: 600;
+}
+
+.review-swiper {
+  flex: 1;
+  min-height: 0;
+}
+
+.review-slide {
+  height: 100%;
+  box-sizing: border-box;
+  padding-bottom: 48rpx;
 }
 
 .review-card {
@@ -185,6 +191,12 @@
   border-top: 1rpx solid var(--border);
 }
 
+.summary--slide {
+  margin: 0;
+  padding-top: 8rpx;
+  border-top: 0;
+}
+
 .summary__title {
   font-weight: 600;
   color: var(--text-primary);
@@ -196,10 +208,6 @@
   color: var(--text-secondary);
   font-size: 24rpx;
   line-height: 40rpx;
-}
-
-.tail {
-  height: 120rpx;
 }
 
 .footer {

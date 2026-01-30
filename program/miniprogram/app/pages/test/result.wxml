@@ -19,37 +19,43 @@
     </view>
   </view>
 
-  <scroll-view
-    class="body"
-    scroll-y="true"
-    enhanced="true"
-    show-scrollbar="false"
-    scroll-with-animation="true"
-    scroll-into-view="{{scrollIntoView}}"
-  >
-    <view class="review">
-      <view wx:if="{{reviewTitle}}" class="review__meta">{{reviewTitle}}</view>
+  <view class="body">
+    <view wx:if="{{reviewTitle}}" class="review__meta">{{reviewTitle}}</view>
 
-      <view wx:for="{{reviewItems}}" wx:key="questionId" class="review-card">
-        <view class="review-card__question">{{item.question}}</view>
+    <swiper
+      class="review-swiper"
+      indicator-dots="true"
+      indicator-color="rgba(60, 60, 59, 0.2)"
+      indicator-active-color="#E18638"
+      current="{{swiperCurrent}}"
+      bindchange="onSwiperChange"
+    >
+      <swiper-item wx:for="{{reviewItems}}" wx:key="questionId">
+        <scroll-view class="review-slide" scroll-y="true" enhanced="true" show-scrollbar="false">
+          <view class="review-card">
+            <view class="review-card__question">{{item.question}}</view>
 
-        <view class="review-card__desc">
-          <text class="review-card__desc-label">你选择的做法是：</text>
-          <text class="review-card__desc-text">{{item.selectedText}}</text>
-        </view>
+            <view class="review-card__desc">
+              <text class="review-card__desc-label">你选择的做法是：</text>
+              <text class="review-card__desc-text">{{item.selectedText}}</text>
+            </view>
 
-        <view wx:if="{{item.adviceText}}" class="review-card__advice-title">下次遇到类似情况，你可以</view>
-        <view wx:if="{{item.adviceText}}" class="review-card__advice">{{item.adviceText}}</view>
-      </view>
-    </view>
+            <view wx:if="{{item.adviceText}}" class="review-card__advice-title">下次遇到类似情况，你可以</view>
+            <view wx:if="{{item.adviceText}}" class="review-card__advice">{{item.adviceText}}</view>
+          </view>
+        </scroll-view>
+      </swiper-item>
 
-    <view class="summary" wx:if="{{aiSummary}}">
-      <view class="summary__title">针对今天的这份报告,你的专属AI帮你总结了一份觉察报告:</view>
-      <view class="summary__text">{{aiSummary}}</view>
-    </view>
-
-    <view id="tail-anchor" class="tail" />
-  </scroll-view>
+      <swiper-item wx:if="{{aiSummary}}">
+        <scroll-view class="review-slide" scroll-y="true" enhanced="true" show-scrollbar="false">
+          <view class="summary summary--slide">
+            <view class="summary__title">针对今天的这份报告,你的专属AI帮你总结了一份觉察报告:</view>
+            <view class="summary__text">{{aiSummary}}</view>
+          </view>
+        </scroll-view>
+      </swiper-item>
+    </swiper>
+  </view>
 
   <view class="footer safe-bottom">
     <button class="btn-cta" bindtap="onDone">{{doneText}}</button>

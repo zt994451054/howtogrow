@@ -81,7 +81,7 @@ Page({
     canGenerateAiSummary: false,
     aiLoading: false,
     aiSummary: "",
-    scrollIntoView: "",
+    swiperCurrent: 0,
   },
   onLoad(query) {
     const { navBarHeight } = getSystemMetrics();
@@ -148,7 +148,7 @@ Page({
       aiSummary: existingAiSummary,
       canGenerateAiSummary:
         typeof session.assessmentId === "number" && session.assessmentId > 0 && !existingAiSummary,
-      scrollIntoView: "",
+      swiperCurrent: 0,
     });
   },
   onDone() {
@@ -180,8 +180,8 @@ Page({
       .then((content) => {
         session.aiSummary = content;
         setDailySession(session);
-        this.setData({ aiSummary: content, canGenerateAiSummary: false, scrollIntoView: "" }, () => {
-          wx.nextTick(() => this.setData({ scrollIntoView: "tail-anchor" }));
+        this.setData({ aiSummary: content, canGenerateAiSummary: false }, () => {
+          this.setData({ swiperCurrent: this.data.reviewItems.length });
         });
       })
       .catch((err) => {
@@ -208,5 +208,10 @@ Page({
         wx.hideLoading();
         this.setData({ aiLoading: false });
       });
+  },
+  onSwiperChange(e) {
+    const current = e && e.detail ? Number(e.detail.current) : 0;
+    if (!Number.isFinite(current)) return;
+    this.setData({ swiperCurrent: current });
   },
 });
