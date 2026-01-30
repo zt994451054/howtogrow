@@ -99,13 +99,14 @@
 
 .drawer__head {
   background: var(--brand);
-  padding: 48rpx var(--page-padding) 32rpx;
+  padding: calc(var(--page-nav-height) + var(--page-padding)) var(--page-padding) 16rpx;
   color: #fff;
 }
 
 .drawer__head .a {
   align-items: center;
   gap: 18rpx;
+  min-height: 72rpx;
 }
 
 .logo {
