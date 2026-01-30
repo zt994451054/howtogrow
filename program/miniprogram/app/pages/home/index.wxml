@@ -112,14 +112,10 @@
                 <view wx:if="{{!item.isDone}}" class="plus">＋</view>
               </view>
 
-              <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}} {{item.hasStatus && item.moodImageUrl ? 'mood--image' : ''}}">
-                <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-                <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
-                <view wx:else class="smile-icon">
-                  <view class="smile-icon__eye smile-icon__eye--l" />
-                  <view class="smile-icon__eye smile-icon__eye--r" />
-                  <view class="smile-icon__mouth" />
-                </view>
+              <view class="mood {{item.hasMood ? item.moodCls : 'mood-empty'}} {{item.hasMood && item.moodImageUrl ? 'mood--image' : ''}}">
+                <image wx:if="{{item.hasMood && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                <view wx:elif="{{item.hasMood}}" class="mood__emoji">{{item.moodEmoji}}</view>
+                <view wx:else class="mood__blank" />
               </view>
             </view>
           </view>

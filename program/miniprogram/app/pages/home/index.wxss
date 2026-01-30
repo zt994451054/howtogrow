@@ -511,9 +511,8 @@
 }
 
 .mood-empty {
-  background: rgba(225, 134, 56, 0.7);
-  border: 6rpx solid #fff;
-  color: #fff;
+  background: #fff;
+  border: 2rpx solid var(--border);
 }
 
 .mood__blank {

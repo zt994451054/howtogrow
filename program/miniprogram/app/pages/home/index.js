@@ -278,7 +278,8 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
       const statusCodeFromMood = moodId && STATUS_CODE_BY_MOOD_ID[moodId] ? STATUS_CODE_BY_MOOD_ID[moodId] : "";
       const statusKey = STATUS_IMAGE_BY_CODE[statusCode] ? statusCode : statusCodeFromMood;
       const hasStatus = Boolean(statusCode || statusCodeFromMood);
-      const moodImageUrl = statusKey && STATUS_IMAGE_BY_CODE[statusKey] ? STATUS_IMAGE_BY_CODE[statusKey] : "";
+      const hasMood = Boolean(moodId && (moodStyle || statusCodeFromMood));
+      const moodImageUrl = hasMood && statusKey && STATUS_IMAGE_BY_CODE[statusKey] ? STATUS_IMAGE_BY_CODE[statusKey] : "";
 
       const troubleScenes = Array.isArray(d.troubleScenes) ? d.troubleScenes : [];
       const troubleNames = troubleScenes.map((s) => (s && s.name ? String(s.name) : "")).filter(Boolean);
@@ -328,8 +329,9 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         titleOn: hasAssessment,
         contentOn: hasDiaryText,
         hasStatus,
-        moodEmoji: hasStatus && moodStyle ? moodStyle.emoji : "",
-        moodCls: hasStatus && moodStyle ? moodStyle.cls : "",
+        hasMood,
+        moodEmoji: hasMood && moodStyle ? moodStyle.emoji : "",
+        moodCls: hasMood && moodStyle ? moodStyle.cls : "",
         moodImageUrl,
       };
     })
@@ -369,6 +371,7 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
       titleOn: false,
       contentOn: false,
       hasStatus: false,
+      hasMood: false,
       moodEmoji: "",
       moodCls: "",
       moodImageUrl: "",
