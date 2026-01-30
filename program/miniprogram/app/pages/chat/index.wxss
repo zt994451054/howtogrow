@@ -363,7 +363,7 @@
   font-size: 28rpx;
   line-height: 44rpx;
   text-align: left;
-  color: rgba(255, 255, 255, 0.96);
+  color: inherit;
 }
 
 .bubble.b-ai .h2w__p,
@@ -388,7 +388,7 @@
 
 .bubble.b-ai {
   background: var(--brand);
-  color: #fff;
+  color: rgb(253, 248, 244);
   border: none;
   border-top-left-radius: 12rpx;
 }
