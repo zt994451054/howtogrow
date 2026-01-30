@@ -291,6 +291,14 @@ function buildOption(daysRaw, visibleCodes) {
   const x = days.map((d) => toXLabel(d.bizDate));
   const visible = Array.isArray(visibleCodes) && visibleCodes.length ? visibleCodes : DIMENSIONS.map((d) => d.code);
   const showSymbol = x.length > 0 && x.length < 2;
+  const title = {
+    text: "能力分值",
+    left: 0,
+    top: 0,
+    padding: 0,
+    textStyle: { color: "#9CA3AF", fontSize: 14, fontWeight: "normal" },
+  };
+  const grid = { left: "3%", right: "4%", bottom: "8%", top: 36, containLabel: true };
 
   const allValues = [];
   const series = DIMENSIONS.map((dim) => {
@@ -321,9 +329,10 @@ function buildOption(daysRaw, visibleCodes) {
   if (!hasAnyPoint) {
     const placeholderX = ["", "", "", "", "", ""];
     return {
+      title,
       color: ["#F97316"],
       tooltip: { show: false },
-      grid: { left: "3%", right: "4%", bottom: "8%", top: "10%", containLabel: true },
+      grid,
       xAxis: {
         type: "category",
         boundaryGap: false,
@@ -353,6 +362,7 @@ function buildOption(daysRaw, visibleCodes) {
     };
   }
   return {
+    title,
     color: DIMENSIONS.map((d) => d.color),
     tooltip: {
       trigger: "axis",
@@ -364,7 +374,7 @@ function buildOption(daysRaw, visibleCodes) {
       confine: true,
       valueFormatter: (v) => (typeof v === "number" ? String(v) : "-"),
     },
-    grid: { left: "3%", right: "4%", bottom: "8%", top: "10%", containLabel: true },
+    grid,
     xAxis: {
       type: "category",
       boundaryGap: false,
