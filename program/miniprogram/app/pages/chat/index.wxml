@@ -8,10 +8,10 @@
         <view class="menu-icon__line" />
       </view>
     </view>
-    <view class="title">马上沟通</view>
-    <view class="icon-btn" bindtap="startNewChat" hover-class="tap" hover-stay-time="80">
+    <view class="title">我是您的专属育言师，有问题可以随时问我</view>
+    <!-- <view class="icon-btn" bindtap="startNewChat" hover-class="tap" hover-stay-time="80">
       <ui-icon name="edit" size="{{37}}" />
-    </view>
+    </view> -->
   </view>
 
   <view class="drawer-layer {{drawerOpen ? 'on' : ''}}">
@@ -24,7 +24,7 @@
             <view class="logo__tail" />
           </view>
           <view class="col">
-            <view class="drawer__t1">历史对话</view>
+            <view class="drawer__t1">历史咨询记录</view>
             <view class="drawer__t2">查看之前的咨询记录</view>
           </view>
         </view>
