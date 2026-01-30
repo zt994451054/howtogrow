@@ -247,7 +247,7 @@
   font-size: inherit;
   font-weight: inherit;
   text-align: left;
-  color: var(--text-primary);
+  color: var(--brand);
   line-height: inherit;
   white-space: nowrap;
 }
@@ -334,7 +334,7 @@
   font-size: 20rpx;
   line-height: 24rpx;
   text-align: left;
-  color: #3c3c3b;
+  color: currentColor;
   font-weight: 700;
 }
 
