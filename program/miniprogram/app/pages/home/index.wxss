@@ -608,7 +608,7 @@
 .foot__t {
   font-size: 24rpx;
   font-weight: 700;
-  color: var(--text-ink);
+  color: var(--text-ink-muted);
   letter-spacing: 2rpx;
   margin-bottom: 4rpx;
 }
@@ -616,20 +616,11 @@
 .foot__s {
   font-size: 24rpx;
   font-weight: 700;
-  color: var(--text-ink);
+  color: var(--text-ink-muted);
   letter-spacing: 2rpx;
 }
 
-.foot--all-gray .foot__t,
-.foot--all-gray .foot__s {
-  color: var(--text-ink-muted);
-}
-
-.foot--mixed .foot__s {
-  color: var(--text-ink-muted);
-}
-
-.foot--all-black .foot__t,
-.foot--all-black .foot__s {
+.foot__t.on,
+.foot__s.on {
   color: var(--text-ink);
 }

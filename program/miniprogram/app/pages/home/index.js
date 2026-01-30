@@ -205,12 +205,6 @@ function buildAssessmentPreviewFromDetail(detail) {
   return { title, content: tip };
 }
 
-function resolveFootStyle(isDone, hasAssessment) {
-  if (!isDone) return "foot--all-gray";
-  if (hasAssessment) return "foot--all-black";
-  return "foot--mixed";
-}
-
 function uniqPositiveNumbers(values) {
   const list = Array.isArray(values) ? values : [];
   const seen = new Set();
@@ -287,33 +281,35 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
       const moodImageUrl = statusKey && STATUS_IMAGE_BY_CODE[statusKey] ? STATUS_IMAGE_BY_CODE[statusKey] : "";
 
       const troubleScenes = Array.isArray(d.troubleScenes) ? d.troubleScenes : [];
-      const troubleNames = troubleScenes
-        .map((s) => (s && s.name ? String(s.name) : ""))
-        .filter(Boolean);
+      const troubleNames = troubleScenes.map((s) => (s && s.name ? String(s.name) : "")).filter(Boolean);
 
       const assessmentId = d.assessment && d.assessment.assessmentId ? Number(d.assessment.assessmentId) : 0;
-      const aiSummary = d.assessment && d.assessment.aiSummary ? String(d.assessment.aiSummary) : "";
       const hasAssessment = Boolean(assessmentId);
 
       const diaryContent = d.diary && d.diary.content ? String(d.diary.content) : "";
       const diaryImageUrl = d.diary && d.diary.imageUrl ? String(d.diary.imageUrl) : "";
-      const hasDiary = Boolean(diaryContent && diaryContent.trim()) || Boolean(diaryImageUrl && diaryImageUrl.trim());
+      const diaryText = diaryContent.trim();
+      const diaryImageTrim = diaryImageUrl.trim();
+      const hasDiaryText = Boolean(diaryText);
+      const hasDiary = hasDiaryText || Boolean(diaryImageTrim);
 
       const isDone =
         hasStatus ||
         troubleNames.length > 0 ||
         Boolean(assessmentId) ||
         hasDiary;
-      const footStyle = resolveFootStyle(isDone, hasAssessment);
 
-      // Home card footer (2 lines) is driven only by daily assessment data.
-      // When the day has an assessment record, we further replace these placeholders with:
-      // - Q1 title
-      // - Q1 first option improvementTip
-      const title = hasAssessment ? "已完成自测" : DEFAULT_FOOT_TITLE;
-      const content = hasAssessment ? (aiSummary || DEFAULT_FOOT_CONTENT) : DEFAULT_FOOT_CONTENT;
+      let title = DEFAULT_FOOT_TITLE;
+      if (hasAssessment) {
+        title = "已完成自测";
+      }
 
-      const imageUrl = diaryImageUrl.trim();
+      let content = DEFAULT_FOOT_CONTENT;
+      if (hasDiaryText) {
+        content = diaryText;
+      }
+
+      const imageUrl = diaryImageTrim;
 
       return {
         id: `obs-${recordDate}`,
@@ -329,7 +325,8 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         imageUrl: isDone ? imageUrl : "",
         title,
         content,
-        footStyle,
+        titleOn: hasAssessment,
+        contentOn: hasDiaryText,
         hasStatus,
         moodEmoji: hasStatus && moodStyle ? moodStyle.emoji : "",
         moodCls: hasStatus && moodStyle ? moodStyle.cls : "",
@@ -369,7 +366,8 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
       imageUrl: "",
       title: DEFAULT_FOOT_TITLE,
       content: DEFAULT_FOOT_CONTENT,
-      footStyle: resolveFootStyle(false, false),
+      titleOn: false,
+      contentOn: false,
       hasStatus: false,
       moodEmoji: "",
       moodCls: "",
@@ -488,7 +486,7 @@ Page({
       if (!assessmentId) return d;
       const preview = this._assessmentPreviewCache.get(assessmentId);
       if (!preview) return d;
-      return { ...d, title: preview.title, content: preview.content };
+      return { ...d, title: preview.title };
     });
     this.setData({ dayList: next });
   },

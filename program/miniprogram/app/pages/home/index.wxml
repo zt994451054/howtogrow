@@ -124,9 +124,9 @@
             </view>
           </view>
 
-          <view class="foot {{item.footStyle}}">
-            <view class="foot__t text-ellipsis">{{item.title}}</view>
-            <view class="foot__s text-ellipsis">{{item.content}}</view>
+          <view class="foot">
+            <view class="foot__t text-ellipsis {{item.titleOn ? 'on' : ''}}">{{item.title}}</view>
+            <view class="foot__s text-ellipsis {{item.contentOn ? 'on' : ''}}">{{item.content}}</view>
           </view>
         </view>
       </view>

@@ -11,7 +11,7 @@ page,
   --text-secondary: #6b7280;
   --text-muted: rgba(60, 60, 59, 0.3);
   --text-ink: #3c3c3b;
-  --text-ink-muted: #3c3c3b;
+  --text-ink-muted: rgba(60, 60, 59, 0.6);
 
   --border: #f3f4f6;
   --page-padding: 32rpx;
