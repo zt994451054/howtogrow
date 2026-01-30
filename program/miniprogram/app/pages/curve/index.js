@@ -288,9 +288,11 @@ function getDayScore(day, dimensionCode) {
 
 function buildOption(daysRaw, visibleCodes) {
   const days = normalizeDays(daysRaw);
-  const x = days.map((d) => toXLabel(d.bizDate));
+  const xLabels = days.map((d) => toXLabel(d.bizDate));
+  const padCount = xLabels.length === 1 ? 5 : 0;
+  const xAxisData = padCount ? [xLabels[0], ...Array.from({ length: padCount }, () => "")] : xLabels;
   const visible = Array.isArray(visibleCodes) && visibleCodes.length ? visibleCodes : DIMENSIONS.map((d) => d.code);
-  const showSymbol = x.length > 0 && x.length < 2;
+  const showSymbol = xLabels.length > 0 && xLabels.length < 2;
   const title = {
     text: "能力分值",
     left: 0,
@@ -309,6 +311,9 @@ function buildOption(daysRaw, visibleCodes) {
       if (score !== null) allValues.push(score);
       return score;
     });
+    if (padCount) {
+      data.push(...Array.from({ length: padCount }, () => null));
+    }
     return {
       name: dim.label,
       type: "line",
@@ -378,7 +383,7 @@ function buildOption(daysRaw, visibleCodes) {
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: x,
+      data: xAxisData,
       axisLine: { show: true, lineStyle: { color: "#6B7280", width: 1 } },
       axisTick: { show: false },
       axisLabel: { color: "#9CA3AF", fontSize: 10, margin: 12 },
