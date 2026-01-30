@@ -60,7 +60,7 @@
   <view class="footer safe-bottom">
     <button class="btn-cta" bindtap="onDone">{{doneText}}</button>
     <button
-      wx:if="{{canGenerateAiSummary}}"
+      wx:if="{{canGenerateAiSummary && swiperCurrent == reviewItems.length - 1}}"
       class="btn-cta btn-cta--ghost"
       loading="{{aiLoading}}"
       disabled="{{aiLoading}}"
