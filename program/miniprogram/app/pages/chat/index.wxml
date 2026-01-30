@@ -34,7 +34,10 @@
         <button class="new" bindtap="startNewChat">✎ 开启新会话</button>
         <view class="tag">最近</view>
         <button wx:for="{{sessions}}" wx:key="sessionId" class="sess" bindtap="selectSession" data-id="{{item.sessionId}}">
-          {{item.title ? item.title : ('会话 #' + item.sessionId)}}
+          <view class="sess-row">
+            <view class="sess-time">{{item.displayTime ? item.displayTime : ''}}</view>
+            <view class="sess-title text-ellipsis">{{item.title ? item.title : ('会话 #' + item.sessionId)}}</view>
+          </view>
         </button>
         <view wx:if="{{sessions.length == 0}}" class="sess-empty">暂无会话</view>
       </scroll-view>

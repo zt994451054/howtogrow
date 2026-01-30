@@ -218,6 +218,27 @@
   box-sizing: border-box;
 }
 
+.sess-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.sess-time {
+  width: 90rpx;
+  flex: 0 0 auto;
+  font-size: 20rpx;
+  color: var(--text-muted);
+}
+
+.sess-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
 .sess::after {
   border: none;
 }
