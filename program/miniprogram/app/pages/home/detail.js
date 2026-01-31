@@ -97,12 +97,18 @@ const DIARY_PROMPTS = [
 ];
 
 const TIMELINE_ICON_BY_ID = {
-  parentingStatus: "/assets/timeline/status.svg",
-  troubles: "/assets/timeline/troubles.svg",
-  mirror: "/assets/timeline/mirror.svg",
-  diary: "/assets/timeline/diary.svg",
-  expert: "/assets/timeline/expert.svg",
+  parentingStatus: { normal: "/assets/image/1.png", active: "/assets/image/1-2.png" },
+  troubles: { normal: "/assets/image/2.png", active: "/assets/image/2-2.png" },
+  mirror: { normal: "/assets/image/3.png", active: "/assets/image/3-2.png" },
+  diary: { normal: "/assets/image/4.png", active: "/assets/image/4-2.png" },
+  expert: { normal: "/assets/image/5.png", active: "/assets/image/5-2.png" },
 };
+
+function pickTimelineIcon(id, done) {
+  const item = TIMELINE_ICON_BY_ID[id] || {};
+  if (done) return item.active || item.normal || "";
+  return item.normal || item.active || "";
+}
 
 function normalizeText(value) {
   return safeText(value).replace(/\r\n/g, "\n");
@@ -226,7 +232,7 @@ function buildItems(record, date) {
       title: "育儿状态",
       done: statusDone,
       statusImageUrl,
-      iconImageUrl: statusImageUrl || TIMELINE_ICON_BY_ID.parentingStatus,
+      iconImageUrl: pickTimelineIcon("parentingStatus", statusDone),
       desc: statusDone ? `已记录：${statusCode}` : "今天的你是温柔耐心的爸妈，还是被气到想“重启系统”？",
       isLast: false,
     },
@@ -234,7 +240,7 @@ function buildItems(record, date) {
       id: "troubles",
       title: "烦恼存档",
       done: troubleDone,
-      iconImageUrl: TIMELINE_ICON_BY_ID.troubles,
+      iconImageUrl: pickTimelineIcon("troubles", troubleDone),
       desc: troubleDone ? `已记录：${troubleNames.join("、")}` : "拖拉磨蹭，情绪失控，隔代教育矛盾不断",
       isLast: false,
     },
@@ -242,7 +248,7 @@ function buildItems(record, date) {
       id: "mirror",
       title: "行为镜子",
       done: assessmentDone,
-      iconImageUrl: TIMELINE_ICON_BY_ID.mirror,
+      iconImageUrl: pickTimelineIcon("mirror", assessmentDone),
       desc: assessmentDone
         ? "已完成每日自测，点击查看答题与建议"
         : canStartAssessment
@@ -254,7 +260,7 @@ function buildItems(record, date) {
       id: "diary",
       title: "育儿日记",
       done: diaryDone,
-      iconImageUrl: TIMELINE_ICON_BY_ID.diary,
+      iconImageUrl: pickTimelineIcon("diary", diaryDone),
       desc: diaryDone
         ? clampDesc(diaryContent || "已记录日记配图", 60)
         : "别一个人扛，写下来，不是抱怨，而是一次自我梳理，也可能是改变的起点",
@@ -264,7 +270,7 @@ function buildItems(record, date) {
       id: "expert",
       title: "继续深度咨询",
       done: expertDone,
-      iconImageUrl: TIMELINE_ICON_BY_ID.expert,
+      iconImageUrl: pickTimelineIcon("expert", expertDone),
       desc: expertDone ? clampDesc(aiSummary, 60) : "点击进入马上沟通，继续深度咨询",
       isLast: true,
     },
