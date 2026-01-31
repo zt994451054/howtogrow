@@ -81,7 +81,7 @@
 .menu-icon {
   width: 100%;
   height: 100%;
-  padding: 14rpx 6rpx;
+  padding: 14rpx 0rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
