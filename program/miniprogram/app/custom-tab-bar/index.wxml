@@ -1,4 +1,5 @@
 <view class="tabbar">
+  <image class="tabbar__bg" src="/assets/tab/bt_bg.png" mode="scaleToFill" />
   <view class="tabbar__inner">
     <view class="tabbar__item {{selected == 0 ? 'is-active' : ''}}" bindtap="onTap" data-index="0" data-path="/pages/home/index">
       <view class="tabbar__icon">
@@ -32,7 +33,7 @@
 
     <view class="tabbar__center">
       <view class="center-btn" bindtap="onMoodTap">
-        <image class="center-icon" mode="aspectFit" src="/assets/tab/tb1.png" />
+        <image class="center-icon" mode="aspectFit" src="/assets/tab/bt_icon.png" />
       </view>
     </view>
   </view>
