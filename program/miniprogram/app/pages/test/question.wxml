@@ -21,10 +21,10 @@
   <scroll-view class="body" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view class="title">{{currentItem.content}}</view>
 
-    <view class="swap" bindtap="onSwap">
+    <!-- <view class="swap" bindtap="onSwap">
       <view class="swap__icon">⟳</view>
       <view class="swap__text">换个题目</view>
-    </view>
+    </view> -->
 
     <view class="options">
       <view

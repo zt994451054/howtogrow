@@ -63,9 +63,10 @@
 }
 
 .title {
-  margin-top: 26rpx;
+  margin-top: 40rpx;
+  margin-bottom: 80rpx;
   text-align: center;
-  color: #F08019;
+  color: #e18639;
   font-size: 28rpx;
   font-weight: 600;
   line-height: 52rpx;
@@ -101,19 +102,19 @@
 .opt {
   width: 100%;
   padding: 28rpx 28rpx;
-  border-radius: 32rpx;
+  border-radius: 16rpx;
   font-size: 22rpx;
-  font-weight: 800;
+  /* font-weight: 800; */
   line-height: 36rpx;
   background: #FCE6D1;
   border: 4rpx solid transparent;
-  color: #000000;
+  color: #322e2a;
   box-sizing: border-box;
 }
 
 .opt--on {
-  /* background: rgba(255, 246, 230, 1); */
-  border-color: #F08019;
+  background: #edb67f;
+  /* border-color: #F08019; */
   /* color: #111827; */
   box-shadow: var(--shadow-sm);
 }

@@ -78,18 +78,18 @@
   <view wx:if="{{showTroubleSheet}}" class="overlay">
     <ui-header title="{{dateSlash}}烦恼存档" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
-    <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
-      <view class="trouble-hero">
-        <view class="trouble-hero__ball">
-          <view class="trouble-hero__tile t1" />
-          <view class="trouble-hero__tile t2" />
-          <view class="trouble-hero__tile t3" />
-          <view class="trouble-hero__tile t4" />
-          <view class="trouble-hero__bar" />
-        </view>
-        <view class="trouble-hero__title quote">{{troubleQuote}}</view>
+    <view class="trouble-hero">
+      <view class="trouble-hero__ball">
+        <view class="trouble-hero__tile t1" />
+        <view class="trouble-hero__tile t2" />
+        <view class="trouble-hero__tile t3" />
+        <view class="trouble-hero__tile t4" />
+        <view class="trouble-hero__bar" />
       </view>
+      <view class="trouble-hero__title quote">{{troubleQuote}}</view>
+    </view>
 
+    <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
       <view wx:if="{{troubleLoading}}" class="sheet__loading">加载中…</view>
       <view wx:else class="trouble-select-grid">
         <view
@@ -100,8 +100,8 @@
           data-id="{{item.id}}"
         >
           <view class="trouble-chip__circle {{item.selected ? 'on' : ''}}">
-            <image wx:if="{{item.logoUrl}}" class="trouble-chip__logo" src="{{item.logoUrl}}" mode="aspectFill" />
-            <view wx:else class="trouble-chip__fallback">{{item.shortName}}</view>
+            <image wx:if="{{item.logoUrl}}" class="trouble-chip__logo {{item.selected ? '' : 'is-muted'}}" src="{{item.logoUrl}}" mode="aspectFill" />
+            <view wx:else class="trouble-chip__fallback {{item.selected ? '' : 'is-muted'}}">{{item.shortName}}</view>
           </view>
           <view class="trouble-chip__label {{item.selected ? 'on' : ''}}">{{item.name}}</view>
         </view>
