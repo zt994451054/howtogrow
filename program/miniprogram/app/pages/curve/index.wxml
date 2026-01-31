@@ -102,7 +102,7 @@
           >
             <view
               class="dim-item__dot {{item._on ? 'is-active' : ''}}"
-              style="background: {{item._on ? item.color : (item.bg ? item.bg : item.color)}};"
+              style="background: {{item.bg}};"
             />
             <view class="dim-item__content">
               <view class="dim-item__title">{{item.label}}</view>

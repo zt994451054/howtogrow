@@ -310,7 +310,7 @@
 }
 
 .dim-pills {
-  margin-top: 12rpx;
+  margin-top: 30rpx;
 }
 
 .dim-tags {
@@ -339,7 +339,7 @@
 
 .dim-tag.is-active {
   background: var(--tag-bg, rgba(249, 115, 22, 0.12));
-  color: var(--tag-color, var(--brand));
+  color: #494747;
   /* border-color: var(--tag-color, var(--brand)); */
 }
 
