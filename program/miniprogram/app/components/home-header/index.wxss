@@ -79,8 +79,10 @@
 }
 
 .menu-icon {
-  width: 60rpx;
-  height: 40rpx;
+  width: 100%;
+  height: 100%;
+  padding: 14rpx 6rpx;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
