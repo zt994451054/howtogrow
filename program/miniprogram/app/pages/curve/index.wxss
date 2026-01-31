@@ -97,7 +97,7 @@
 
 .menu-pop {
   position: absolute;
-  right: 34rpx;
+  right: 33rpx;
   width: 320rpx;
   background: #fff;
   border-radius: var(--radius-16);

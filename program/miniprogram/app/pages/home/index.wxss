@@ -102,7 +102,7 @@
 
 .menu-pop {
   position: absolute;
-  right: 34rpx;
+  right: 33rpx;
   width: 320rpx;
   background: #fff;
   border-radius: var(--radius-16);
@@ -607,7 +607,7 @@
 }
 
 .foot {
-  padding: 10rpx 4rpx 0;
+  padding: 14rpx 4rpx 0;
 }
 
 .foot__t {
