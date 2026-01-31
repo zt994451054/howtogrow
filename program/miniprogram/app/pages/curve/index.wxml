@@ -113,6 +113,7 @@
                 <image wx:if="{{item.imageUrl}}" class="mood-row__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
                 <view wx:else class="mood-row__emoji">{{item.emoji}}</view>
               </view>
+              <view class="mood-row__label">{{item.label}}的</view>
               <view class="mood-row__pill">
                 <text class="mood-row__pct {{item.count > 0 ? 'on' : ''}}" style="--pct-color: {{item.color}};">{{item.percentage}}%</text>
               </view>

@@ -97,11 +97,11 @@
 
 .menu-pop {
   position: absolute;
-  right: 24rpx;
+  right: 34rpx;
   width: 320rpx;
   background: #fff;
   border-radius: var(--radius-16);
-  border: 2rpx solid rgba(17, 24, 39, 0.06);
+  /* border: 2rpx solid rgba(17, 24, 39, 0.06); */
   overflow: hidden;
   animation: fadeIn 0.18s ease-out forwards;
 }
@@ -109,7 +109,7 @@
 .menu-pop__title {
   font-size: 20rpx;
   color: var(--text-muted);
-  padding: 18rpx 20rpx 10rpx;
+  padding: 20rpx 20rpx 20rpx 26rpx;
 }
 
 .menu-pop__list {
@@ -117,7 +117,7 @@
 }
 
 .menu-item {
-  width: 100%;
+  width: 270rpx;
   text-align: left;
   background: transparent;
   border-radius: 14rpx;
@@ -154,6 +154,7 @@
 .menu-item.add {
   color: var(--brand);
   font-weight: 600;
+  padding: 18rpx 0rpx;
 }
 
 .body {
@@ -466,8 +467,18 @@
   line-height: 1;
 }
 
+.mood-row__label {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
 .mood-row__pill {
-  margin-top: 12rpx;
+  margin-top: 10rpx;
   width: 96rpx;
   height: 32rpx;
   border-radius: 9999rpx;

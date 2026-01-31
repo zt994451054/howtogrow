@@ -13,7 +13,7 @@
 }
 
 .wrap {
-  padding: var(--page-padding) var(--page-padding) 240rpx;
+  padding: 40rpx 40rpx 240rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
@@ -37,6 +37,7 @@
 .timeline {
   position: relative;
   padding-left: 0;
+  padding-top: 60rpx;
 }
 
 .timeline__line {
