@@ -13,7 +13,7 @@
   </view>
 
   <view class="flag-wrap">
-    <image class="flag" src="/assets/image/jcjy.png" mode="aspectFit" />
+    <image class="flag" src="https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/jcjy.png" mode="aspectFit" />
   </view>
 
   <view class="body">

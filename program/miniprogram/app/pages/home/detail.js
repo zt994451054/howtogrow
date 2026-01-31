@@ -97,11 +97,11 @@ const DIARY_PROMPTS = [
 ];
 
 const TIMELINE_ICON_BY_ID = {
-  parentingStatus: { normal: "/assets/image/1.png", active: "/assets/image/1-2.png" },
-  troubles: { normal: "/assets/image/2.png", active: "/assets/image/2-2.png" },
-  mirror: { normal: "/assets/image/3.png", active: "/assets/image/3-2.png" },
-  diary: { normal: "/assets/image/4.png", active: "/assets/image/4-2.png" },
-  expert: { normal: "/assets/image/5.png", active: "/assets/image/5-2.png" },
+  parentingStatus: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/1.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/1-2.png" },
+  troubles: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/2.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/2-2.png" },
+  mirror: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/3.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/3-2.png" },
+  diary: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/4.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/4-2.png" },
+  expert: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/5.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/5-2.png" },
 };
 
 function pickTimelineIcon(id, done) {
