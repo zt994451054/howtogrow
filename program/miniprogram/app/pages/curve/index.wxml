@@ -76,6 +76,21 @@
         </view>
       </view>
 
+      <scroll-view class="dim-tags" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="dim-tags__inner">
+          <view
+            wx:for="{{dimensions}}"
+            wx:key="code"
+            class="dim-tag {{item._on ? 'is-active' : ''}}"
+            style="--tag-color: {{item.color}}; --tag-bg: {{item.bg ? item.bg : item.color}};"
+            bindtap="onToggleDimension"
+            data-code="{{item.code}}"
+          >
+            {{item.label}}
+          </view>
+        </view>
+      </scroll-view>
+
       <view class="dim-pills">
         <view class="dim-panel">
           <view
@@ -85,7 +100,10 @@
             bindtap="onToggleDimension"
             data-code="{{item.code}}"
           >
-            <view class="dim-item__dot" style="background: {{item.bg ? item.bg : item.color}};" />
+            <view
+              class="dim-item__dot {{item._on ? 'is-active' : ''}}"
+              style="background: {{item._on ? item.color : (item.bg ? item.bg : item.color)}};"
+            />
             <view class="dim-item__content">
               <view class="dim-item__title">{{item.label}}</view>
               <view class="dim-item__desc">{{item.desc}}</view>
