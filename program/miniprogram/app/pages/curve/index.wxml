@@ -10,27 +10,27 @@
     />
   </view>
 
-  <view wx:if="{{menuOpen}}" class="menu-layer">
-    <view class="menu-mask" bindtap="closeChildMenu" />
-    <view class="menu-pop" style="top: {{menuPopoverTopPx}}px;">
-      <view class="menu-pop__title">切换孩子</view>
-      <view class="menu-pop__list">
-        <button
+  <cover-view wx:if="{{menuOpen}}" class="menu-layer">
+    <cover-view class="menu-mask" bindtap="closeChildMenu" />
+    <cover-view class="menu-pop" style="top: {{menuPopoverTopPx}}px;">
+      <cover-view class="menu-pop__title">切换孩子</cover-view>
+      <cover-view class="menu-pop__list">
+        <cover-view
           wx:for="{{children}}"
           wx:key="id"
           class="menu-item {{selectedChildId == item.id ? 'on' : ''}}"
           bindtap="onPickChild"
           data-id="{{item.id}}"
         >
-          <view class="menu-item__row row between">
-            <view class="menu-item__name">{{item.nickname}}</view>
-            <view wx:if="{{selectedChildId == item.id}}" class="menu-item__dot" />
-          </view>
-        </button>
-        <button class="menu-item add" bindtap="onAddChild">＋ 添加新孩子</button>
-      </view>
-    </view>
-  </view>
+          <cover-view class="menu-item__row row between">
+            <cover-view class="menu-item__name">{{item.nickname}}</cover-view>
+            <cover-view wx:if="{{selectedChildId == item.id}}" class="menu-item__dot" />
+          </cover-view>
+        </cover-view>
+        <cover-view class="menu-item add" bindtap="onAddChild">＋ 添加新孩子</cover-view>
+      </cover-view>
+    </cover-view>
+  </cover-view>
 
   <!-- 内容区滚动，顶部固定 -->
   <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
