@@ -606,7 +606,7 @@
 }
 
 .foot {
-  padding: 8rpx 4rpx 0;
+  padding: 10rpx 4rpx 0;
 }
 
 .foot__t {
