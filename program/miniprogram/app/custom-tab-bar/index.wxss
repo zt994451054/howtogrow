@@ -79,7 +79,7 @@
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translate(-50%, -40%);
+  transform: translate(-50%, -43%);
   width: 150rpx;
   height: 150rpx;
   display: flex;
