@@ -1,13 +1,14 @@
 <view class="page" style="--page-nav-height: {{navBarHeight}}px;">
-  <view class="status" />
-
-  <home-header
-    avatar-url="{{avatarUrl}}"
-    avatar-text="{{avatarText}}"
-    greet-text="{{greetText}}"
-    bind:profile="onOpenProfile"
-    bind:menu="toggleChildMenu"
-  />
+  <view class="nav">
+    <view class="status" />
+    <home-header
+      avatar-url="{{avatarUrl}}"
+      avatar-text="{{avatarText}}"
+      greet-text="{{greetText}}"
+      bind:profile="onOpenProfile"
+      bind:menu="toggleChildMenu"
+    />
+  </view>
 
   <view wx:if="{{menuOpen}}" class="menu-layer">
     <view class="menu-mask" bindtap="closeChildMenu" />
@@ -31,8 +32,8 @@
     </view>
   </view>
 
-  <!-- 使用页面原生滚动：避免 canvas 在 scroll-view 中随滚动出现抖动/漂浮 -->
-  <view class="body safe-bottom">
+  <!-- 内容区滚动，顶部固定 -->
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view wx:if="{{!childrenLoaded}}" class="loading">加载中…</view>
 
     <view wx:elif="{{children.length == 0}}" class="empty col center">
@@ -143,7 +144,7 @@
 
       <!-- <view class="footer-hint"><text class="def">困扰您最多的是</text><text class="gra">动不动哭闹发脾气</text></view> -->
     </view>
-  </view>
+  </scroll-view>
 
   <!-- 自定义日期范围（最多180天） -->
   <view class="sheet {{customRangeOpen ? 'show' : ''}}">

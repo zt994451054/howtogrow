@@ -1,7 +1,17 @@
 .page {
   min-height: 100vh;
+  height: 100vh;
   /* background: var(--bg-page); */
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #fff;
 }
 
 .status {
@@ -149,7 +159,8 @@
 .body {
   /* background: var(--bg-page); */
   background-color: #fff;
-
+  flex: 1;
+  min-height: 0;
 }
 
 .wrap {
