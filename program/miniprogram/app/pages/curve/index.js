@@ -39,11 +39,36 @@ function hexToRgba(hex, alpha) {
 }
 
 const DIMENSIONS = [
-  { code: "RELATIONSHIP_BUILDING", label: "亲子关系", color: "#F97316" },
-  { code: "RULE_GUIDANCE", label: "规则建立", color: "#EC4899" },
-  { code: "LEARNING_SUPPORT", label: "学习支持", color: "#10B981" },
-  { code: "EMOTION_MANAGEMENT", label: "情绪管理", color: "#3B82F6" },
-  { code: "COMMUNICATION_EXPRESSION", label: "沟通表达", color: "#8B5CF6" },
+  {
+    code: "COMMUNICATION_EXPRESSION",
+    label: "沟通表达",
+    desc: "是否能倾听、共情、开放式提问、非暴力沟通",
+    color: "#8B5CF6",
+  },
+  {
+    code: "EMOTION_MANAGEMENT",
+    label: "情绪管理",
+    desc: "是否能控制自己情绪，不吼、不急躁",
+    color: "#3B82F6",
+  },
+  {
+    code: "RULE_GUIDANCE",
+    label: "规则引导",
+    desc: "是否能设定清晰规则，并持续执行",
+    color: "#EC4899",
+  },
+  {
+    code: "LEARNING_SUPPORT",
+    label: "学习支持",
+    desc: "是否能关注过程、激发内驱、降低孩子压力",
+    color: "#10B981",
+  },
+  {
+    code: "RELATIONSHIP_BUILDING",
+    label: "关系建设",
+    desc: "是否能接住孩子情绪、建立安全信任的关系",
+    color: "#F97316",
+  },
 ].map((d) => ({ ...d, bg: hexToRgba(d.color, 0.12) }));
 
 const DEFAULT_DIM_PILL_BG = hexToRgba("#f08019", 0.12);

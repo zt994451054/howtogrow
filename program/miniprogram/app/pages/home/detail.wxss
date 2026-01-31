@@ -44,7 +44,7 @@
   position: absolute;
   left: 70rpx;
   top: 70rpx;
-  bottom: 70rpx;
+  bottom: 90rpx;
   width: 8rpx;
   background: #e18638;
   border-radius: 9999rpx;

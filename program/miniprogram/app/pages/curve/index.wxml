@@ -77,16 +77,21 @@
       </view>
 
       <view class="dim-pills">
-        <button
-          wx:for="{{dimensions}}"
-          wx:key="code"
-          class="dim-pill {{item._on ? 'on' : 'off'}}"
-          style="background: {{item._on ? item.color : '#E7E7E7'}}; color: {{item._on ? '#fff' : '#3c3c3b'}};"
-          bindtap="onToggleDimension"
-          data-code="{{item.code}}"
-        >
-          <text class="dim-pill__text">{{item.label}}</text>
-        </button>
+        <view class="dim-panel">
+          <view
+            wx:for="{{dimensions}}"
+            wx:key="code"
+            class="dim-item {{item._on ? 'is-active' : ''}}"
+            bindtap="onToggleDimension"
+            data-code="{{item.code}}"
+          >
+            <view class="dim-item__dot" style="background: {{item.bg ? item.bg : item.color}};" />
+            <view class="dim-item__content">
+              <view class="dim-item__title">{{item.label}}</view>
+              <view class="dim-item__desc">{{item.desc}}</view>
+            </view>
+          </view>
+        </view>
       </view>
 
       <view class="persist col center" wx:if="{{false}}">
