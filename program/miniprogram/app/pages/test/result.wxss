@@ -81,38 +81,7 @@
 .flag {
   width: 300rpx;
   height: 300rpx;
-  border-radius: 9999rpx;
-  background: rgba(249, 115, 22, 0.12);
-  position: relative;
-  box-shadow: var(--shadow-sm);
-}
-
-.flag__bar {
-  position: absolute;
-  left: 140rpx;
-  top: 60rpx;
-  width: 20rpx;
-  height: 190rpx;
-  background: var(--brand);
-  border-radius: 20rpx;
-}
-
-.flag__tag {
-  position: absolute;
-  left: 160rpx;
-  top: 86rpx;
-  width: 96rpx;
-  height: 80rpx;
-  background: rgba(253, 186, 116, 0.9);
-  border-radius: 10rpx;
-  color: #fff;
-  font-weight: 600;
-  font-size: 22rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  white-space: pre-line;
+  display: block;
 }
 
 .review__meta {

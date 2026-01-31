@@ -13,10 +13,7 @@
   </view>
 
   <view class="flag-wrap">
-    <view class="flag">
-      <view class="flag__bar" />
-      <view class="flag__tag">今日\n建议</view>
-    </view>
+    <image class="flag" src="/assets/image/jcjy.png" mode="aspectFit" />
   </view>
 
   <view class="body">
