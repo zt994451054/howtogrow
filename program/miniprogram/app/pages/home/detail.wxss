@@ -70,7 +70,7 @@
   width: 152rpx;
   height: 152rpx;
   border-radius: 9999rpx;
-  background: rgba(252, 232, 220, 1);
+  background: #fff;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -81,11 +81,6 @@
   display: block;
 }
 
-.item__icon-mask {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.6);
-}
 
 .item__body {
   flex: 1;
@@ -118,9 +113,6 @@
   background: var(--text-muted);
 }
 
-.item.todo .item__icon-img {
-  filter: grayscale(1);
-}
 
 .loading {
   color: var(--text-muted);

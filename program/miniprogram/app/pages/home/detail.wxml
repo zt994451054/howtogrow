@@ -19,7 +19,6 @@
         >
           <view class="item__icon">
             <image class="item__icon-img" src="{{item.iconImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-            <view wx:if="{{!item.done}}" class="item__icon-mask"></view>
           </view>
 
           <view class="item__body">
