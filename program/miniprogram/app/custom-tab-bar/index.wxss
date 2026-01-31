@@ -66,8 +66,8 @@
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translate(-50%, -50%);
-  width: 120rpx;
+  transform: translate(-50%, -47%);
+  width: 170rpx;
   height: 120rpx;
   display: flex;
   align-items: center;

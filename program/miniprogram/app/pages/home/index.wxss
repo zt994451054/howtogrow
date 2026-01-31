@@ -1,6 +1,9 @@
 .page {
   min-height: 100vh;
+  height: 100vh;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .status {
@@ -161,6 +164,8 @@
 
 .body {
   background: #fff;
+  flex: 1;
+  min-height: 0;
 }
 
 .wrap {

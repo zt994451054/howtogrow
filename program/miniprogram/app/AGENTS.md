@@ -54,6 +54,13 @@
   - `pages/me/subscription` → `createOrder` 获取 `payParams` → `wx.requestPayment`
   - 如接口返回 `SUBSCRIPTION_REQUIRED`，页面以 Modal 引导去订阅
 
+## 页面顶部交互（首页）
+
+- 首页顶部使用 `components/home-header`：左侧头像/问候、右侧菜单按钮。
+- 交互：头像点击触发个人信息入口；菜单按钮打开“切换孩子”弹层（由 `menuOpen` 控制，`menuPopoverTopPx` 负责定位）。
+- 固定方式：`home-header` 放在 `scroll-view` 之外，页面采用纵向 `flex` 布局；内容滚动发生在 `scroll-view.body` 内，确保顶部始终固定。
+  - 对应样式：`pages/home/index.wxss` 中 `.page` 为 `height: 100vh; display: flex; flex-direction: column;`，`.body` 为 `flex: 1; min-height: 0;`。
+
 ## 开发约定（给后续协作者/大模型）
 
 - 新增页面：必须在 `app.json` 注册；若需要 tab 项，需同步更新 `custom-tab-bar/index.wxml` 与 `app.json.tabBar.list`。

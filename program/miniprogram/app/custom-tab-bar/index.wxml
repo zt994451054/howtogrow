@@ -32,7 +32,7 @@
 
     <view class="tabbar__center">
       <view class="center-btn" bindtap="onMoodTap">
-        <image class="center-icon" mode="aspectFit" src="/assets/image/ctp.png" />
+        <image class="center-icon" mode="aspectFit" src="/assets/tab/tb1.png" />
       </view>
     </view>
   </view>
