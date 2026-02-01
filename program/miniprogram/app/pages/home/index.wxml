@@ -1,20 +1,15 @@
-<view class="page">
-  <view class="status" style="height: {{statusBarHeight}}px;" />
+<view class="page" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="status" />
 
-  <view class="header row between" style="padding-top: {{headerPadTopPx}}px;">
-    <view class="row a">
-      <view class="avatar" bindtap="onOpenProfile" hover-class="tap" hover-stay-time="80">
-        <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
-        <view wx:else class="avatar__text">{{avatarText}}</view>
-      </view>
-      <view class="col">
-        <view class="greet">{{greetText}}</view>
-      </view>
-    </view>
-    <view class="icon-btn" bindtap="toggleChildMenu">
-      <ui-icon name="menu" size="{{24}}" />
-    </view>
-  </view>
+  <home-header
+    avatar-url="{{avatarUrl}}"
+    avatar-text="{{avatarText}}"
+    greet-name="{{greetName}}"
+    greet-suffix="{{greetSuffix}}"
+    greet-text="{{greetText}}"
+    bind:profile="onOpenProfile"
+    bind:menu="toggleChildMenu"
+  />
 
   <view wx:if="{{menuOpen}}" class="menu-layer">
     <view class="menu-mask" bindtap="closeChildMenu" />
@@ -85,7 +80,7 @@
         <picker mode="date" fields="month" value="{{monthValue}}" start="{{minMonthStart}}" end="{{maxMonthEnd}}" bindchange="onMonthChange">
           <view class="month__picker row a">
             <view class="month__picker-text">{{monthText}}</view>
-            <view class="month__picker-icon">›</view>
+            <image class="month__picker-icon" src="../../assets/image/uni-down.png" mode="aspectFit" />
           </view>
         </picker>
       </view>
@@ -100,30 +95,34 @@
         >
           <view class="thumb-wrap">
             <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
-                <view class="thumb__inner">
-                <view class="date-tag {{item.isDone ? 'date-tag-done' : 'date-tag-undone'}}">
-                  <view class="date-tag__d">{{item.dayText}}</view>
-                  <view class="date-tag__w">{{item.weekday}}</view>
+              <view class="thumb__inner">
+                <view class="thumb__date">{{item.dayText}} / {{item.weekday}}</view>
+                <view class="thumb__camera">
+                  <view class="camera-icon">
+                    <view class="camera-icon__body" />
+                    <view class="camera-icon__top" />
+                    <view class="camera-icon__lens" />
+                    <view class="camera-icon__dot" />
+                  </view>
                 </view>
 
                 <image wx:if="{{item.isDone && item.imageUrl}}" class="thumb__img" src="{{item.imageUrl}}" mode="aspectFill" />
+                <image wx:elif="{{item.isDone}}" class="thumb__img thumb__img--fallback" src="../../assets/image/bgsw@x.png" mode="aspectFill" />
 
                 <view wx:if="{{!item.isDone}}" class="plus">＋</view>
+              </view>
 
-                <!-- Default badge for every card; keep it inside the card, but carve a corner arc under it. -->
-                <view class="mood-notch" />
-                <view class="mood {{item.hasStatus ? item.moodCls : 'mood-empty'}}">
-                  <image wx:if="{{item.hasStatus && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-                  <view wx:elif="{{item.hasStatus}}" class="mood__emoji">{{item.moodEmoji}}</view>
-                  <view wx:else class="mood__blank" />
-                </view>
+              <view class="mood {{item.hasMood ? item.moodCls : 'mood-empty'}} {{item.hasMood && item.moodImageUrl ? 'mood--image' : ''}}">
+                <image wx:if="{{item.hasMood && item.moodImageUrl}}" class="mood__img" src="{{item.moodImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                <view wx:elif="{{item.hasMood}}" class="mood__emoji">{{item.moodEmoji}}</view>
+                <view wx:else class="mood__blank" />
               </view>
             </view>
           </view>
 
           <view class="foot">
-            <view class="foot__t text-ellipsis {{item.hasAssessment ? '' : 'muted'}}">{{item.title}}</view>
-            <view class="foot__s text-ellipsis">{{item.content}}</view>
+            <view class="foot__t text-ellipsis {{item.titleOn ? 'on' : ''}}">{{item.title}}</view>
+            <view class="foot__s text-ellipsis {{item.contentOn ? 'on' : ''}}">{{item.content}}</view>
           </view>
         </view>
       </view>

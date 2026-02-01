@@ -32,3 +32,31 @@
 .tap {
   opacity: 0.85;
 }
+
+.btn-cta {
+  width: 100% !important;
+  height: 92rpx;
+  border-radius: 46rpx;
+  background: var(--brand) !important;
+  color: #fff !important;
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 92rpx;
+}
+
+.btn-cta::after {
+  border: none;
+}
+
+.btn-cta--disabled {
+  opacity: 0.5;
+}
+
+.btn-cta--ghost {
+  margin-top: 18rpx;
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-pill);
+  border: 2rpx solid rgba(17, 24, 39, 0.06);
+}

@@ -9,10 +9,12 @@ function defaultAvatar() {
 
 Page({
   data: {
-    statusBarHeight: 20,
+    navBarHeight: 0,
     nickname: "育儿新手",
     avatarUrl: defaultAvatar(),
     subscriptionEndAt: "",
+    subscriptionTip: "未订阅会员",
+    subscriptionTipTone: "warn",
     isSubscribed: false,
     isExpired: false,
     freeTrialUsed: false,
@@ -20,8 +22,10 @@ Page({
     pendingNav: "",
   },
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
-    this.setData({ statusBarHeight });
+    const { navBarHeight } = getSystemMetrics();
+    const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
+    this.setData({ navBarHeight: navHeight });
   },
   onShow() {
     const tab = this.getTabBar && this.getTabBar();
@@ -46,12 +50,18 @@ Page({
   applyMe(me) {
     const endAt = me.subscriptionEndAt ? String(me.subscriptionEndAt).slice(0, 10) : "";
     const today = new Date().toISOString().slice(0, 10);
+    const isSubscribed = !!endAt;
+    const isExpired = endAt ? endAt < today : false;
+    const subscriptionTip = !endAt ? "未订阅会员" : isExpired ? `已过期（${endAt}）` : `${endAt} 到期`;
+    const subscriptionTipTone = !endAt || isExpired ? "warn" : "";
     this.setData({
       nickname: me.nickname || "育儿新手",
       avatarUrl: me.avatarUrl || defaultAvatar(),
       subscriptionEndAt: endAt,
-      isSubscribed: !!endAt,
-      isExpired: endAt ? endAt < today : false,
+      subscriptionTip,
+      subscriptionTipTone,
+      isSubscribed,
+      isExpired,
       freeTrialUsed: !!me.freeTrialUsed,
     });
   },

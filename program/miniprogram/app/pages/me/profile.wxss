@@ -95,7 +95,7 @@
 
 .label {
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(107, 114, 128, 1);
   margin-bottom: 12rpx;
 }
@@ -142,7 +142,7 @@
   background: var(--brand) !important;
   color: #fff !important;
   font-size: 30rpx;
-  font-weight: 900;
+  font-weight: 600;
   box-shadow: var(--shadow-brand);
   margin-top: 8rpx;
 }

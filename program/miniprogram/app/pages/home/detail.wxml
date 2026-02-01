@@ -1,13 +1,13 @@
 <view class="page">
-  <ui-header title="{{title}}" left="back" bind:left="onBack" avoidMenu="{{true}}" />
+  <ui-header title="我的觉察" left="back" bind:left="onBack" avoidMenu="{{true}}" />
 
   <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view class="wrap animate-fade-in">
-      <view wx:if="{{greetText}}" class="greet">{{greetText}}</view>
+      <!-- <view wx:if="{{greetText}}" class="greet">{{greetText}}</view> -->
 
       <view class="quote">{{quote}}</view>
 
-      <view class="timeline">
+      <view class="timeline {{timelineHasData ? '' : 'timeline--muted'}}">
         <view class="timeline__line" />
 
         <view
@@ -17,42 +17,8 @@
           bindtap="onTapItem"
           data-id="{{item.id}}"
         >
-          <view class="item__icon {{item.done ? 'on' : ''}}">
-            <image
-              wx:if="{{item.id == 'parentingStatus' && item.done && item.statusImageUrl}}"
-              class="item__icon-img"
-              src="{{item.statusImageUrl}}"
-              mode="aspectFill"
-              lazy-load="{{true}}"
-            />
-            <view wx:else class="obs-icon obs-icon--{{item.icon}}">
-              <view wx:if="{{item.icon == 'status'}}" class="obs-icon__status">
-                <view class="obs-icon__status-eye left" />
-                <view class="obs-icon__status-eye right" />
-                <view class="obs-icon__status-mouth" />
-              </view>
-              <view wx:elif="{{item.icon == 'troubles'}}" class="obs-icon__troubles">
-                <view class="obs-icon__troubles-bump top" />
-                <view class="obs-icon__troubles-bump right" />
-              </view>
-              <view wx:elif="{{item.icon == 'mirror'}}" class="obs-icon__mirror">
-                <view class="obs-icon__mirror-clip" />
-                <view class="obs-icon__mirror-line l1" />
-                <view class="obs-icon__mirror-line l2" />
-                <view class="obs-icon__mirror-line l3" />
-              </view>
-              <view wx:elif="{{item.icon == 'diary'}}" class="obs-icon__diary">
-                <view class="obs-icon__diary-page left" />
-                <view class="obs-icon__diary-page right" />
-                <view class="obs-icon__diary-seam" />
-              </view>
-              <view wx:elif="{{item.icon == 'expert'}}" class="obs-icon__expert">
-                <view class="obs-icon__expert-cap" />
-                <view class="obs-icon__expert-base" />
-                <view class="obs-icon__expert-tassel" />
-                <view class="obs-icon__expert-tassel-dot" />
-              </view>
-            </view>
+          <view class="item__icon">
+            <image class="item__icon-img" src="{{item.iconImageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
           </view>
 
           <view class="item__body">
@@ -68,14 +34,9 @@
 
   <!-- 育儿状态（全屏） -->
   <view wx:if="{{showStatusSheet}}" class="overlay">
-    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
-    <view class="overlay__header row between">
-      <view class="overlay__back" bindtap="closeSheets">‹</view>
-      <view class="overlay__title">{{dateSlash}}育儿状态</view>
-      <view class="overlay__spacer" />
-    </view>
+    <ui-header title="{{dateSlash}}育儿状态" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
-    <view class="overlay__quote">{{statusQuote}}</view>
+    <view class="overlay__quote quote">{{statusQuote}}</view>
 
     <view class="mood-area">
       <view class="mood-center">
@@ -108,31 +69,26 @@
     </view>
 
     <view class="overlay__footer safe-bottom">
-      <button class="overlay__btn" loading="{{statusSaving}}" bindtap="onSaveStatus">确 定</button>
+      <button class="btn-cta" loading="{{statusSaving}}" bindtap="onSaveStatus">确 定</button>
     </view>
   </view>
 
   <!-- 烦恼存档（全屏） -->
   <view wx:if="{{showTroubleSheet}}" class="overlay">
-    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
-    <view class="overlay__header row between">
-      <view class="overlay__back" bindtap="closeSheets">‹</view>
-      <view class="overlay__title">{{dateSlash}}烦恼存档</view>
-      <view class="overlay__spacer" />
+    <ui-header title="{{dateSlash}}烦恼存档" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
+
+    <view class="trouble-hero">
+      <view class="trouble-hero__ball">
+        <view class="trouble-hero__tile t1" />
+        <view class="trouble-hero__tile t2" />
+        <view class="trouble-hero__tile t3" />
+        <view class="trouble-hero__tile t4" />
+        <view class="trouble-hero__bar" />
+      </view>
+      <view class="trouble-hero__title quote">{{troubleQuote}}</view>
     </view>
 
     <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
-      <view class="trouble-hero">
-        <view class="trouble-hero__ball">
-          <view class="trouble-hero__tile t1" />
-          <view class="trouble-hero__tile t2" />
-          <view class="trouble-hero__tile t3" />
-          <view class="trouble-hero__tile t4" />
-          <view class="trouble-hero__bar" />
-        </view>
-        <view class="trouble-hero__title">{{troubleQuote}}</view>
-      </view>
-
       <view wx:if="{{troubleLoading}}" class="sheet__loading">加载中…</view>
       <view wx:else class="trouble-select-grid">
         <view
@@ -143,8 +99,8 @@
           data-id="{{item.id}}"
         >
           <view class="trouble-chip__circle {{item.selected ? 'on' : ''}}">
-            <image wx:if="{{item.logoUrl}}" class="trouble-chip__logo" src="{{item.logoUrl}}" mode="aspectFill" />
-            <view wx:else class="trouble-chip__fallback">{{item.shortName}}</view>
+            <image wx:if="{{item.logoUrl}}" class="trouble-chip__logo {{item.selected ? '' : 'is-muted'}}" src="{{item.logoUrl}}" mode="aspectFill" />
+            <view wx:else class="trouble-chip__fallback {{item.selected ? '' : 'is-muted'}}">{{item.shortName}}</view>
           </view>
           <view class="trouble-chip__label {{item.selected ? 'on' : ''}}">{{item.name}}</view>
         </view>
@@ -153,7 +109,7 @@
 
     <view class="overlay__footer safe-bottom">
       <button
-        class="overlay__btn {{troubleDraftIds.length ? '' : 'overlay__btn--disabled'}}"
+        class="btn-cta {{troubleDraftIds.length ? '' : 'btn-cta--disabled'}}"
         loading="{{troubleSaving}}"
         disabled="{{!troubleDraftIds.length}}"
         bindtap="onSaveTroubles"
@@ -165,20 +121,15 @@
 
   <!-- 育儿日记（全屏） -->
   <view wx:if="{{showDiarySheet}}" class="overlay">
-    <view class="overlay__safe" style="height: {{overlaySafeTopPx}}px;" />
-    <view class="overlay__header row between">
-      <view class="overlay__back" bindtap="closeSheets">‹</view>
-      <view class="overlay__title">{{dateSlash}}育儿日记</view>
-      <view class="overlay__spacer" />
-    </view>
+    <ui-header title="{{dateSlash}}育儿日记" left="back" bind:left="closeSheets" avoidMenu="{{true}}" />
 
     <scroll-view class="overlay__scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
       <view class="diary-wrap">
         <view class="diary-prompt">
-          <view class="diary-prompt__head row">
+          <!-- <view class="diary-prompt__head row">
             <view class="diary-prompt__spark">✦</view>
             <view class="diary-prompt__label">你记录的每一次感悟，都是你成长的脚印</view>
-          </view>
+          </view> -->
           <view class="diary-prompt__box">
             <view class="diary-prompt__text">{{diaryPromptText}}</view>
             <view class="diary-prompt__actions row">
@@ -201,10 +152,10 @@
         </view>
 
         <view class="diary-photo">
-          <view class="diary-photo__head row">
+          <!-- <view class="diary-photo__head row">
             <view class="diary-photo__camera">📷</view>
             <view class="diary-photo__label">定格瞬间 (可选)</view>
-          </view>
+          </view> -->
 
           <view wx:if="{{diaryDraftImageUrl}}" class="diary-photo__preview">
             <image class="diary-photo__img" src="{{diaryDraftImageUrl}}" mode="aspectFill" bindtap="onPreviewDiaryImage" />
@@ -221,7 +172,7 @@
 
     <view class="overlay__footer safe-bottom">
       <button
-        class="overlay__btn {{diaryCanSubmit ? '' : 'overlay__btn--disabled'}}"
+        class="btn-cta {{diaryCanSubmit ? '' : 'btn-cta--disabled'}}"
         loading="{{diarySaving}}"
         disabled="{{!diaryCanSubmit}}"
         bindtap="onSaveDiary"

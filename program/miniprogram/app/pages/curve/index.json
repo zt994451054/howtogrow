@@ -1,6 +1,7 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
+    "home-header": "/components/home-header/index",
     "ui-icon": "/components/ui-icon/index",
     "ec-canvas": "/components/ec-canvas/ec-canvas"
   }

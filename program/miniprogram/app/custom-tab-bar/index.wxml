@@ -1,45 +1,40 @@
-<view class="tabbar safe-bottom">
+<view class="tabbar">
+  <image class="tabbar__bg" src="/assets/tab/bt_bg.png" mode="scaleToFill" />
   <view class="tabbar__inner">
     <view class="tabbar__item {{selected == 0 ? 'is-active' : ''}}" bindtap="onTap" data-index="0" data-path="/pages/home/index">
       <view class="tabbar__icon">
-        <image class="icon-image" mode="aspectFit" src="{{selected == 0 ? '/assets/tab/home-active.png' : '/assets/tab/home.png'}}" />
+        <image class="icon-image" mode="aspectFit" src="{{selected == 0 ? '/assets/tab/mrcj-active.png' : '/assets/tab/mrcj.png'}}" />
       </view>
-      <view class="tabbar__label">每日觉察</view>
+      <view class="tabbar__label">觉察</view>
     </view>
 
     <view class="tabbar__item {{selected == 1 ? 'is-active' : ''}}" bindtap="onTap" data-index="1" data-path="/pages/curve/index">
       <view class="tabbar__icon">
-        <view class="icon-chart {{selected == 1 ? 'is-active' : ''}}">
-          <view class="bar b1" />
-          <view class="bar b2" />
-          <view class="bar b3" />
-        </view>
+        <image class="icon-image" mode="aspectFit" src="{{selected == 1 ? '/assets/tab/jzqx-active.png' : '/assets/tab/jzqx.png'}}" />
       </view>
-      <view class="tabbar__label">家长曲线</view>
+      <view class="tabbar__label">数据</view>
     </view>
 
-    <view class="tabbar__center">
-      <view class="center-btn" bindtap="onMoodTap">
-        <view class="center-logo">
-          <view class="center-logo__curve" />
-          <view class="center-logo__stem" />
-        </view>
-      </view>
-    </view>
+    <view class="tabbar__spacer" />
 
     <view class="tabbar__item {{selected == 2 ? 'is-active' : ''}}" bindtap="onTap" data-index="2" data-path="/pages/chat/index">
       <view class="tabbar__icon">
-        <image class="icon-image" mode="aspectFit" src="{{selected == 2 ? '/assets/tab/chat-active.png' : '/assets/tab/chat.png'}}" />
+        <image class="icon-image" mode="aspectFit" src="{{selected == 2 ? '/assets/tab/ljzx-active.png' : '/assets/tab/ljzx.png'}}" />
       </view>
-      <view class="tabbar__label">马上沟通</view>
+      <view class="tabbar__label">育言师</view>
     </view>
 
     <view class="tabbar__item {{selected == 3 ? 'is-active' : ''}}" bindtap="onTap" data-index="3" data-path="/pages/me/index">
       <view class="tabbar__icon">
-        <image class="icon-image" mode="aspectFit" src="{{selected == 3 ? '/assets/tab/me-active.png' : '/assets/tab/me.png'}}" />
+        <image class="icon-image" mode="aspectFit" src="{{selected == 3 ? '/assets/tab/wdsz-active.png' : '/assets/tab/wdsz.png'}}" />
       </view>
-      <view class="tabbar__label">我的</view>
+      <view class="tabbar__label">我</view>
+    </view>
+
+    <view class="tabbar__center">
+      <view class="center-btn" bindtap="onMoodTap">
+        <image class="center-icon" mode="aspectFit" src="/assets/tab/bt_icon.png" />
+      </view>
     </view>
   </view>
-  <view class="home-indicator" />
 </view>

@@ -21,7 +21,7 @@
 }
 
 .card__title {
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 12rpx;
   color: var(--text-primary);
 }
@@ -45,7 +45,7 @@
 }
 
 .child__name {
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .child__sub {
@@ -100,7 +100,7 @@
 .tag__label {
   margin-top: 10rpx;
   font-size: 22rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(31, 41, 55, 1);
 }
 
@@ -113,7 +113,7 @@
 }
 
 .empty__title {
-  font-weight: 900;
+  font-weight: 600;
   font-size: 34rpx;
   margin-bottom: 12rpx;
 }

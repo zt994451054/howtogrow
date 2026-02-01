@@ -33,7 +33,7 @@
   },
   "miniprogramRoot": "./",
   "compileType": "miniprogram",
-  "libVersion": "3.5.6",
+  "libVersion": "3.14.0",
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [],

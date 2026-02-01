@@ -26,13 +26,52 @@ function pickValidChildId(children, preferredId) {
   return list.length ? toSafeId(list[0]?.id) : 0;
 }
 
+function hexToRgba(hex, alpha) {
+  const match = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || "").trim());
+  const aRaw = Number(alpha);
+  const a = Number.isFinite(aRaw) ? Math.min(1, Math.max(0, aRaw)) : 0.12;
+  if (!match) return `rgba(0, 0, 0, ${a})`;
+  const value = parseInt(match[1], 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
 const DIMENSIONS = [
-  { code: "RELATIONSHIP_BUILDING", label: "亲子关系", color: "#F97316" },
-  { code: "RULE_GUIDANCE", label: "规则建立", color: "#EC4899" },
-  { code: "LEARNING_SUPPORT", label: "学习支持", color: "#10B981" },
-  { code: "EMOTION_MANAGEMENT", label: "情绪管理", color: "#3B82F6" },
-  { code: "COMMUNICATION_EXPRESSION", label: "沟通表达", color: "#8B5CF6" },
-];
+  {
+    code: "COMMUNICATION_EXPRESSION",
+    label: "沟通表达",
+    desc: "是否能倾听、共情、开放式提问、非暴力沟通",
+    color: "#8B5CF6",
+  },
+  {
+    code: "EMOTION_MANAGEMENT",
+    label: "情绪管理",
+    desc: "是否能控制自己情绪，不吼、不急躁",
+    color: "#3B82F6",
+  },
+  {
+    code: "RULE_GUIDANCE",
+    label: "规则引导",
+    desc: "是否能设定清晰规则，并持续执行",
+    color: "#EC4899",
+  },
+  {
+    code: "LEARNING_SUPPORT",
+    label: "学习支持",
+    desc: "是否能关注过程、激发内驱、降低孩子压力",
+    color: "#10B981",
+  },
+  {
+    code: "RELATIONSHIP_BUILDING",
+    label: "关系建设",
+    desc: "是否能接住孩子情绪、建立安全信任的关系",
+    color: "#F97316",
+  },
+].map((d) => ({ ...d, bg: hexToRgba(d.color, 0.12) }));
+
+const DEFAULT_DIM_PILL_BG = hexToRgba("#f08019", 0.12);
 
 const STATUS_IMAGE_BY_LABEL = {
   乐观: "https://howtotalk.oss-cn-beijing.aliyuncs.com/parenting/%E4%B9%90%E8%A7%82.jpg",
@@ -274,9 +313,19 @@ function getDayScore(day, dimensionCode) {
 
 function buildOption(daysRaw, visibleCodes) {
   const days = normalizeDays(daysRaw);
-  const x = days.map((d) => toXLabel(d.bizDate));
+  const xLabels = days.map((d) => toXLabel(d.bizDate));
+  const padCount = xLabels.length === 1 ? 5 : 0;
+  const xAxisData = padCount ? [xLabels[0], ...Array.from({ length: padCount }, () => "")] : xLabels;
   const visible = Array.isArray(visibleCodes) && visibleCodes.length ? visibleCodes : DIMENSIONS.map((d) => d.code);
-  const showSymbol = x.length > 0 && x.length < 2;
+  const showSymbol = xLabels.length > 0 && xLabels.length < 2;
+  const title = {
+    text: "能力分值",
+    left: 0,
+    top: 0,
+    padding: 0,
+    textStyle: { color: "#9CA3AF", fontSize: 14, fontWeight: "normal" },
+  };
+  const grid = { left: "3%", right: "4%", bottom: "8%", top: 36, containLabel: true };
 
   const allValues = [];
   const series = DIMENSIONS.map((dim) => {
@@ -287,6 +336,9 @@ function buildOption(daysRaw, visibleCodes) {
       if (score !== null) allValues.push(score);
       return score;
     });
+    if (padCount) {
+      data.push(...Array.from({ length: padCount }, () => null));
+    }
     return {
       name: dim.label,
       type: "line",
@@ -307,9 +359,10 @@ function buildOption(daysRaw, visibleCodes) {
   if (!hasAnyPoint) {
     const placeholderX = ["", "", "", "", "", ""];
     return {
+      title,
       color: ["#F97316"],
       tooltip: { show: false },
-      grid: { left: "3%", right: "4%", bottom: "8%", top: "10%", containLabel: true },
+      grid,
       xAxis: {
         type: "category",
         boundaryGap: false,
@@ -339,6 +392,7 @@ function buildOption(daysRaw, visibleCodes) {
     };
   }
   return {
+    title,
     color: DIMENSIONS.map((d) => d.color),
     tooltip: {
       trigger: "axis",
@@ -350,11 +404,11 @@ function buildOption(daysRaw, visibleCodes) {
       confine: true,
       valueFormatter: (v) => (typeof v === "number" ? String(v) : "-"),
     },
-    grid: { left: "3%", right: "4%", bottom: "8%", top: "10%", containLabel: true },
+    grid,
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: x,
+      data: xAxisData,
       axisLine: { show: true, lineStyle: { color: "#6B7280", width: 1 } },
       axisTick: { show: false },
       axisLabel: { color: "#9CA3AF", fontSize: 10, margin: 12 },
@@ -373,8 +427,7 @@ function buildOption(daysRaw, visibleCodes) {
 
 Page({
   data: {
-    statusBarHeight: 20,
-    headerPadTopPx: 16,
+    navBarHeight: 0,
     menuOpen: false,
     menuPopoverTopPx: 0,
     children: [],
@@ -400,8 +453,9 @@ Page({
     customToDraft: "",
     customRangeDays: 0,
 
-    dimensions: DIMENSIONS.map((d) => ({ ...d, _on: true })),
-    visibleDimensionCodes: DIMENSIONS.map((d) => d.code),
+    dimensions: DIMENSIONS.map((d, idx) => ({ ...d, _on: idx === 0 })),
+    visibleDimensionCodes: DIMENSIONS.length ? [DIMENSIONS[0].code] : [],
+    defaultDimPillBg: DEFAULT_DIM_PILL_BG,
 
     // Keep this JSON-serializable; chart init is handled via `bind:init`.
     // Enable touch so users can drag on chart to inspect daily values.
@@ -410,6 +464,8 @@ Page({
     chartLoading: false,
 
     statusStats: [],
+    statusStatsTop: [],
+    statusStatsTopLastIndex: 0,
     statusTotalDays: 0,
     statusLoading: false,
     troubleLoading: false,
@@ -417,10 +473,10 @@ Page({
   },
 
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
+    const { navBarHeight } = getSystemMetrics();
     const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
-    const headerPadTopPx = menuRect ? Math.max(12, Number(menuRect.bottom || 0) - Number(statusBarHeight || 0) + 8) : 16;
-    const menuPopoverTopPx = menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(statusBarHeight || 0) + 56);
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
+    const menuPopoverTopPx = menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(navHeight || 0) + 56);
 
     const today = new Date();
     const dateTo = formatDateYmd(today);
@@ -428,8 +484,7 @@ Page({
     const dateFrom = formatDateYmd(new Date(today.getTime() - rangeDays * 24 * 3600 * 1000));
 
     this.setData({
-      statusBarHeight,
-      headerPadTopPx,
+      navBarHeight: navHeight,
       menuPopoverTopPx,
       today: dateTo,
       dateFrom,
@@ -690,13 +745,11 @@ Page({
     const code = String(e?.currentTarget?.dataset?.code || "").trim();
     if (!code) return;
 
-    const current = Array.isArray(this.data.visibleDimensionCodes) ? this.data.visibleDimensionCodes.slice() : [];
-    const idx = current.indexOf(code);
-    if (idx >= 0) current.splice(idx, 1);
-    else current.push(code);
+    const currentCode = Array.isArray(this.data.visibleDimensionCodes) ? String(this.data.visibleDimensionCodes[0] || "") : "";
+    if (currentCode === code) return;
 
-    const nextCodes = current.length ? current : DIMENSIONS.map((d) => d.code);
-    const dims = DIMENSIONS.map((d) => ({ ...d, _on: nextCodes.includes(d.code) }));
+    const nextCodes = [code];
+    const dims = DIMENSIONS.map((d) => ({ ...d, _on: d.code === code }));
     this.setData({ visibleDimensionCodes: nextCodes, dimensions: dims });
 
     const option = buildOption(lastDaysRaw, nextCodes);
@@ -765,12 +818,20 @@ Page({
           return acc;
         }, []);
         const { total, items } = buildStatusStats(days, from, to);
+        const top = total > 0 ? items.slice(0, 5) : [];
+        let topLastIndex = 0;
+        for (let i = top.length - 1; i >= 0; i -= 1) {
+          if (Number(top[i]?.count || 0) > 0) {
+            topLastIndex = i;
+            break;
+          }
+        }
         const topTroubles = buildTopTroubles(days, from, to);
-        this.setData({ statusStats: items, statusTotalDays: total, topTroubles });
+        this.setData({ statusStats: items, statusStatsTop: top, statusStatsTopLastIndex: topLastIndex, statusTotalDays: total, topTroubles });
       })
       .catch(() => {
         if (reqId !== awarenessReqSeq) return;
-        this.setData({ statusStats: [], statusTotalDays: 0, topTroubles: [] });
+        this.setData({ statusStats: [], statusStatsTop: [], statusStatsTopLastIndex: 0, statusTotalDays: 0, topTroubles: [] });
       })
       .finally(() => {
         if (reqId !== awarenessReqSeq) return;

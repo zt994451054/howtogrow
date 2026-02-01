@@ -3,3 +3,4 @@
 /program/.m2/
 /program/backend/.m2/
 /logs/
+.DS_Store

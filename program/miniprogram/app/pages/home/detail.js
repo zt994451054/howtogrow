@@ -13,11 +13,8 @@ const { formatDateYmd } = require("../../utils/date");
 const { getSystemMetrics } = require("../../utils/system");
 
 const OVERLAY_SAFE_TOP_GAP_PX = 12;
-
-function buildTitle(date) {
-  const d = String(date || "").replace(/-/g, "/");
-  return d ? `${d}每日觉察` : "每日觉察";
-}
+const PAGE_PADDING_RPX = 32;
+const MOOD_OPTION_SIZE_RPX = 120;
 
 const DEFAULT_QUOTE = "你记下的每个烦躁瞬间\n都是写给孩子未来的一封信\n“看，爸爸妈妈也在学着长大”";
 const QUOTE_SCENE_DAILY_OBSERVATION = "每日觉察";
@@ -99,6 +96,20 @@ const DIARY_PROMPTS = [
   "最好的爱是陪伴，今天我做到了吗？",
 ];
 
+const TIMELINE_ICON_BY_ID = {
+  parentingStatus: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/1.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/1-2.png" },
+  troubles: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/2.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/2-2.png" },
+  mirror: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/3.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/3-2.png" },
+  diary: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/4.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/4-2.png" },
+  expert: { normal: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/5.png", active: "https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/5-2.png" },
+};
+
+function pickTimelineIcon(id, done) {
+  const item = TIMELINE_ICON_BY_ID[id] || {};
+  if (done) return item.active || item.normal || "";
+  return item.normal || item.active || "";
+}
+
 function normalizeText(value) {
   return safeText(value).replace(/\r\n/g, "\n");
 }
@@ -108,10 +119,22 @@ function findStatusOption(code) {
   return STATUS_OPTIONS.find((o) => o.code === value) || STATUS_OPTIONS[0];
 }
 
+function getOrbitRadiusPercent() {
+  const metrics = getSystemMetrics();
+  const windowWidth = Number(metrics.windowWidth || 0);
+  if (!windowWidth) return 42;
+  const rpxToPx = windowWidth / 750;
+  const orbitSizePx = windowWidth - PAGE_PADDING_RPX * rpxToPx * 2;
+  const optionSizePx = MOOD_OPTION_SIZE_RPX * rpxToPx;
+  if (orbitSizePx <= 0) return 42;
+  const radius = 50 - (optionSizePx / 2 / orbitSizePx) * 100;
+  return Math.min(50, Math.max(0, Number(radius.toFixed(2))));
+}
+
 function buildOrbitOptions(options) {
   const list = Array.isArray(options) ? options : [];
   const total = list.length || 1;
-  const radius = 42;
+  const radius = getOrbitRadiusPercent();
   return list.map((mood, index) => {
     const angleDeg = index * (360 / total) - 90;
     const angleRad = (angleDeg * Math.PI) / 180;
@@ -206,26 +229,26 @@ function buildItems(record, date) {
   const items = [
     {
       id: "parentingStatus",
-      icon: "status",
       title: "育儿状态",
       done: statusDone,
       statusImageUrl,
+      iconImageUrl: statusImageUrl || pickTimelineIcon("parentingStatus", statusDone),
       desc: statusDone ? `已记录：${statusCode}` : "今天的你是温柔耐心的爸妈，还是被气到想“重启系统”？",
       isLast: false,
     },
     {
       id: "troubles",
-      icon: "troubles",
       title: "烦恼存档",
       done: troubleDone,
+      iconImageUrl: pickTimelineIcon("troubles", troubleDone),
       desc: troubleDone ? `已记录：${troubleNames.join("、")}` : "拖拉磨蹭，情绪失控，隔代教育矛盾不断",
       isLast: false,
     },
     {
       id: "mirror",
-      icon: "mirror",
       title: "行为镜子",
       done: assessmentDone,
+      iconImageUrl: pickTimelineIcon("mirror", assessmentDone),
       desc: assessmentDone
         ? "已完成每日自测，点击查看答题与建议"
         : canStartAssessment
@@ -235,9 +258,9 @@ function buildItems(record, date) {
     },
     {
       id: "diary",
-      icon: "diary",
       title: "育儿日记",
       done: diaryDone,
+      iconImageUrl: pickTimelineIcon("diary", diaryDone),
       desc: diaryDone
         ? clampDesc(diaryContent || "已记录日记配图", 60)
         : "别一个人扛，写下来，不是抱怨，而是一次自我梳理，也可能是改变的起点",
@@ -245,9 +268,9 @@ function buildItems(record, date) {
     },
     {
       id: "expert",
-      icon: "expert",
       title: "继续深度咨询",
       done: expertDone,
+      iconImageUrl: pickTimelineIcon("expert", expertDone),
       desc: expertDone ? clampDesc(aiSummary, 60) : "点击进入马上沟通，继续深度咨询",
       isLast: true,
     },
@@ -264,12 +287,13 @@ Page({
     date: "",
     dateSlash: "",
     dateText: "",
-    title: "每日觉察",
+    title: "我的觉察",
     quote: DEFAULT_QUOTE,
     overlaySafeTopPx: 0,
     statusQuote: DEFAULT_PARENTING_STATUS_QUOTE,
     troubleQuote: DEFAULT_TROUBLE_QUOTE,
     loading: false,
+    timelineHasData: false,
     record: {
       parentingStatusCode: "",
       moodId: "",
@@ -321,7 +345,7 @@ Page({
       dateText: toDateText(date),
       childName: "孩子",
       greetText: "",
-      title: buildTitle(date),
+      title: "我的觉察",
       quote: DEFAULT_QUOTE,
       overlaySafeTopPx: getOverlaySafeTopPx(),
       statusQuote: DEFAULT_PARENTING_STATUS_QUOTE,
@@ -420,9 +444,11 @@ Page({
           diaryImageUrl,
         };
 
+        const items = buildItems(record, date);
         this.setData({
           record,
-          items: buildItems(record, date),
+          items,
+          timelineHasData: items.some((item) => item.done),
         });
       })
       .catch(() => {

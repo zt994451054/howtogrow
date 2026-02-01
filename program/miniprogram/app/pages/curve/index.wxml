@@ -1,46 +1,39 @@
-<view class="page">
-  <view class="status" style="height: {{statusBarHeight}}px;" />
-
-  <!-- 顶部参考「每日觉察」页面：头像问候 + 菜单 -->
-  <view class="header row between" style="padding-top: {{headerPadTopPx}}px;">
-    <view class="row a">
-      <view class="avatar" bindtap="onOpenProfile" hover-class="tap" hover-stay-time="80">
-        <image wx:if="{{avatarUrl}}" class="avatar__img" src="{{avatarUrl}}" mode="aspectFill" />
-        <view wx:else class="avatar__text">{{avatarText}}</view>
-      </view>
-      <view class="col">
-        <view class="greet">{{greetText}}</view>
-      </view>
-    </view>
-    <view class="icon-btn" bindtap="toggleChildMenu">
-      <ui-icon name="menu" size="{{24}}" />
-    </view>
+<view class="page" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="nav">
+    <view class="status" />
+    <home-header
+      avatar-url="{{avatarUrl}}"
+      avatar-text="{{avatarText}}"
+      greet-text="{{greetText}}"
+      bind:profile="onOpenProfile"
+      bind:menu="toggleChildMenu"
+    />
   </view>
 
-  <view wx:if="{{menuOpen}}" class="menu-layer">
-    <view class="menu-mask" bindtap="closeChildMenu" />
-    <view class="menu-pop" style="top: {{menuPopoverTopPx}}px;">
-      <view class="menu-pop__title">切换孩子</view>
-      <view class="menu-pop__list">
-        <button
+  <cover-view wx:if="{{menuOpen}}" class="menu-layer">
+    <cover-view class="menu-mask" bindtap="closeChildMenu" />
+    <cover-view class="menu-pop" style="top: {{menuPopoverTopPx}}px;">
+      <cover-view class="menu-pop__title">切换孩子</cover-view>
+      <cover-view class="menu-pop__list">
+        <cover-view
           wx:for="{{children}}"
           wx:key="id"
           class="menu-item {{selectedChildId == item.id ? 'on' : ''}}"
           bindtap="onPickChild"
           data-id="{{item.id}}"
         >
-          <view class="menu-item__row row between">
-            <view class="menu-item__name">{{item.nickname}}</view>
-            <view wx:if="{{selectedChildId == item.id}}" class="menu-item__dot" />
-          </view>
-        </button>
-        <button class="menu-item add" bindtap="onAddChild">＋ 添加新孩子</button>
-      </view>
-    </view>
-  </view>
+          <cover-view class="menu-item__row row between">
+            <cover-view class="menu-item__name">{{item.nickname}}</cover-view>
+            <cover-view wx:if="{{selectedChildId == item.id}}" class="menu-item__dot" />
+          </cover-view>
+        </cover-view>
+        <cover-view class="menu-item add" bindtap="onAddChild">＋ 添加新孩子</cover-view>
+      </cover-view>
+    </cover-view>
+  </cover-view>
 
-  <!-- 使用页面原生滚动：避免 canvas 在 scroll-view 中随滚动出现抖动/漂浮 -->
-  <view class="body safe-bottom">
+  <!-- 内容区滚动，顶部固定 -->
+  <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view wx:if="{{!childrenLoaded}}" class="loading">加载中…</view>
 
     <view wx:elif="{{children.length == 0}}" class="empty col center">
@@ -59,9 +52,10 @@
       <view class="section-head row between">
         <view class="section-head__title">我的成长曲线</view>
         <view class="date-chip row a" bindtap="onPickDateRange">
-          <ui-icon name="calendar" size="{{18}}" />
+          <ui-icon name="calendar" size="{{10}}" />
           <view class="date-chip__text">{{rangeLabel}}</view>
-          <ui-icon name="chevronDown" size="{{18}}" />
+          <image src='../../assets/image/uni-down.png' style='width: 14px;height: 14px;'/>
+          <!-- <ui-icon name="chevronDown" size="{{14}}"/> -->
         </view>
       </view>
 
@@ -82,22 +76,45 @@
         </view>
       </view>
 
+      <scroll-view class="dim-tags" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="dim-tags__inner">
+          <view
+            wx:for="{{dimensions}}"
+            wx:key="code"
+            class="dim-tag {{item._on ? 'is-active' : ''}}"
+            style="--tag-color: {{item.color}}; --tag-bg: {{item.bg ? item.bg : item.color}};"
+            bindtap="onToggleDimension"
+            data-code="{{item.code}}"
+          >
+            {{item.label}}
+          </view>
+        </view>
+      </scroll-view>
+
       <view class="dim-pills">
-        <button
-          wx:for="{{dimensions}}"
-          wx:key="code"
-          class="dim-pill {{item._on ? 'on' : 'off'}}"
-          style="border-color: {{item.color}}; color: {{item.color}};"
-          bindtap="onToggleDimension"
-          data-code="{{item.code}}"
-        >
-          {{item.label}}
-        </button>
+        <view class="dim-panel">
+          <view
+            wx:for="{{dimensions}}"
+            wx:key="code"
+            class="dim-item {{item._on ? 'is-active' : ''}}"
+            bindtap="onToggleDimension"
+            data-code="{{item.code}}"
+          >
+            <view
+              class="dim-item__dot {{item._on ? 'is-active' : ''}}"
+              style="background: {{item.bg}};"
+            />
+            <view class="dim-item__content">
+              <view class="dim-item__title">{{item.label}}</view>
+              <view class="dim-item__desc">{{item.desc}}</view>
+            </view>
+          </view>
+        </view>
       </view>
 
-      <view class="persist col center">
+      <view class="persist col center" wx:if="{{false}}">
         <view class="persist__icon">
-          <ui-icon name="bookmark" size="{{28}}" />
+          <image src='https://picsum.photos/seed/picsum/300/300'/>
         </view>
         <view class="persist__name">{{progressName}}</view>
         <view class="persist__desc">
@@ -107,20 +124,23 @@
       </view>
 
       <view class="mood-card">
-        <view class="mood-card__head col center">
-          <view class="mood-card__title">我的育儿状态分布</view>
+        <view class="mood-card__head row between">
+          <view class="mood-card__title">我的育儿状态</view>
           <view class="mood-card__sub">已记录 {{statusTotalDays}} 天</view>
         </view>
 
-        <view class="mood-grid">
-          <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-item">
-            <view class="mood-item__pct">{{item.percentage}}%</view>
-            <view class="mood-item__bar" style="height: {{item.barHeight}}rpx; background: {{item.color}};" />
-            <view class="mood-item__face" style="background: {{item.bg}}; color: {{item.color}};">
-              <image wx:if="{{item.imageUrl}}" class="mood-item__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
-              <view wx:else>{{item.emoji}}</view>
+        <view class="mood-card__panel">
+          <view class="mood-row">
+            <view wx:for="{{statusStats}}" wx:key="moodId" class="mood-row__item">
+              <view class="mood-row__face" style="background: {{item.bg ? item.bg : item.color}};">
+                <image wx:if="{{item.imageUrl}}" class="mood-row__img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                <view wx:else class="mood-row__emoji">{{item.emoji}}</view>
+              </view>
+              <view class="mood-row__label">{{item.label}}的</view>
+              <view class="mood-row__pill">
+                <text class="mood-row__pct {{item.count > 0 ? 'on' : ''}}" style="--pct-color: {{item.color}};">{{item.percentage}}%</text>
+              </view>
             </view>
-            <view class="mood-item__label">{{item.label}}</view>
           </view>
         </view>
       </view>
@@ -146,9 +166,9 @@
         </view>
       </view>
 
-      <view class="footer-hint">你的每次觉察，都是孩子成长路上最珍贵的礼物</view>
+      <!-- <view class="footer-hint"><text class="def">困扰您最多的是</text><text class="gra">动不动哭闹发脾气</text></view> -->
     </view>
-  </view>
+  </scroll-view>
 
   <!-- 自定义日期范围（最多180天） -->
   <view class="sheet {{customRangeOpen ? 'show' : ''}}">

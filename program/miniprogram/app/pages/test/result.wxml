@@ -1,62 +1,70 @@
-<view class="page">
-  <view class="status" style="height: {{statusBarHeight}}px;" />
+<view class="page" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="status" style="height: var(--page-nav-height);" />
 
   <view class="top row between">
     <view wx:if="{{mode == 'history'}}" class="back" bindtap="onBack">
-      <ui-icon name="back" size="{{24}}" />
+      <image mode="aspectFit" src="/assets/image/uni-left.png" style="width: 48rpx; height: 48rpx; display: block;" />
     </view>
     <view wx:else class="spacer" />
     <view class="top__title" wx:if="{{mode == 'history'}}">测试详情</view>
     <view class="close" bindtap="onDone">
-      <ui-icon name="close" size="{{24}}" />
+      <image mode="aspectFit" src="/assets/tab/test-active.png" style="width: 48rpx; height: 48rpx; display: block;" />
     </view>
   </view>
 
-  <scroll-view class="body" scroll-y="true" enhanced="true" show-scrollbar="false">
-    <view class="flag-wrap">
-      <view class="flag">
-        <view class="flag__bar" />
-        <view class="flag__tag">今日\n建议</view>
-      </view>
-    </view>
+  <view class="flag-wrap">
+    <image class="flag" src="https://howtotalk.oss-cn-beijing.aliyuncs.com/miniprogram/jcjy.png" mode="aspectFit" />
+  </view>
 
-    <view class="review">
-      <view wx:for="{{reviewItems}}" wx:key="questionId" class="block">
-        <view class="q row">
-          <view class="q__no">{{index + 1}}</view>
-          <view class="q__title">{{item.question}}</view>
-        </view>
+  <view class="body">
+    <view wx:if="{{reviewTitle}}" class="review__meta">{{reviewTitle}}</view>
 
-        <view class="your">
-          <view class="your__label">你的做法</view>
-          <view class="your__text">{{item.selectedText}}</view>
-        </view>
+    <swiper
+      class="review-swiper"
+      indicator-dots="true"
+      indicator-color="rgba(60, 60, 59, 0.2)"
+      indicator-active-color="#E18638"
+      current="{{swiperCurrent}}"
+      bindchange="onSwiperChange"
+    >
+      <swiper-item wx:for="{{reviewItems}}" wx:key="questionId">
+        <scroll-view class="review-slide" scroll-y="true" enhanced="true" show-scrollbar="false">
+          <view class="review-card">
+            <view class="review-card__question">{{item.question}}</view>
 
-        <view class="opts">
-          <view class="opts__label">觉察建议</view>
-          <view wx:for="{{item.selectedOptions}}" wx:for-item="opt" wx:key="optionId" class="opt is-selected {{opt.suggestFlag == 1 ? 'is-ok' : 'is-warn'}}">
-            <view class="opt__head row">
-              <view class="opt__icon">{{opt.suggestFlag == 1 ? '✓' : '!'}}</view>
-              <view class="opt__content">{{opt.content}}</view>
+            <view class="review-card__desc">
+              <text class="review-card__desc-label">你选择的做法是：</text>
+              <text class="review-card__desc-text">{{item.selectedText}}</text>
             </view>
-            <view wx:if="{{opt.improvementTip}}" class="opt__tip">{{opt.improvementTip}}</view>
+
+            <view wx:if="{{item.adviceText}}" class="review-card__advice-title">下次遇到类似情况，你可以</view>
+            <view wx:if="{{item.adviceText}}" class="review-card__advice">{{item.adviceText}}</view>
           </view>
-        </view>
-      </view>
-    </view>
+        </scroll-view>
+      </swiper-item>
 
-    <view class="summary" wx:if="{{aiSummary}}">
-      <view class="summary__title">针对今天的这份报告,你的专属AI帮你总结了一份觉察报告:</view>
-      <view class="summary__text">{{aiSummary}}</view>
-    </view>
-
-    <view class="tail" />
-  </scroll-view>
+      <swiper-item wx:if="{{aiSummary}}">
+        <scroll-view class="review-slide" scroll-y="true" enhanced="true" show-scrollbar="false">
+          <view class="summary summary--slide">
+            <view class="summary__title">针对今天的这份报告,你的专属AI帮你总结了一份觉察报告:</view>
+            <view class="summary__text">{{aiSummary}}</view>
+          </view>
+        </scroll-view>
+      </swiper-item>
+    </swiper>
+  </view>
 
   <view class="footer safe-bottom">
-    <button class="btn" bindtap="onDone">{{doneText}}</button>
-    <button wx:if="{{canGenerateAiSummary}}" class="btn-ghost" loading="{{aiLoading}}" bindtap="onGenerateAiSummary">
-      生成 AI 总结
+    <button class="btn-cta" bindtap="onDone">{{doneText}}</button>
+    <button
+      wx:if="{{canGenerateAiSummary && swiperCurrent == reviewItems.length - 1}}"
+      class="btn-cta btn-cta--ghost"
+      loading="{{aiLoading}}"
+      disabled="{{aiLoading}}"
+      bindtap="onGenerateAiSummary"
+    >
+      <text wx:if="{{aiLoading}}">生成中</text>
+      <text wx:else>生成 AI 总结</text>
     </button>
   </view>
 </view>

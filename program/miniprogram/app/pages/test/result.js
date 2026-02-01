@@ -2,6 +2,46 @@ const { fetchAiSummary } = require("../../services/assessments");
 const { clearDailySession, getDailySession, setDailySession } = require("../../services/daily-session");
 const { getSystemMetrics } = require("../../utils/system");
 
+function normalizeInlineText(value) {
+  if (value == null) return "";
+  return String(value).replace(/\\n/g, "").trim();
+}
+
+function normalizeMultilineText(value) {
+  if (value == null) return "";
+  return String(value).replace(/\\n/g, "\n").trim();
+}
+
+function parseDateInput(value) {
+  if (!value) return null;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+  const s = String(value).trim();
+  if (!s) return null;
+
+  const ymd = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (ymd) {
+    const year = Number(ymd[1]);
+    const month = Number(ymd[2]);
+    const day = Number(ymd[3]);
+    if (Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)) {
+      return new Date(year, month - 1, day);
+    }
+  }
+
+  const dt = new Date(s);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt;
+}
+
+function formatReviewTitle(date) {
+  const dt = parseDateInput(date);
+  const safe = dt || new Date();
+  const y = safe.getFullYear();
+  const m = safe.getMonth() + 1;
+  const d = safe.getDate();
+  return `${y}年${m}月${d}日自测建议`;
+}
+
 function getPageRoute(page) {
   if (!page) return "";
   return String(page.route || page.__route__ || "").trim();
@@ -32,11 +72,27 @@ function normalizeSuggestFlag(value) {
 }
 
 Page({
-  data: { statusBarHeight: 20, mode: "complete", doneText: "完成自测", reviewItems: [], canGenerateAiSummary: false, aiLoading: false, aiSummary: "" },
+  data: {
+    navBarHeight: 0,
+    mode: "complete",
+    doneText: "完成自测",
+    reviewTitle: "",
+    reviewItems: [],
+    canGenerateAiSummary: false,
+    aiLoading: false,
+    aiSummary: "",
+    swiperCurrent: 0,
+  },
   onLoad(query) {
-    const { statusBarHeight } = getSystemMetrics();
+    const { navBarHeight } = getSystemMetrics();
+    const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
     const mode = query.mode || "complete";
-    this.setData({ statusBarHeight, mode, doneText: mode === "history" ? "返回记录" : "完成自测" });
+    this.setData({
+      navBarHeight: navHeight,
+      mode,
+      doneText: mode === "history" ? "返回记录" : "完成自测",
+    });
   },
   onBack() {
     this.onDone();
@@ -49,6 +105,9 @@ Page({
       return;
     }
     const existingAiSummary = typeof session.aiSummary === "string" ? session.aiSummary : "";
+    const reviewTitle = formatReviewTitle(
+      session.submittedAt || session.recordDate || session.date || (session.submitResult && session.submitResult.submittedAt) || null,
+    );
     const reviewItems = (session.items || [])
       .map((it) => {
         const optionIds = session.answers[it.questionId] || [];
@@ -56,10 +115,10 @@ Page({
         const options = (it.options || [])
           .map((o) => ({
             optionId: o.optionId,
-            content: o.content,
+            content: normalizeInlineText(o.content),
             sortNo: o.sortNo,
             suggestFlag: normalizeSuggestFlag(o.suggestFlag),
-            improvementTip: o.improvementTip || "",
+            improvementTip: normalizeMultilineText(o.improvementTip),
             selected: optionIds.includes(o.optionId),
           }))
           .sort((a, b) => (a.sortNo || 0) - (b.sortNo || 0) || (a.optionId || 0) - (b.optionId || 0));
@@ -69,19 +128,27 @@ Page({
           .map((o) => o.content)
           .filter(Boolean)
           .join("、") || "（未选择）";
+
+        const adviceText = selectedOptions
+          .map((o) => o.improvementTip)
+          .filter(Boolean)
+          .join("\n\n");
+
         return {
           questionId: it.questionId,
-          question: String(it.content || "").replace(/\\n/g, ""),
+          question: normalizeInlineText(it.content),
           selectedText,
-          selectedOptions,
+          adviceText,
         };
       })
       .filter(Boolean);
     this.setData({
+      reviewTitle,
       reviewItems,
       aiSummary: existingAiSummary,
       canGenerateAiSummary:
         typeof session.assessmentId === "number" && session.assessmentId > 0 && !existingAiSummary,
+      swiperCurrent: 0,
     });
   },
   onDone() {
@@ -106,14 +173,19 @@ Page({
   onGenerateAiSummary() {
     const session = getDailySession();
     if (!session || !session.assessmentId) return;
+    if (this.data.aiLoading) return;
     this.setData({ aiLoading: true });
+    wx.showLoading({ title: "生成中", mask: true });
     fetchAiSummary(session.assessmentId)
       .then((content) => {
         session.aiSummary = content;
         setDailySession(session);
-        this.setData({ aiSummary: content, canGenerateAiSummary: false });
+        this.setData({ aiSummary: content, canGenerateAiSummary: false }, () => {
+          this.setData({ swiperCurrent: this.data.reviewItems.length });
+        });
       })
       .catch((err) => {
+        wx.hideLoading();
         const code = err && err.code ? String(err.code) : "";
         const message = err && typeof err.message === "string" && err.message.trim() ? err.message.trim() : "生成失败";
         if (code === "SUBSCRIPTION_REQUIRED") {
@@ -132,6 +204,14 @@ Page({
         }
         wx.showToast({ title: message, icon: "none" });
       })
-      .finally(() => this.setData({ aiLoading: false }));
+      .finally(() => {
+        wx.hideLoading();
+        this.setData({ aiLoading: false });
+      });
+  },
+  onSwiperChange(e) {
+    const current = e && e.detail ? Number(e.detail.current) : 0;
+    if (!Number.isFinite(current)) return;
+    this.setData({ swiperCurrent: current });
   },
 });
