@@ -1,13 +1,17 @@
-<view class="page">
-  <view class="status" style="height: {{statusBarHeight}}px;" />
+<view class="page" style="--page-nav-height: {{navBarHeight}}px;">
+  <view class="status" />
   <view class="header row between">
-    <view class="icon-btn" bindtap="openDrawer">
-      <ui-icon name="menu" size="{{24}}" />
+    <view class="icon-btn" bindtap="openDrawer" hover-class="tap" hover-stay-time="80">
+      <view class="menu-icon">
+        <view class="menu-icon__line" />
+        <view class="menu-icon__line" />
+        <view class="menu-icon__line" />
+      </view>
     </view>
-    <view class="title">马上沟通</view>
-    <view class="icon-btn" bindtap="startNewChat">
-      <ui-icon name="edit" size="{{22}}" />
-    </view>
+    <view class="title">我是您的专属育言师，有问题可以随时问我</view>
+    <!-- <view class="icon-btn" bindtap="startNewChat" hover-class="tap" hover-stay-time="80">
+      <ui-icon name="edit" size="{{37}}" />
+    </view> -->
   </view>
 
   <view class="drawer-layer {{drawerOpen ? 'on' : ''}}">
@@ -20,7 +24,7 @@
             <view class="logo__tail" />
           </view>
           <view class="col">
-            <view class="drawer__t1">历史对话</view>
+            <view class="drawer__t1">历史咨询记录</view>
             <view class="drawer__t2">查看之前的咨询记录</view>
           </view>
         </view>
@@ -30,7 +34,10 @@
         <button class="new" bindtap="startNewChat">✎ 开启新会话</button>
         <view class="tag">最近</view>
         <button wx:for="{{sessions}}" wx:key="sessionId" class="sess" bindtap="selectSession" data-id="{{item.sessionId}}">
-          {{item.title ? item.title : ('会话 #' + item.sessionId)}}
+          <view class="sess-row">
+            <view class="sess-time">{{item.displayTime ? item.displayTime : ''}}</view>
+            <view class="sess-title text-ellipsis">{{item.title ? item.title : ('会话 #' + item.sessionId)}}</view>
+          </view>
         </button>
         <view wx:if="{{sessions.length == 0}}" class="sess-empty">暂无会话</view>
       </scroll-view>
@@ -50,11 +57,15 @@
     bindscrolltoupper="onMessagesScrollToUpper"
   >
     <view class="msg-list">
-	      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
-	        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
-	          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
-	            <text>{{item.role == 'user' ? '👤' : '🤖'}}</text>
-	          </view>
+      <view wx:for="{{messages}}" wx:key="id" wx:for-index="idx" class="msg {{item.role == 'user' ? 'me' : 'ai'}}">
+        <view class="bubble-row {{item.role == 'user' ? 'rev' : ''}}">
+          <view class="avatar {{item.role == 'user' ? 'a-me' : 'a-ai'}}">
+            <image
+              class="avatar__img"
+              src="{{item.role == 'user' ? '/assets/tab/me.png' : '/assets/logo-placeholder.png'}}"
+              mode="aspectFill"
+            />
+          </view>
           <view wx:if="{{item.role == 'user'}}" class="bubble b-me">{{item.text}}</view>
           <view wx:else class="bubble b-ai">
             <view wx:if="{{typing && idx == messages.length - 1 && !item.text}}" class="typing-hint">
@@ -76,16 +87,13 @@
                 bindtap="onCopyAi"
                 data-id="{{item.id}}"
               >
-                <ui-icon name="copy" size="{{18}}" />
+                <image class="copy-icon" src="../../assets/image/uni-copy.png" mode="aspectFit" />
               </view>
             </view>
           </view>
         </view>
 
-        <view
-          wx:if="{{idx == 0 && !typing && quickQuestions.length > 0 && messages.length <= 1}}"
-          class="quick"
-        >
+        <view wx:if="{{idx == 0 && !typing && quickQuestions.length > 0 && messages.length <= 1}}" class="quick">
           <view
             wx:for="{{quickQuestions}}"
             wx:key="*this"

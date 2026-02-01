@@ -100,7 +100,7 @@ function toMonthValue(date) {
 }
 
 function toMonthText(date) {
-  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+  return `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
 }
 
 function dayOfWeekText(date) {
@@ -278,20 +278,21 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
       const statusCodeFromMood = moodId && STATUS_CODE_BY_MOOD_ID[moodId] ? STATUS_CODE_BY_MOOD_ID[moodId] : "";
       const statusKey = STATUS_IMAGE_BY_CODE[statusCode] ? statusCode : statusCodeFromMood;
       const hasStatus = Boolean(statusCode || statusCodeFromMood);
-      const moodImageUrl = statusKey && STATUS_IMAGE_BY_CODE[statusKey] ? STATUS_IMAGE_BY_CODE[statusKey] : "";
+      const hasMood = Boolean(moodId && (moodStyle || statusCodeFromMood));
+      const moodImageUrl = hasMood && statusKey && STATUS_IMAGE_BY_CODE[statusKey] ? STATUS_IMAGE_BY_CODE[statusKey] : "";
 
       const troubleScenes = Array.isArray(d.troubleScenes) ? d.troubleScenes : [];
-      const troubleNames = troubleScenes
-        .map((s) => (s && s.name ? String(s.name) : ""))
-        .filter(Boolean);
+      const troubleNames = troubleScenes.map((s) => (s && s.name ? String(s.name) : "")).filter(Boolean);
 
       const assessmentId = d.assessment && d.assessment.assessmentId ? Number(d.assessment.assessmentId) : 0;
-      const aiSummary = d.assessment && d.assessment.aiSummary ? String(d.assessment.aiSummary) : "";
       const hasAssessment = Boolean(assessmentId);
 
       const diaryContent = d.diary && d.diary.content ? String(d.diary.content) : "";
       const diaryImageUrl = d.diary && d.diary.imageUrl ? String(d.diary.imageUrl) : "";
-      const hasDiary = Boolean(diaryContent && diaryContent.trim()) || Boolean(diaryImageUrl && diaryImageUrl.trim());
+      const diaryText = diaryContent.trim();
+      const diaryImageTrim = diaryImageUrl.trim();
+      const hasDiaryText = Boolean(diaryText);
+      const hasDiary = hasDiaryText || Boolean(diaryImageTrim);
 
       const isDone =
         hasStatus ||
@@ -299,14 +300,17 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         Boolean(assessmentId) ||
         hasDiary;
 
-      // Home card footer (2 lines) is driven only by daily assessment data.
-      // When the day has an assessment record, we further replace these placeholders with:
-      // - Q1 title
-      // - Q1 first option improvementTip
-      const title = hasAssessment ? "已完成自测" : DEFAULT_FOOT_TITLE;
-      const content = hasAssessment ? (aiSummary || DEFAULT_FOOT_CONTENT) : DEFAULT_FOOT_CONTENT;
+      let title = DEFAULT_FOOT_TITLE;
+      if (hasAssessment) {
+        title = "已完成自测";
+      }
 
-      const imageUrl = diaryImageUrl.trim();
+      let content = DEFAULT_FOOT_CONTENT;
+      if (hasDiaryText) {
+        content = diaryText;
+      }
+
+      const imageUrl = diaryImageTrim;
 
       return {
         id: `obs-${recordDate}`,
@@ -322,9 +326,12 @@ function buildDayListFromMonthlyApi(monthly, childId, today = new Date()) {
         imageUrl: isDone ? imageUrl : "",
         title,
         content,
+        titleOn: hasAssessment,
+        contentOn: hasDiaryText,
         hasStatus,
-        moodEmoji: hasStatus && moodStyle ? moodStyle.emoji : "",
-        moodCls: hasStatus && moodStyle ? moodStyle.cls : "",
+        hasMood,
+        moodEmoji: hasMood && moodStyle ? moodStyle.emoji : "",
+        moodCls: hasMood && moodStyle ? moodStyle.cls : "",
         moodImageUrl,
       };
     })
@@ -361,7 +368,10 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
       imageUrl: "",
       title: DEFAULT_FOOT_TITLE,
       content: DEFAULT_FOOT_CONTENT,
+      titleOn: false,
+      contentOn: false,
       hasStatus: false,
+      hasMood: false,
       moodEmoji: "",
       moodCls: "",
       moodImageUrl: "",
@@ -372,8 +382,7 @@ function buildEmptyMonthDayList(targetMonth, today = new Date()) {
 
 Page({
   data: {
-    statusBarHeight: 20,
-    headerPadTopPx: 16,
+    navBarHeight: 0,
     banners: [],
     bannerIndex: 0,
     menuOpen: false,
@@ -381,6 +390,8 @@ Page({
     children: [],
     selectedChildId: 0,
     greetText: "您好",
+    greetName: "",
+    greetSuffix: "您好",
     avatarText: "妈",
     avatarUrl: "",
     monthText: "",
@@ -410,18 +421,17 @@ Page({
       .catch(() => {});
   },
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
+    const { navBarHeight } = getSystemMetrics();
     const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
-    const headerPadTopPx = menuRect ? Math.max(12, Number(menuRect.bottom || 0) - Number(statusBarHeight || 0) + 8) : 16;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
     const today = new Date();
     const maxMonth = toMonthValue(today);
     const monthValue = clampMonthValue(toMonthValue(today), MIN_MONTH, maxMonth);
     const parsed = parseMonthValue(monthValue);
     const monthDate = parsed ? new Date(parsed.year, parsed.month - 1, 1) : today;
     this.setData({
-      statusBarHeight,
-      headerPadTopPx,
-      menuPopoverTopPx: menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(statusBarHeight || 0) + 56),
+      navBarHeight: navHeight,
+      menuPopoverTopPx: menuRect ? Math.max(0, Number(menuRect.bottom || 0) + 56) : Math.max(0, Number(navHeight || 0) + 56),
       monthText: toMonthText(monthDate),
       monthValue,
       minMonth: MIN_MONTH,
@@ -479,7 +489,7 @@ Page({
       if (!assessmentId) return d;
       const preview = this._assessmentPreviewCache.get(assessmentId);
       if (!preview) return d;
-      return { ...d, title: preview.title, content: preview.content };
+      return { ...d, title: preview.title };
     });
     this.setData({ dayList: next });
   },
@@ -533,12 +543,16 @@ Page({
     const childId = Number(this.data.selectedChildId || 0);
     const selected = (this.data.children || []).find((c) => Number(c.id) === childId) || null;
     if (!selected) {
-      this.setData({ greetText: "您好" });
+      this.setData({ greetText: "您好", greetName: "", greetSuffix: "您好" });
       return;
     }
     const identity = selected.parentIdentity ? String(selected.parentIdentity) : "妈妈";
+    const greetName = `${selected.nickname}${identity}`;
+    const greetSuffix = "您好";
     this.setData({
-      greetText: `${selected.nickname}${identity}，您好`,
+      greetText: `${greetName}，${greetSuffix}`,
+      greetName,
+      greetSuffix,
     });
   },
 

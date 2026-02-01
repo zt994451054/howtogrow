@@ -2,6 +2,21 @@
   "setting": {
     "ignoreDevUnusedFiles": false,
     "ignoreUploadUnusedFiles": false,
-    "urlCheck": false
-  }
+    "urlCheck": false,
+    "coverView": false,
+    "lazyloadPlaceholderEnable": false,
+    "skylineRenderEnable": false,
+    "preloadBackgroundData": false,
+    "autoAudits": false,
+    "useApiHook": true,
+    "showShadowRootInWxmlPanel": false,
+    "useStaticServer": false,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "compileHotReLoad": true,
+    "checkInvalidKey": true,
+    "bigPackageSizeSupport": false
+  },
+  "libVersion": "3.14.0",
+  "projectname": "app"
 }

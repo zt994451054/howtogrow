@@ -1,15 +1,17 @@
 .page {
   min-height: 100vh;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .subhead {
-  padding: 20rpx 32rpx 0;
+  padding: var(--section-gap) var(--page-padding) 0;
 }
 
 .subhead__title {
   font-size: 28rpx;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -20,7 +22,8 @@
 }
 
 .body {
-  padding: 120rpx 48rpx 0;
+  flex: 1;
+  padding: 120rpx var(--page-padding) 0;
   text-align: center;
 }
 
@@ -37,7 +40,7 @@
 }
 
 .t1 {
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 32rpx;
   margin-bottom: 12rpx;
@@ -49,14 +52,6 @@
   margin-bottom: 48rpx;
 }
 
-.btn {
-  width: 100%;
-  background: var(--brand);
-  color: #fff;
-  border-radius: 24rpx;
-  padding: 22rpx 0;
-  font-size: 28rpx;
-  font-weight: 900;
-  box-shadow: var(--shadow-brand);
+.footer {
+  padding: 18rpx var(--page-padding) var(--page-footer-gap);
 }
-

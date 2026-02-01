@@ -36,9 +36,57 @@ function toUiMessages(descMessages) {
     }));
 }
 
+function toDateValue(value) {
+  if (value == null) return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (typeof value === "number") {
+    const ms = value < 1e11 ? value * 1000 : value;
+    const d = new Date(ms);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  if (/^\d+$/.test(raw)) {
+    const n = Number(raw);
+    if (Number.isFinite(n)) {
+      const ms = n < 1e11 ? n * 1000 : n;
+      const d = new Date(ms);
+      if (!Number.isNaN(d.getTime())) return d;
+    }
+  }
+  let d = new Date(raw);
+  if (Number.isNaN(d.getTime())) {
+    d = new Date(raw.replace(/-/g, "/"));
+  }
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function toMmDd(value) {
+  const d = toDateValue(value);
+  if (!d) return "";
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${mm}/${dd}`;
+}
+
+function toUiSessions(rawSessions) {
+  const list = Array.isArray(rawSessions) ? rawSessions : [];
+  return list.map((s) => {
+    const timeValue =
+      s?.lastMessageAt ??
+      s?.updatedAt ??
+      s?.createdAt ??
+      s?.lastActiveAt ??
+      s?.lastMessageTime ??
+      s?.lastMessage?.createdAt ??
+      null;
+    return { ...s, displayTime: toMmDd(timeValue) };
+  });
+}
+
 Page({
   data: {
-    statusBarHeight: 20,
+    navBarHeight: 0,
     drawerOpen: false,
     sessions: [],
     sessionId: 0,
@@ -59,8 +107,10 @@ Page({
     historyBeforeMessageId: null,
   },
   onLoad() {
-    const { statusBarHeight } = getSystemMetrics();
-    this.setData({ statusBarHeight });
+    const { navBarHeight } = getSystemMetrics();
+    const menuRect = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    const navHeight = menuRect && Number(menuRect.bottom || 0) > 0 ? Number(menuRect.bottom) : Number(navBarHeight || 0);
+    this.setData({ navBarHeight: navHeight });
   },
   onHide() {
     this.stopAiTyping();
@@ -130,7 +180,7 @@ Page({
   },
   refreshSessions() {
     return listChatSessions(20)
-      .then((sessions) => this.setData({ sessions }))
+      .then((sessions) => this.setData({ sessions: toUiSessions(sessions) }))
       .catch(() => this.setData({ sessions: [] }));
   },
   openDrawer() {
