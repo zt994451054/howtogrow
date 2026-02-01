@@ -232,7 +232,7 @@ function buildItems(record, date) {
       title: "育儿状态",
       done: statusDone,
       statusImageUrl,
-      iconImageUrl: pickTimelineIcon("parentingStatus", statusDone),
+      iconImageUrl: statusImageUrl || pickTimelineIcon("parentingStatus", statusDone),
       desc: statusDone ? `已记录：${statusCode}` : "今天的你是温柔耐心的爸妈，还是被气到想“重启系统”？",
       isLast: false,
     },
