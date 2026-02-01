@@ -9,7 +9,8 @@
   <view class="body col center">
     <view class="bubble">📝</view>
     <view class="t1">准备好了吗？</view>
-    <view class="t2">接下来将开始关于 {{childName}} 的沟通能力测试</view>
+    <!-- <view class="t2">接下来将开始关于 {{childName}} 的沟通能力测试</view> -->
+     <view class="t2">接下来将开始您今天的觉察</view>
   </view>
 
   <view class="footer">

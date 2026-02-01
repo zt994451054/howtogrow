@@ -59,7 +59,7 @@
 
 .body {
   height: calc(100vh - 260rpx);
-  padding: 0 var(--page-padding);
+  padding: 0 40rpx;
 }
 
 .title {
@@ -95,7 +95,7 @@
 .options {
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
+  gap: 36rpx;
   padding-bottom: 30rpx;
 }
 
@@ -103,7 +103,8 @@
   width: 100%;
   padding: 28rpx 28rpx;
   border-radius: 16rpx;
-  font-size: 22rpx;
+  font-size: 28rpx;
+  font-weight: bold;
   /* font-weight: 800; */
   line-height: 36rpx;
   background: #FCE6D1;

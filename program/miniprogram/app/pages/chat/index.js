@@ -3,7 +3,7 @@ const { createChatSession, listChatSessions, listChatQuickQuestions, listChatMes
 const { getCachedMe, isProfileComplete } = require("../../services/auth");
 const towxml = require("../../towxml/index");
 
-const DEFAULT_AI_GREETING = "你好！我是你的育儿助手 Howtotalk。今天遇到了什么挑战吗？";
+const DEFAULT_AI_GREETING = "家长您好，我是你的专属育儿师HowToGrow。来吧，说说看，最近在孩子身上遇到什么让你头疼或者拿不准的事儿了？";
 
 function toAiNodes(markdown) {
   try {
