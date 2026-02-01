@@ -14,7 +14,8 @@ public enum ParentIdentity {
   PATERNAL_GRANDMA("奶奶"),
   PATERNAL_GRANDPA("爷爷"),
   MATERNAL_GRANDPA("外公"),
-  MATERNAL_GRANDMA("外婆");
+  MATERNAL_GRANDMA("外婆"),
+  OTHER_GUARDIAN("其他监护人");
 
   private static final Map<String, ParentIdentity> BY_VALUE =
       Arrays.stream(values())
@@ -47,4 +48,3 @@ public enum ParentIdentity {
     return Optional.ofNullable(BY_VALUE.get(trimmed.toLowerCase(Locale.ROOT)));
   }
 }
-

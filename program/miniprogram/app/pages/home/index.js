@@ -11,7 +11,7 @@ const { getSystemMetrics } = require("../../utils/system");
 const MIN_MONTH = "2025-06";
 
 const DEFAULT_FOOT_TITLE = "你忘记觉察了哦";
-const DEFAULT_FOOT_CONTENT = "你没有收获到任何建议。";
+const DEFAULT_FOOT_CONTENT = "你没有留下任何感悟";
 
 const STATUS_IMAGE_BY_CODE = {
   乐观: "https://howtotalk.oss-cn-beijing.aliyuncs.com/parenting/%E4%B9%90%E8%A7%82.jpg",

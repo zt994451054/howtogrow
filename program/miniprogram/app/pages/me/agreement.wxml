@@ -3,7 +3,7 @@
 
   <scroll-view class="body safe-bottom" scroll-y="true" enhanced="true" show-scrollbar="false">
     <view class="wrap">
-      <view class="title">{{meta.appName}} 用户协议与隐私政策</view>
+      <view class="title">HOWTOGROW如何成长协议与隐私政策</view>
       <view class="meta">
         <text class="meta__item">版本：{{meta.version}}</text>
         <text class="meta__dot">·</text>

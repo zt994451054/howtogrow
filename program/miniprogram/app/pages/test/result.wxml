@@ -7,9 +7,9 @@
     </view>
     <view wx:else class="spacer" />
     <view class="top__title" wx:if="{{mode == 'history'}}">测试详情</view>
-    <view class="close" bindtap="onDone">
+    <!-- <view class="close" bindtap="onDone">
       <image mode="aspectFit" src="/assets/tab/test-active.png" style="width: 48rpx; height: 48rpx; display: block;" />
-    </view>
+    </view> -->
   </view>
 
   <view class="flag-wrap">

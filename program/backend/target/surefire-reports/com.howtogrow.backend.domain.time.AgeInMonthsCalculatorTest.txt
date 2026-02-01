@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.howtogrow.backend.domain.time.AgeInMonthsCalculatorTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.howtogrow.backend.domain.time.AgeInMonthsCalculatorTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.howtogrow.backend.domain.time.AgeInMonthsCalculatorTest

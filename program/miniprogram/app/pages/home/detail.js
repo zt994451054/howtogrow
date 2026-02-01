@@ -15,6 +15,7 @@ const { getSystemMetrics } = require("../../utils/system");
 const OVERLAY_SAFE_TOP_GAP_PX = 12;
 const PAGE_PADDING_RPX = 32;
 const MOOD_OPTION_SIZE_RPX = 120;
+const MAX_TROUBLE_SCENE_SELECTION = 10;
 
 const DEFAULT_QUOTE = "你记下的每个烦躁瞬间\n都是写给孩子未来的一封信\n“看，爸爸妈妈也在学着长大”";
 const QUOTE_SCENE_DAILY_OBSERVATION = "每日觉察";
@@ -318,6 +319,7 @@ Page({
     troubleSaving: false,
     troubleScenes: [],
     troubleDraftIds: [],
+    troubleMaxCount: MAX_TROUBLE_SCENE_SELECTION,
 
     showDiarySheet: false,
     diarySaving: false,
@@ -584,10 +586,11 @@ Page({
           };
         });
         const selected = Array.isArray(record?.scenes) ? record.scenes.map((s) => safeText(s?.id).trim()).filter(Boolean) : monthlyIds;
+        const uniqueSelected = Array.from(new Set(selected));
         const q = normalizeText(quote).trim();
         this.setData({
-          troubleScenes: applySelectedFlag(list, selected),
-          troubleDraftIds: selected,
+          troubleScenes: applySelectedFlag(list, uniqueSelected),
+          troubleDraftIds: uniqueSelected,
           troubleQuote: q || DEFAULT_TROUBLE_QUOTE,
         });
       })
@@ -603,7 +606,14 @@ Page({
     const selected = Array.isArray(this.data.troubleDraftIds) ? this.data.troubleDraftIds.slice() : [];
     const idx = selected.indexOf(id);
     if (idx >= 0) selected.splice(idx, 1);
-    else selected.push(id);
+    else {
+      const maxCount = Number(this.data.troubleMaxCount || MAX_TROUBLE_SCENE_SELECTION);
+      if (selected.length >= maxCount) {
+        wx.showToast({ title: `最多选择 ${maxCount} 个烦恼场景`, icon: "none" });
+        return;
+      }
+      selected.push(id);
+    }
     this.setData({ troubleDraftIds: selected, troubleScenes: applySelectedFlag(this.data.troubleScenes, selected) });
   },
 
@@ -612,11 +622,17 @@ Page({
     const date = safeText(this.data.date).trim();
     const rawIds = Array.isArray(this.data.troubleDraftIds) ? this.data.troubleDraftIds.map((v) => safeText(v).trim()).filter(Boolean) : [];
     if (!childId || !date) return;
-    if (!rawIds.length) {
+    const uniqueIds = Array.from(new Set(rawIds));
+    if (!uniqueIds.length) {
       wx.showToast({ title: "请至少选择 1 个烦恼场景", icon: "none" });
       return;
     }
-    const ids = rawIds.map((v) => Number(v)).filter((v) => v > 0);
+    const maxCount = Number(this.data.troubleMaxCount || MAX_TROUBLE_SCENE_SELECTION);
+    if (uniqueIds.length > maxCount) {
+      wx.showToast({ title: `最多选择 ${maxCount} 个烦恼场景`, icon: "none" });
+      return;
+    }
+    const ids = uniqueIds.map((v) => Number(v)).filter((v) => v > 0);
     if (date > formatDateYmd(new Date())) {
       wx.showToast({ title: "记录日期不能是未来时间", icon: "none" });
       return;

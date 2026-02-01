@@ -114,7 +114,7 @@
         disabled="{{!troubleDraftIds.length}}"
         bindtap="onSaveTroubles"
       >
-        确 定 {{troubleDraftIds.length ? '(' + troubleDraftIds.length + ')' : ''}}
+        确 定 {{troubleDraftIds.length ? '(' + troubleDraftIds.length + '/' + troubleMaxCount + ')' : ''}}
       </button>
     </view>
   </view>
@@ -144,11 +144,11 @@
             class="diary-editor__input"
             placeholder="记录当下的感受，哪怕只是只言片语..."
             value="{{diaryDraftContent}}"
-            maxlength="200"
+            maxlength="500"
             auto-height="true"
             bindinput="onDiaryInput"
           />
-          <view class="diary-editor__count">{{diaryDraftLength}}/200</view>
+          <view class="diary-editor__count">{{diaryDraftLength}}/500</view>
         </view>
 
         <view class="diary-photo">

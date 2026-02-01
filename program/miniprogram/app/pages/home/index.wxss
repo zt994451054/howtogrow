@@ -619,8 +619,8 @@
 }
 
 .foot__s {
-  font-size: 24rpx;
-  font-weight: 700;
+  font-size: 22rpx;
+  font-weight: 600;
   color: var(--text-ink-muted);
   letter-spacing: 2rpx;
 }

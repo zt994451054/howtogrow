@@ -115,7 +115,7 @@
 #### `PUT /api/v1/miniprogram/children/{childId}` / `DELETE /api/v1/miniprogram/children/{childId}`
 - Path：
   - `childId`：孩子ID
-> 新增/更新孩子时需填写 `parentIdentity`（爸爸/妈妈/奶奶/爷爷/外公/外婆）。
+> 新增/更新孩子时需填写 `parentIdentity`（爸爸/妈妈/奶奶/爷爷/外公/外婆/其他监护人）。
 
 #### `GET /api/v1/miniprogram/banners` / `GET /api/v1/miniprogram/banners/{id}`
 - `GET /.../banners` 响应 data：`BannerListItemView[]`

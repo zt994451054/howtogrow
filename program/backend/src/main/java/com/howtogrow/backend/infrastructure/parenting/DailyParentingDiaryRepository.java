@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -65,7 +66,10 @@ public class DailyParentingDiaryRepository {
           SET content = :content, image_url = :imageUrl, updated_at = NOW(3)
           WHERE id = :id
           """,
-          Map.of("id", existing.get(), "content", content, "imageUrl", imageUrl));
+          new MapSqlParameterSource()
+              .addValue("id", existing.get())
+              .addValue("content", content)
+              .addValue("imageUrl", imageUrl));
       return;
     }
 
@@ -75,7 +79,7 @@ public class DailyParentingDiaryRepository {
         INSERT INTO daily_parenting_diary(user_id, child_id, record_date, content, image_url, created_at, updated_at)
         VALUES (:userId, :childId, :recordDate, :content, :imageUrl, NOW(3), NOW(3))
         """,
-        new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+        new MapSqlParameterSource()
             .addValue("userId", userId)
             .addValue("childId", childId)
             .addValue("recordDate", recordDate)

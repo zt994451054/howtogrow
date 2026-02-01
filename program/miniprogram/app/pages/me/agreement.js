@@ -1,9 +1,9 @@
 const AGREEMENT_META = {
-  appName: "Howtotalk",
+  appName: "HOWTOGROW如何成长",
   version: "v1.0",
   effectiveDate: "2025-12-31",
   lastUpdatedDate: "2025-12-31",
-  contactEmail: "support@howtotalk.example",
+  contactEmail: "support@howtogrow.example",
 };
 
 const AGREEMENT_SECTIONS = [
@@ -13,7 +13,7 @@ const AGREEMENT_SECTIONS = [
     blocks: [
       {
         type: "p",
-        text: "欢迎您使用 Howtotalk（以下简称“本服务”）。在您开始使用前，请务必阅读并理解本协议与隐私政策的全部内容。您点击同意、注册、登录或开始使用，即视为您已充分阅读并接受本协议的约束。",
+        text: "欢迎您使用 Howtogrow（以下简称“本服务”）。在您开始使用前，请务必阅读并理解本协议与隐私政策的全部内容。您点击同意、注册、登录或开始使用，即视为您已充分阅读并接受本协议的约束。",
       },
       {
         type: "p",

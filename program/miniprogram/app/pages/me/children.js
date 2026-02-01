@@ -16,7 +16,7 @@ Page({
     nickname: "",
     gender: 1,
     birthDate: "",
-    parentIdentityOptions: ["妈妈", "爸爸", "爷爷", "奶奶", "外公", "外婆"],
+    parentIdentityOptions: ["妈妈", "爸爸", "爷爷", "奶奶", "外公", "外婆", "其他监护人"],
     parentIdentityIndex: 0,
     parentIdentity: "妈妈",
     showAuthModal: false,

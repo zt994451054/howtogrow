@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
           switch (constraintName) {
             case "ck_quote_scene" -> "场景不合法（允许：每日觉察/育儿状态/烦恼档案/育儿日记）";
             case "ck_quote_age_range" -> "年龄范围不合法（0-18 且 minAge<=maxAge）";
-            case "ck_child_parent_identity" -> "家长身份不合法（允许：爸爸/妈妈/奶奶/爷爷/外公/外婆）";
+            case "ck_child_parent_identity" -> "家长身份不合法（允许：爸爸/妈妈/奶奶/爷爷/外公/外婆/其他监护人）";
             default -> "数据不合法";
           };
       log.warn(

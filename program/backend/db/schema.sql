@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS child (
   nickname VARCHAR(64) NOT NULL COMMENT '孩子昵称',
   gender TINYINT NOT NULL DEFAULT 0 COMMENT '性别：0未知 1男 2女',
   birth_date DATE NOT NULL COMMENT '出生日期',
-  parent_identity VARCHAR(16) NOT NULL COMMENT '家长身份：爸爸/妈妈/奶奶/爷爷/外公/外婆',
+  parent_identity VARCHAR(16) NOT NULL COMMENT '家长身份：爸爸/妈妈/奶奶/爷爷/外公/外婆/其他监护人',
   status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1启用 0删除',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS child (
   PRIMARY KEY (id),
   KEY idx_child_user_id (user_id),
   CONSTRAINT fk_child_user FOREIGN KEY (user_id) REFERENCES user_account(id),
-  CONSTRAINT ck_child_parent_identity CHECK (parent_identity IN ('爸爸','妈妈','奶奶','爷爷','外公','外婆'))
+  CONSTRAINT ck_child_parent_identity CHECK (parent_identity IN ('爸爸','妈妈','奶奶','爷爷','外公','外婆','其他监护人'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='孩子信息';
 
 -- =========

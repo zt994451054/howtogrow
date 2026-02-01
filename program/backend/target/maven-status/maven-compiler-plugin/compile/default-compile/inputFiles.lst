@@ -53,6 +53,7 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BannerUpsertRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BannerView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BatchDeleteRequest.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/BatchUpdateQuestionTroubleScenesRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/DimensionCreateRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/DimensionUpdateRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/DimensionView.java
@@ -75,6 +76,7 @@
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/SubscriptionExtendRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/SubscriptionExtendResponse.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/TroubleSceneImportResponse.java
+/Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/TroubleSceneUpdateMode.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/TroubleSceneUpsertRequest.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/TroubleSceneView.java
 /Users/zhoutong/Documents/project/howtogrow/program/backend/src/main/java/com/howtogrow/backend/controller/admin/dto/UploadPublicResponse.java

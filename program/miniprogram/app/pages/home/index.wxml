@@ -97,14 +97,14 @@
             <view class="thumb {{item.isDone ? '' : 'thumb-notdone'}}">
               <view class="thumb__inner">
                 <view class="thumb__date">{{item.dayText}} / {{item.weekday}}</view>
-                <view class="thumb__camera">
+                <!-- <view class="thumb__camera">
                   <view class="camera-icon">
                     <view class="camera-icon__body" />
                     <view class="camera-icon__top" />
                     <view class="camera-icon__lens" />
                     <view class="camera-icon__dot" />
                   </view>
-                </view>
+                </view> -->
 
                 <image wx:if="{{item.isDone && item.imageUrl}}" class="thumb__img" src="{{item.imageUrl}}" mode="aspectFill" />
                 <image wx:elif="{{item.isDone}}" class="thumb__img thumb__img--fallback" src="../../assets/image/bgsw@x.png" mode="aspectFill" />
