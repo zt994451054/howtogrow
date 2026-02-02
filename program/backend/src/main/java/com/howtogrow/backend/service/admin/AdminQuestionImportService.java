@@ -10,10 +10,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
@@ -333,14 +335,15 @@ public class AdminQuestionImportService {
     if (questionRepo.existsSameQuestion(first.minAge, first.maxAge, questionType, first.questionContent)) {
       throw new AppException(ErrorCode.INVALID_REQUEST, "题目已存在");
     }
+    assertNoDuplicateOptions(group);
     var questionId = questionRepo.insertQuestion(first.questionContent, first.minAge, first.maxAge, questionType, 1);
     questionRepo.replaceQuestionTroubleScenes(questionId, resolveSceneIds(first.troubleSceneNames, troubleSceneIdByName));
 
     int defaultSortNo = 1;
     for (var row : group) {
-      var optionContent = row.optionContent.trim();
+      var optionContent = normalizeOptionContent(row.optionContent);
       if (optionContent.isBlank()) {
-        throw new AppException(ErrorCode.INVALID_REQUEST, "选项内容不能为空");
+        throw new AppException(ErrorCode.INVALID_REQUEST, "选项内容不能为空（第" + row.rowNum + "行）");
       }
       var suggestFlag = row.suggestFlag == 0 ? 0 : 1;
       int sortNo = row.sortNo;
@@ -387,6 +390,72 @@ public class AdminQuestionImportService {
     }
     var qt = raw.isEmpty() ? "MULTI" : raw.toUpperCase(Locale.ROOT);
     return ("SINGLE".equals(qt) || "MULTI".equals(qt)) ? qt : "MULTI";
+  }
+
+  private static void assertNoDuplicateOptions(List<ImportRow> group) {
+    var firstRowNumsByOption = new HashMap<String, Integer>();
+    var rowNumsByDuplicateOption = new LinkedHashMap<String, List<Integer>>();
+
+    for (var row : group) {
+      var normalized = normalizeOptionContent(row.optionContent);
+      if (normalized.isBlank()) {
+        throw new AppException(ErrorCode.INVALID_REQUEST, "选项内容不能为空（第" + row.rowNum + "行）");
+      }
+
+      var firstRowNum = firstRowNumsByOption.putIfAbsent(normalized, row.rowNum);
+      if (firstRowNum == null) {
+        continue;
+      }
+      rowNumsByDuplicateOption.computeIfAbsent(normalized, k -> new ArrayList<>(List.of(firstRowNum))).add(row.rowNum);
+    }
+
+    if (rowNumsByDuplicateOption.isEmpty()) {
+      return;
+    }
+
+    var parts = new ArrayList<String>();
+    for (var e : rowNumsByDuplicateOption.entrySet()) {
+      var optionText = snippet(e.getKey(), 60);
+      parts.add("「" + optionText + "」出现在" + formatRowNums(e.getValue()));
+    }
+    throw new AppException(ErrorCode.INVALID_REQUEST, "选项重复：" + String.join("；", parts));
+  }
+
+  private static String formatRowNums(List<Integer> rowNums) {
+    var sorted = new ArrayList<Integer>();
+    for (var n : rowNums) {
+      if (n != null && n > 0) {
+        sorted.add(n);
+      }
+    }
+    sorted.sort(Integer::compareTo);
+    var out = new ArrayList<String>(sorted.size());
+    for (var n : sorted) {
+      out.add("第" + n + "行");
+    }
+    return String.join("、", out);
+  }
+
+  private static String snippet(String text, int maxLen) {
+    if (text == null) {
+      return "";
+    }
+    var t = text.trim();
+    if (t.length() <= maxLen) {
+      return t;
+    }
+    return t.substring(0, maxLen) + "...";
+  }
+
+  private static final Pattern ZERO_WIDTH_CHARS = Pattern.compile("[\\u200B\\u200C\\u200D\\uFEFF]");
+
+  private static String normalizeOptionContent(String raw) {
+    if (raw == null) {
+      return "";
+    }
+    var t = raw.trim();
+    t = ZERO_WIDTH_CHARS.matcher(t).replaceAll("");
+    return t.trim();
   }
 
   private static int parseSuggestFlag(String raw) {
