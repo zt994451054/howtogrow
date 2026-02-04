@@ -13,8 +13,8 @@ app:
   oss:
     enabled: true
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: LTAI5tKivhkaVvzeNb8CsU2n
-    access-key-secret: M9yoQMAhmJ5HjE2ECpQzqOWFr7BV5V
+    access-key-id: {ak}
+    access-key-secret: {sk}
     bucket: howtotalk
     avatar-prefix: avatars
   daily-assessment:
